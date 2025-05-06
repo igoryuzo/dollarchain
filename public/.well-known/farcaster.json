@@ -13,7 +13,7 @@
     "buttonTitle": "View Your Account",
     "splashImageUrl": "https://www.dollarchain.xyz/images/icon.png",
     "splashBackgroundColor": "#0f172a",
-    "webhookUrl": "https://api.neynar.com/f/app/YOUR_APP_ID_HERE/event",
+    "webhookUrl": "https://api.neynar.com/f/app/04093a6d-63e1-4ddc-a625-5e50a2c8f1d2/event",
     "subtitle": "Farcaster Mini App Demo",
     "description": "A sample Farcaster Mini App with authentication and notifications",
     "primaryCategory": "developer-tools",
