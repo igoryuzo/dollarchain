@@ -1,8 +1,8 @@
 {
   "accountAssociation": {
-    "header": "REPLACE_WITH_YOUR_HEADER_FROM_WARPCAST_TOOL",
-    "payload": "REPLACE_WITH_YOUR_PAYLOAD_FROM_WARPCAST_TOOL",
-    "signature": "REPLACE_WITH_YOUR_SIGNATURE_FROM_WARPCAST_TOOL"
+    "header": "eyJmaWQiOjE3NzE0LCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4ZjUxMjMyMDYxQ0Y0M0E2NzlmQ0U2QTcyQzQ0MzJhMzVkM2YyNzczMCJ9",
+    "payload": "eyJkb21haW4iOiJ3d3cuZG9sbGFyY2hhaW4ueHl6In0",
+    "signature": "MHg0M2IxMzEyZjljZWZkZjU1YjRmYjlhMzgxNGMyOTg0MWY3OTA5YzVhMTdlNzY4NjhlNDg0ZTk4ZGFjNTNmYjY0NjI5OWFmZjc0MWY0NDE1NmE5OTFlYWUwYzNjNjM4MDc2NjdmMzU2NmJhYmM2YzZlOTkwZmYxOWMyNDJmYWU2MDFi"
   },
   "frame": {
     "version": "1",
