@@ -39,7 +39,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 NEYNAR_API_KEY=your_neynar_api_key
 
 # Application URL (used for notification links)
-NEXT_PUBLIC_APP_URL=https://your-app-domain.com
+NEXT_PUBLIC_APP_URL=https://www.dollarchain.xyz
 ```
 
 4. Create the database schema in Supabase:
@@ -69,6 +69,10 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
+
+### Production
+
+The app is deployed at [https://www.dollarchain.xyz](https://www.dollarchain.xyz).
 
 ### Deployment
 

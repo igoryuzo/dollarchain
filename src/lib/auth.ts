@@ -15,8 +15,8 @@ export interface AuthUser {
 export const authKitConfig = {
   relay: 'https://relay.farcaster.xyz',
   rpcUrl: 'https://mainnet.optimism.io',
-  domain: typeof window !== 'undefined' ? window.location.host : '',
-  siweUri: typeof window !== 'undefined' ? window.location.origin : '',
+  domain: typeof window !== 'undefined' ? window.location.host : 'www.dollarchain.xyz',
+  siweUri: typeof window !== 'undefined' ? window.location.origin : 'https://www.dollarchain.xyz',
 };
 
 // Generate a secure nonce for authentication

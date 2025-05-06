@@ -24,26 +24,28 @@ export async function POST(request: Request) {
     
     // Create notification content based on category
     let notification;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.dollarchain.xyz';
+    
     switch (category as NotificationCategory) {
       case 'welcome':
         notification = {
           title: 'Congrats! 🎉',
           body: 'Welcome notifications are working!',
-          target_url: `${process.env.NEXT_PUBLIC_APP_URL}/`,
+          target_url: `${baseUrl}/`,
         };
         break;
       case 'test':
         notification = {
           title: 'Test Notification 🧪',
           body: 'This is a test notification',
-          target_url: `${process.env.NEXT_PUBLIC_APP_URL}/`,
+          target_url: `${baseUrl}/`,
         };
         break;
       case 'update':
         notification = {
           title: 'New Update 📢',
           body: 'The app has been updated with new features!',
-          target_url: `${process.env.NEXT_PUBLIC_APP_URL}/`,
+          target_url: `${baseUrl}/`,
         };
         break;
       default:

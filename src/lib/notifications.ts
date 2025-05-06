@@ -14,11 +14,7 @@ export async function sendNotification(
       };
     }
 
-    // Basic validation
-    if (!process.env.NEXT_PUBLIC_APP_URL) {
-      throw new Error('NEXT_PUBLIC_APP_URL is not configured');
-    }
-
+    // Send notification via the API route
     const response = await fetch('/api/send-notification', {
       method: 'POST',
       headers: {
