@@ -24,5 +24,27 @@ export function generateNonce(): string {
   return randomBytes(16).toString('hex');
 }
 
+// Hook for automatic sign-in
+export function useAutoSignIn() {
+  const { signIn } = useSignIn({ nonce: generateNonce() });
+  const { isAuthenticated } = useProfile();
+
+  // Function to trigger sign-in if not already authenticated
+  const autoSignIn = async () => {
+    if (!isAuthenticated) {
+      try {
+        await signIn();
+        return true;
+      } catch (error) {
+        console.error("Auto sign-in failed:", error);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  return { autoSignIn, isAuthenticated };
+}
+
 // Export the hooks for use in components
 export { useSignIn, useProfile, useAppClient, AuthKitProvider }; 

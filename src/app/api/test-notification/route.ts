@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sendTestNotification } from '@/lib/notifications';
+import { sendNotificationsViaNeynar } from '@/lib/neynar';
 
 export async function POST(request: Request) {
   try {
@@ -7,20 +7,25 @@ export async function POST(request: Request) {
 
     if (!fid) {
       return NextResponse.json(
-        { error: 'Missing fid parameter' },
+        { success: false, message: 'Missing fid parameter' },
         { status: 400 }
       );
     }
 
-    // Send a test notification
-    const result = await sendTestNotification(fid);
+    // Send a test notification using Neynar
+    const result = await sendNotificationsViaNeynar(
+      [fid],
+      '🪙 DollarChain Test',
+      'This is a test notification from DollarChain',
+      `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.dollarchain.xyz'}/notification`
+    );
 
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error sending test notification:', error);
     
     return NextResponse.json(
-      { error: 'Failed to send test notification' },
+      { success: false, message: 'Failed to send test notification' },
       { status: 500 }
     );
   }

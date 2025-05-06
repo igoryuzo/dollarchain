@@ -1,11 +1,37 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSignIn, useProfile, AuthKitProvider } from '@/lib/auth';
+import { useSignIn, useProfile, AuthKitProvider, useAutoSignIn } from '@/lib/auth';
 import { authKitConfig } from '@/lib/auth';
 import { Providers } from './providers';
 import { isInIframe, requestStorageAccess, checkLocalStorageAccess } from '@/lib/debug';
 import { sdk } from '@farcaster/frame-sdk';
+
+// Define types for the Frame context
+interface FrameNotificationDetails {
+  url: string;
+  token: string;
+}
+
+interface LocationContext {
+  type: string;
+  [key: string]: unknown;
+}
+
+interface FrameContext {
+  user?: {
+    fid: number;
+    username?: string;
+    displayName?: string;
+    pfpUrl?: string;
+  };
+  client?: {
+    clientFid: number;
+    added: boolean;
+    notificationDetails?: FrameNotificationDetails;
+  };
+  location?: LocationContext;
+}
 
 export default function Home() {
   return (
@@ -20,13 +46,15 @@ export default function Home() {
 function AppContent() {
   const { signIn } = useSignIn({ nonce: undefined });
   const { isAuthenticated, profile } = useProfile();
+  const { autoSignIn } = useAutoSignIn();
   const [addingFrame, setAddingFrame] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [storageAccessStatus, setStorageAccessStatus] = useState<'unknown' | 'granted' | 'denied'>('unknown');
+  const [frameContext, setFrameContext] = useState<FrameContext | null>(null);
 
   useEffect(() => {
-    async function checkAndRequestAccess() {
+    async function initApp() {
       try {
         // Check if we're in an iframe
         const inIframe = isInIframe();
@@ -47,20 +75,29 @@ function AppContent() {
           setStorageAccessStatus('granted');
         }
 
+        // Get the context
+        const context = sdk.context as FrameContext;
+        setFrameContext(context);
+        console.log('Frame context:', context);
+
+        // Attempt automatic sign-in if we have storage access
+        if (storageAccessStatus === 'granted') {
+          await autoSignIn();
+        }
+        
         // Hide the splash screen when we're ready
         await sdk.actions.ready();
-        
       } catch (error) {
-        console.error("Error checking storage access:", error);
+        console.error("Error initializing app:", error);
         setStorageAccessStatus('denied');
       } finally {
-        // Set loading to false after checking storage access
+        // Set loading to false after initialization
         setIsLoading(false);
       }
     }
     
-    checkAndRequestAccess();
-  }, []);
+    initApp();
+  }, [autoSignIn, storageAccessStatus]);
 
   // Authentication status display
   const authStatus = isAuthenticated 
@@ -77,8 +114,16 @@ function AppContent() {
     setAddingFrame(true);
     try {
       // Use the SDK to prompt the user to add the frame
-      await sdk.actions.addFrame();
-      setNotificationStatus('Frame and notifications were added successfully!');
+      const result = await sdk.actions.addFrame();
+      console.log('Add frame result:', result);
+      
+      if (result && 'added' in result && result.added) {
+        setNotificationStatus('Frame and notifications added successfully!');
+      } else if (result && 'added' in result && !result.added && 'reason' in result) {
+        setNotificationStatus(`Failed to add frame: ${result.reason}`);
+      } else {
+        setNotificationStatus('Frame added successfully!');
+      }
     } catch (error) {
       console.error('Error adding frame:', error);
       setNotificationStatus('Failed to add frame and notifications.');
@@ -119,6 +164,9 @@ function AppContent() {
       setNotificationStatus('Error sending notification');
     }
   };
+
+  // Check if the user has already added the frame
+  const hasAddedFrame = frameContext?.client?.added || false;
 
   if (isLoading) {
     return (
@@ -180,13 +228,19 @@ function AppContent() {
                 </div>
               </div>
               
-              <button 
-                onClick={handleAddToFrame}
-                disabled={addingFrame}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors disabled:bg-slate-600"
-              >
-                {addingFrame ? 'Adding...' : 'Add to Frame & Enable Notifications'}
-              </button>
+              {!hasAddedFrame ? (
+                <button 
+                  onClick={handleAddToFrame}
+                  disabled={addingFrame}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors disabled:bg-slate-600"
+                >
+                  {addingFrame ? 'Adding...' : 'Add to Frame & Enable Notifications'}
+                </button>
+              ) : (
+                <div className="px-4 py-2 bg-slate-700 rounded-md text-center text-sm">
+                  ✅ App is added to your Farcaster client
+                </div>
+              )}
               
               <button 
                 onClick={sendTestNotificationClick}

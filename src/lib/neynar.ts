@@ -33,4 +33,38 @@ export function formatNeynarError(error: unknown): string {
   } else {
     return 'Unknown error from Neynar API';
   }
+}
+
+// Function to send notifications to users via Neynar
+export async function sendNotificationsViaNeynar(
+  targetFids: number[],
+  title: string,
+  body: string,
+  targetUrl: string
+): Promise<{ success: boolean; message: string }> {
+  if (!targetFids.length) {
+    return { success: false, message: 'No target FIDs provided' };
+  }
+
+  try {
+    await neynarClient.publishFrameNotifications({
+      targetFids,
+      notification: {
+        title,
+        body,
+        target_url: targetUrl,
+      },
+    });
+
+    return {
+      success: true,
+      message: `Notifications sent successfully`,
+    };
+  } catch (error) {
+    console.error('Error sending notifications via Neynar:', error);
+    return {
+      success: false,
+      message: formatNeynarError(error),
+    };
+  }
 } 
