@@ -1,0 +1,23 @@
+{
+  "accountAssociation": {
+    "header": "REPLACE_WITH_YOUR_HEADER_FROM_WARPCAST_TOOL",
+    "payload": "REPLACE_WITH_YOUR_PAYLOAD_FROM_WARPCAST_TOOL",
+    "signature": "REPLACE_WITH_YOUR_SIGNATURE_FROM_WARPCAST_TOOL"
+  },
+  "frame": {
+    "version": "1",
+    "name": "DollarChain",
+    "iconUrl": "https://your-domain.com/images/icon.png",
+    "homeUrl": "https://your-domain.com/",
+    "imageUrl": "https://your-domain.com/images/cover.png",
+    "buttonTitle": "View Your Account",
+    "splashImageUrl": "https://your-domain.com/images/icon.png",
+    "splashBackgroundColor": "#0f172a",
+    "webhookUrl": "https://api.neynar.com/f/app/YOUR_APP_ID_HERE/event",
+    "subtitle": "Farcaster Mini App Demo",
+    "description": "A sample Farcaster Mini App with authentication and notifications",
+    "primaryCategory": "developer-tools",
+    "tags": ["demo", "auth", "notifications", "supabase"],
+    "tagline": "Your Farcaster Mini App"
+  }
+} 
