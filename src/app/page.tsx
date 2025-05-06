@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSignIn, useProfile, AuthKitProvider } from '@/lib/auth';
 import { authKitConfig } from '@/lib/auth';
+import { Providers } from './providers';
+import { isInIframe, requestStorageAccess, checkLocalStorageAccess } from '@/lib/debug';
 
 export default function Home() {
   return (
-    <AuthKitProvider config={authKitConfig}>
-      <AppContent />
-    </AuthKitProvider>
+    <Providers>
+      <AuthKitProvider config={authKitConfig}>
+        <AppContent />
+      </AuthKitProvider>
+    </Providers>
   );
 }
 
@@ -17,6 +21,41 @@ function AppContent() {
   const { isAuthenticated, profile } = useProfile();
   const [addingFrame, setAddingFrame] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [storageAccessStatus, setStorageAccessStatus] = useState<'unknown' | 'granted' | 'denied'>('unknown');
+
+  useEffect(() => {
+    async function checkAndRequestAccess() {
+      try {
+        // Check if we're in an iframe
+        const inIframe = isInIframe();
+        
+        if (inIframe) {
+          // Check if we have storage access
+          const hasAccess = await checkLocalStorageAccess();
+          
+          if (!hasAccess) {
+            // Try to request storage access
+            const accessGranted = await requestStorageAccess();
+            setStorageAccessStatus(accessGranted ? 'granted' : 'denied');
+          } else {
+            setStorageAccessStatus('granted');
+          }
+        } else {
+          // Not in iframe, we should have access
+          setStorageAccessStatus('granted');
+        }
+      } catch (error) {
+        console.error("Error checking storage access:", error);
+        setStorageAccessStatus('denied');
+      } finally {
+        // Set loading to false after checking storage access
+        setIsLoading(false);
+      }
+    }
+    
+    checkAndRequestAccess();
+  }, []);
 
   // Authentication status display
   const authStatus = isAuthenticated 
@@ -75,6 +114,34 @@ function AppContent() {
       setNotificationStatus('Error sending notification');
     }
   };
+
+  if (isLoading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-slate-900 text-white">
+        <div className="text-2xl">Loading DollarChain...</div>
+      </main>
+    );
+  }
+
+  // If we're denied storage access, show a message and a button to request it
+  if (storageAccessStatus === 'denied' && isInIframe()) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-slate-900 text-white">
+        <div className="max-w-3xl w-full bg-slate-800 rounded-xl shadow-xl p-8 text-center">
+          <h1 className="text-4xl font-bold mb-8">DollarChain</h1>
+          <p className="mb-8">This app requires storage access to function properly in Warpcast.</p>
+          <button 
+            onClick={() => requestStorageAccess().then(result => {
+              setStorageAccessStatus(result ? 'granted' : 'denied');
+            })}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition-colors"
+          >
+            Grant Storage Access
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-slate-900 text-white">
