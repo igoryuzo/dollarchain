@@ -5,6 +5,7 @@ import { useSignIn, useProfile, AuthKitProvider } from '@/lib/auth';
 import { authKitConfig } from '@/lib/auth';
 import { Providers } from './providers';
 import { isInIframe, requestStorageAccess, checkLocalStorageAccess } from '@/lib/debug';
+import { sdk } from '@farcaster/frame-sdk';
 
 export default function Home() {
   return (
@@ -45,6 +46,10 @@ function AppContent() {
           // Not in iframe, we should have access
           setStorageAccessStatus('granted');
         }
+
+        // Hide the splash screen when we're ready
+        await sdk.actions.ready();
+        
       } catch (error) {
         console.error("Error checking storage access:", error);
         setStorageAccessStatus('denied');
@@ -71,8 +76,8 @@ function AppContent() {
   const handleAddToFrame = async () => {
     setAddingFrame(true);
     try {
-      // This would be implemented by addFrameAndNotifications in a real app
-      // but we're currently using simplified auth hooks
+      // Use the SDK to prompt the user to add the frame
+      await sdk.actions.addFrame();
       setNotificationStatus('Frame and notifications were added successfully!');
     } catch (error) {
       console.error('Error adding frame:', error);
