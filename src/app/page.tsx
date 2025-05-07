@@ -46,11 +46,13 @@ export default function Home() {
 function AppContent() {
   const { isAuthenticated, profile } = useProfile();
   const { autoSignIn } = useAutoSignIn();
-  const [addingFrame, setAddingFrame] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [storageAccessStatus, setStorageAccessStatus] = useState<'unknown' | 'granted' | 'denied'>('unknown');
   const [frameContext, setFrameContext] = useState<FrameContext | null>(null);
+
+  // Check if the user has already added the frame
+  const hasAddedFrame = frameContext?.client?.added || false;
 
   // Effect 1: Check storage access only once on mount
   useEffect(() => {
@@ -95,6 +97,13 @@ function AppContent() {
     }
   }, [storageAccessStatus]);
 
+  // Automatically prompt to add frame & notifications after authentication
+  useEffect(() => {
+    if (isAuthenticated && profile && !hasAddedFrame) {
+      handleAddToFrame();
+    }
+  }, [isAuthenticated, profile, hasAddedFrame]);
+
   // Authentication status display
   const authStatus = isAuthenticated 
     ? `Logged in as @${profile.username} (FID: ${profile.fid})` 
@@ -102,7 +111,6 @@ function AppContent() {
 
   // Handle add to frame button click
   const handleAddToFrame = async () => {
-    setAddingFrame(true);
     try {
       // Use the SDK to prompt the user to add the frame
       const result = await sdk.actions.addFrame();
@@ -118,8 +126,6 @@ function AppContent() {
     } catch (error) {
       console.error('Error adding frame:', error);
       setNotificationStatus('Failed to add frame and notifications.');
-    } finally {
-      setAddingFrame(false);
     }
   };
 
@@ -155,9 +161,6 @@ function AppContent() {
       setNotificationStatus('Error sending notification');
     }
   };
-
-  // Check if the user has already added the frame
-  const hasAddedFrame = frameContext?.client?.added || false;
 
   if (isLoading) {
     return (
@@ -212,14 +215,11 @@ function AppContent() {
                 </div>
               </div>
               
+              {/* Automatically prompt, so only show status */}
               {!hasAddedFrame ? (
-                <button 
-                  onClick={handleAddToFrame}
-                  disabled={addingFrame}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors disabled:bg-slate-600"
-                >
-                  {addingFrame ? 'Adding...' : 'Add to Frame & Enable Notifications'}
-                </button>
+                <div className="px-4 py-2 bg-slate-700 rounded-md text-center text-sm">
+                  Prompting to add app to your Farcaster client...
+                </div>
               ) : (
                 <div className="px-4 py-2 bg-slate-700 rounded-md text-center text-sm">
                   ✅ App is added to your Farcaster client
