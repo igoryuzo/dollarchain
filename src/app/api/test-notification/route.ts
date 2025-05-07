@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sendNotificationsViaNeynar } from '@/lib/neynar';
+import { sendNotification } from '@/lib/neynar';
 
 export async function POST(request: Request) {
   try {
@@ -13,14 +13,24 @@ export async function POST(request: Request) {
     }
 
     // Send a test notification using Neynar
-    const result = await sendNotificationsViaNeynar(
-      [fid],
+    const success = await sendNotification(
+      fid,
       '🪙 DollarChain Test',
       'This is a test notification from DollarChain',
       `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.dollarchain.xyz'}/notification`
     );
 
-    return NextResponse.json(result);
+    if (success) {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Test notification sent successfully' 
+      });
+    } else {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Failed to send test notification' 
+      }, { status: 500 });
+    }
   } catch (error) {
     console.error('Error sending test notification:', error);
     

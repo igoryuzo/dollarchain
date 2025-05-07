@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neynarClient, formatNeynarError } from '@/lib/neynar';
+import { getNeynarClient } from '@/lib/neynar';
 import type { NotificationCategory } from '@/lib/notifications';
 
 export async function POST(request: Request) {
@@ -55,6 +55,15 @@ export async function POST(request: Request) {
         );
     }
     
+    // Get Neynar client
+    const client = getNeynarClient();
+    if (!client) {
+      return NextResponse.json(
+        { error: 'Failed to initialize Neynar client' },
+        { status: 500 }
+      );
+    }
+    
     // Send notification with retry logic
     let attempts = 0;
     const maxAttempts = 2;
@@ -64,7 +73,7 @@ export async function POST(request: Request) {
       attempts++;
       try {
         // Call Neynar API to send notification
-        const response = await neynarClient.publishFrameNotifications({
+        const response = await client.publishFrameNotifications({
           targetFids,
           notification,
         });
@@ -91,7 +100,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { 
         error: 'Failed to send notification',
-        details: formatNeynarError(lastError),
+        details: lastError instanceof Error ? lastError.message : 'Unknown error',
       },
       { status: 500 }
     );
