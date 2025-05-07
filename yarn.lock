@@ -189,10 +189,10 @@
     ox "^0.4.4"
     zod "^3.24.1"
 
-"@farcaster/frame-sdk@0.0.37":
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/@farcaster/frame-sdk/-/frame-sdk-0.0.37.tgz#b5a9a52c2d0622d80d3a0c66763c111a459e9936"
-  integrity sha512-A6dWqhTvt6GwS+m4iWSNV4CFM6+dRHi859e1JXdtjEf2JrEyGeijypJGPVTPxh3lDk2STolFG/2xpCic38dePg==
+"@farcaster/frame-sdk@^0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@farcaster/frame-sdk/-/frame-sdk-0.0.38.tgz#042eca4499b59cd62351945662b6567ada210a77"
+  integrity sha512-CGrxO7Mv+Bs7QexEqkE5YbRw7eAiUwOefU1eqbHZ5JhjGlSHaCfIq3Lm8MMcWqBb7CyDVEYFDQkUWw0hjlrzTQ==
   dependencies:
     "@farcaster/frame-core" "0.0.34"
     comlink "^4.4.2"
