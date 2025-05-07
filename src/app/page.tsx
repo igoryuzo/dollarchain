@@ -53,51 +53,48 @@ function AppContent() {
   const [storageAccessStatus, setStorageAccessStatus] = useState<'unknown' | 'granted' | 'denied'>('unknown');
   const [frameContext, setFrameContext] = useState<FrameContext | null>(null);
 
+  // Effect 1: Check storage access only once on mount
   useEffect(() => {
-    async function initApp() {
-      try {
-        // Check if we're in an iframe
-        const inIframe = isInIframe();
-        
-        if (inIframe) {
-          // Check if we have storage access
-          const hasAccess = await checkLocalStorageAccess();
-          
-          if (!hasAccess) {
-            // Try to request storage access
-            const accessGranted = await requestStorageAccess();
-            setStorageAccessStatus(accessGranted ? 'granted' : 'denied');
-          } else {
-            setStorageAccessStatus('granted');
-          }
+    async function checkAccess() {
+      const inIframe = isInIframe();
+      if (inIframe) {
+        const hasAccess = await checkLocalStorageAccess();
+        if (!hasAccess) {
+          const accessGranted = await requestStorageAccess();
+          setStorageAccessStatus(accessGranted ? 'granted' : 'denied');
         } else {
-          // Not in iframe, we should have access
           setStorageAccessStatus('granted');
         }
-
-        // Get the context
-        const context = sdk.context as FrameContext;
-        setFrameContext(context);
-        console.log('Frame context:', context);
-
-        // Attempt automatic sign-in if we have storage access
-        if (storageAccessStatus === 'granted') {
-          await autoSignIn();
-        }
-        
-        // Hide the splash screen when we're ready
-        await sdk.actions.ready();
-      } catch (error) {
-        console.error("Error initializing app:", error);
-        setStorageAccessStatus('denied');
-      } finally {
-        // Set loading to false after initialization
-        setIsLoading(false);
+      } else {
+        setStorageAccessStatus('granted');
       }
     }
-    
-    initApp();
-  }, [autoSignIn, storageAccessStatus]);
+    checkAccess();
+  }, []);
+
+  // Effect 2: Only run when storageAccessStatus changes to 'granted'
+  useEffect(() => {
+    if (storageAccessStatus === 'granted') {
+      async function runAuth() {
+        try {
+          // Get the context
+          const context = sdk.context as FrameContext;
+          setFrameContext(context);
+          console.log('Frame context:', context);
+
+          await autoSignIn();
+          // Hide the splash screen when we're ready
+          await sdk.actions.ready();
+        } catch (error) {
+          console.error("Error initializing app:", error);
+          setStorageAccessStatus('denied');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      runAuth();
+    }
+  }, [storageAccessStatus]);
 
   // Authentication status display
   const authStatus = isAuthenticated 
