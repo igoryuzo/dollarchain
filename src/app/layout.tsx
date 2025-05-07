@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: 'DollarChain',
     images: [
       {
-        url: 'https://www.dollarchain.xyz/images/cover.png',
+        url: 'https://www.dollarchain.xyz/images/dollarchain-logo.png',
         width: 1200,
         height: 630,
       }
@@ -26,14 +26,14 @@ export const metadata: Metadata = {
   other: {
     'fc:frame': JSON.stringify({
       version: "next",
-      imageUrl: "https://www.dollarchain.xyz/images/cover.png",
+      imageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
       button: {
         title: "View Account",
         action: {
           type: "launch_frame",
           name: "DollarChain",
           url: "https://www.dollarchain.xyz/",
-          splashImageUrl: "https://www.dollarchain.xyz/images/icon.png",
+          splashImageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
           splashBackgroundColor: "#0f172a"
         }
       }
