@@ -79,7 +79,7 @@ function AppContent() {
       async function runAuth() {
         try {
           // Get the context
-          const context = sdk.context as FrameContext;
+          const context = await sdk.context as FrameContext;
           setFrameContext(context);
           console.log('Frame context:', context);
 
