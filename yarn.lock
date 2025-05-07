@@ -649,7 +649,7 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-15.3.1.tgz#df5ceb9c3b97bf0d61cb6e84f79bbf9e91a89d29"
   integrity sha512-3PMvF2zRJAifcRNni9uMk/gulWfWS+qVI/pagd+4yLF5bcXPZPPH2xlYRYOsUjmCJOXSTAC2PjRzbhsRzR2fDQ==
 
-"@neynar/nodejs-sdk@2.33.1":
+"@neynar/nodejs-sdk@^2.33.1":
   version "2.33.1"
   resolved "https://registry.yarnpkg.com/@neynar/nodejs-sdk/-/nodejs-sdk-2.33.1.tgz#c7a5a00a8bbcdeb00923b21e63fba8b7e03440bf"
   integrity sha512-31KvaKF7674ql8McOI4mll+C/pb53zW0v1jBJuk13IBW7UZYto7TVxWlbSZLGNnHTCNCyYsdmA/e5QtrvrrVCw==

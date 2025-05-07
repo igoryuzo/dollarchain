@@ -194,4 +194,20 @@ export async function getFollowerCount(fid: number): Promise<number> {
 // Get profile URL for Warpcast
 export function getWarpcastProfileUrl(username: string): string {
   return `https://warpcast.com/${username}`;
+}
+
+export async function sendWelcomeNotification(fid: number) {
+  const notification = {
+    title: "🎉 Welcome!",
+    body: "Thanks for adding our Mini App on Farcaster!",
+    target_url: "https://your-frame-domain.com/", // Change to your app's URL
+  };
+
+  const response = await neynarClient.publishFrameNotifications({
+    targetFids: [fid],
+    notification,
+  });
+
+  console.log("Neynar notification response:", response);
+  return response;
 } 
