@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSignIn, useProfile, AuthKitProvider, useAutoSignIn } from '@/lib/auth';
+import { useProfile, AuthKitProvider, useAutoSignIn } from '@/lib/auth';
 import { authKitConfig } from '@/lib/auth';
 import { Providers } from './providers';
 import { isInIframe, requestStorageAccess, checkLocalStorageAccess } from '@/lib/debug';
@@ -44,7 +44,6 @@ export default function Home() {
 }
 
 function AppContent() {
-  const { signIn } = useSignIn({ nonce: undefined });
   const { isAuthenticated, profile } = useProfile();
   const { autoSignIn } = useAutoSignIn();
   const [addingFrame, setAddingFrame] = useState(false);
@@ -100,11 +99,6 @@ function AppContent() {
   const authStatus = isAuthenticated 
     ? `Logged in as @${profile.username} (FID: ${profile.fid})` 
     : 'Not logged in';
-
-  // Handle sign-in button click
-  const handleSignIn = () => {
-    signIn();
-  };
 
   // Handle add to frame button click
   const handleAddToFrame = async () => {
@@ -202,14 +196,7 @@ function AppContent() {
           <h2 className="text-xl font-semibold mb-2">Authentication Status</h2>
           <p className="text-slate-300">{authStatus}</p>
           
-          {!isAuthenticated ? (
-            <button 
-              onClick={handleSignIn}
-              className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition-colors"
-            >
-              Sign in with Farcaster
-            </button>
-          ) : (
+          {isAuthenticated && (
             <div className="mt-4 flex flex-col gap-3">
               <div className="flex items-center space-x-4">
                 {profile.pfpUrl && (
