@@ -18,8 +18,8 @@ export default function DepositButton() {
         token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         // 1 USDC (6 decimals)
         amount: "1000000",
-        // DollarChain treasury address - replace with your actual treasury address
-        recipientAddress: "0x4fc4b06aAa30E9d41C7857C732CD73B2B0FB2542"
+        // DollarChain treasury address
+        recipientAddress: "0xe5C3AF9a546b095B9a750193D6b41f1Ae6B3a062"
       });
       
       if (result.success) {
