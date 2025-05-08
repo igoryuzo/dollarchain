@@ -34,7 +34,7 @@ export const metadata: Metadata = {
           name: "Dollarchain",
           url: "https://www.dollarchain.xyz/",
           splashImageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
-          splashBackgroundColor: "#0f172a"
+          splashBackgroundColor: "#ffffff"
         }
       }
     })
