@@ -16,6 +16,7 @@ import {
   requestNotificationPermissions
 } from '@/lib/auth';
 import { sdk } from '@farcaster/frame-sdk';
+import DepositButton from './components/DepositButton';
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -165,35 +166,33 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="text-center max-w-md">
-        <h1 className="text-4xl font-bold mb-4">Hello, {user?.username || 'Guest'}!</h1>
+        <h1 className="text-4xl font-bold mb-2">DollarChain</h1>
+        <p className="text-lg mb-6">Hello, {user?.username || 'Guest'}!</p>
         
         {user?.hasAddedApp ? (
           <>
-            <p className="text-xl mb-4">
-              <a 
-                href="https://github.com/igoryuzo/miniapp-scaffold" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 hover:bg-gray-100 px-4 py-2 rounded-lg border border-gray-300 transition-colors"
-              >
-                <img src="/images/github-mark.svg" alt="GitHub" className="w-6 h-6" />
-                <span>Star this GitHub Repo</span>
-              </a>
-            </p>
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <h2 className="text-lg font-semibold mb-2">How it works:</h2>
+              <ol className="list-decimal list-inside space-y-2 text-gray-700">
+                <li>Deposit $1 USDC to join the chain</li>
+                <li>Each deposit adds to the pool</li>
+                <li>A random participant wins the entire pool</li>
+              </ol>
+            </div>
+            
+            <div className="mb-6">
+              <DepositButton />
+            </div>
             
             {!user.hasEnabledNotifications && (
               <button
                 onClick={handleRequestNotifications}
                 disabled={isRequestingNotifications}
-                className="mt-2 mb-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="mt-6 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
               </button>
             )}
-            
-            <p className="text-lg mt-4">
-              Check Warpcast for your welcome notification!
-            </p>
           </>
         ) : (
           <>
