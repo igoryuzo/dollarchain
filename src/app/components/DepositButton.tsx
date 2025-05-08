@@ -45,7 +45,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
         // 1 USDC (6 decimals)
         amount: "1000000",
         // Dollarchain treasury address
-        recipientAddress: "0xe5C3AF9a546b095B9a750193D6b41f1Ae6B3a062"
+        recipientAddress: "0x638d7b6b585F2e248Ecbbc84047A96FD600e204E"
       });
       
       if (result.success) {

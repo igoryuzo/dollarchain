@@ -83,10 +83,11 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
     <div className="w-full mt-6 bg-white rounded-lg shadow overflow-hidden">
       <div className="border-b border-gray-200 bg-purple-50 px-4 py-3">
         <h3 className="text-lg font-medium text-purple-900">Waitlist Members</h3>
+        <p className="text-sm text-purple-700 mt-1">Members get a head start.</p>
       </div>
       
       <ul className="divide-y divide-gray-100">
-        {users.map((user) => (
+        {users.map((user, index) => (
           <li key={user.fid} className="hover:bg-gray-50">
             <a
               href={`https://warpcast.com/${user.username}`}
@@ -94,6 +95,9 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
               rel="noopener noreferrer"
               className="flex items-center px-4 py-3 group"
             >
+              <div className="flex-shrink-0 w-6 text-right mr-3">
+                <span className="text-sm text-gray-500 font-medium">{index + 1}</span>
+              </div>
               <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
                 {user.avatar_url ? (
                   <Image
