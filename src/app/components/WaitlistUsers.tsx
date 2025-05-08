@@ -81,41 +81,44 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
 
   return (
     <div className="w-full mt-6 bg-white rounded-lg shadow overflow-hidden">
-      <div className="border-b border-gray-200 bg-purple-50 px-6 py-5">
-        <h3 className="text-2xl font-bold text-purple-900">Waitlist Members</h3>
+      <div className="border-b border-gray-200 bg-purple-50 px-4 py-3">
+        <h3 className="text-lg font-medium text-purple-900">Waitlist Members</h3>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 p-6">
+      <ul className="divide-y divide-gray-100">
         {users.map((user) => (
-          <a
-            key={user.fid}
-            href={`https://warpcast.com/${user.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center group hover:opacity-90 transition-opacity"
-          >
-            <div className="h-24 w-24 rounded-full bg-gray-200 overflow-hidden mb-3">
-              {user.avatar_url ? (
-                <Image
-                  src={user.avatar_url}
-                  alt={`${user.username}'s avatar`}
-                  width={96}
-                  height={96}
-                  className="h-24 w-24 object-cover group-hover:scale-105 transition-transform duration-200"
-                  unoptimized // Add unoptimized to fix avatar loading issues
-                />
-              ) : (
-                <div className="h-24 w-24 flex items-center justify-center bg-purple-100 text-purple-800 text-2xl font-bold">
-                  {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
-                </div>
-              )}
-            </div>
-            <div className="text-lg font-medium text-purple-700 text-center group-hover:text-purple-900">
-              @{user.username}
-            </div>
-          </a>
+          <li key={user.fid} className="hover:bg-gray-50">
+            <a
+              href={`https://warpcast.com/${user.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center px-4 py-3 group"
+            >
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
+                {user.avatar_url ? (
+                  <Image
+                    src={user.avatar_url}
+                    alt={`${user.username}'s avatar`}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 object-cover"
+                    unoptimized // Add unoptimized to fix avatar loading issues
+                  />
+                ) : (
+                  <div className="h-10 w-10 flex items-center justify-center bg-purple-100 text-purple-800 font-bold">
+                    {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
+                  </div>
+                )}
+              </div>
+              <div className="ml-3">
+                <span className="text-sm font-medium text-purple-700 group-hover:text-purple-900">
+                  @{user.username}
+                </span>
+              </div>
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 } 
