@@ -51,13 +51,13 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
   if (isLoading) {
     return (
       <div className="w-full mt-4">
-        <div className="text-center text-gray-500 py-8">
+        <div className="text-center text-gray-500 py-6">
           <div className="animate-pulse flex justify-center items-center">
-            <div className="h-4 w-4 bg-gray-300 rounded-full mr-1"></div>
-            <div className="h-4 w-4 bg-gray-300 rounded-full mr-1"></div>
-            <div className="h-4 w-4 bg-gray-300 rounded-full"></div>
+            <div className="h-3 w-3 bg-gray-300 rounded-full mr-1"></div>
+            <div className="h-3 w-3 bg-gray-300 rounded-full mr-1"></div>
+            <div className="h-3 w-3 bg-gray-300 rounded-full"></div>
           </div>
-          <p className="mt-2">Loading waitlist...</p>
+          <p className="mt-2 text-sm">Loading waitlist...</p>
         </div>
       </div>
     );
@@ -66,7 +66,7 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
   if (error) {
     return (
       <div className="w-full mt-4">
-        <p className="text-center text-red-500">{error}</p>
+        <p className="text-center text-red-500 text-sm">{error}</p>
       </div>
     );
   }
@@ -74,16 +74,16 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
   if (users.length === 0) {
     return (
       <div className="w-full mt-4">
-        <p className="text-center text-gray-500 py-8">No users have joined the waitlist yet.</p>
+        <p className="text-center text-gray-500 py-6 text-sm">No users have joined the waitlist yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full mt-6 bg-white rounded-lg shadow overflow-hidden">
-      <div className="border-b border-gray-200 bg-purple-50 px-4 py-3">
-        <h3 className="text-lg font-medium text-purple-900">Waitlist Members</h3>
-        <p className="text-sm text-purple-700 mt-1">Members get a head start.</p>
+    <div className="w-full mt-6 rounded-md overflow-hidden border border-gray-100">
+      <div className="border-b border-gray-100 bg-purple-50 px-4 py-3 text-center">
+        <h3 className="text-lg font-medium text-purple-800">Waitlist Members</h3>
+        <p className="text-sm text-purple-600 mt-1">Members get a head start.</p>
       </div>
       
       <ul className="divide-y divide-gray-100">
@@ -96,7 +96,7 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
               className="flex items-center px-4 py-3 group"
             >
               <div className="flex-shrink-0 w-6 text-right mr-3">
-                <span className="text-sm text-gray-500 font-medium">{index + 1}</span>
+                <span className="text-sm text-gray-400 font-medium">{index + 1}</span>
               </div>
               <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
                 {user.avatar_url ? (

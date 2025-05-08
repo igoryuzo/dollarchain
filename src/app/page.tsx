@@ -16,6 +16,7 @@ import {
   requestNotificationPermissions
 } from '@/lib/auth';
 import { sdk } from '@farcaster/frame-sdk';
+import Image from 'next/image';
 import DepositButton from './components/DepositButton';
 import WaitlistUsers from './components/WaitlistUsers';
 
@@ -161,53 +162,64 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-white">
         <div className="text-2xl font-semibold">Loading...</div>
       </main>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="max-w-2xl w-full p-6 bg-white rounded-lg shadow-lg">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-6">Dollarchain, a social coordination game.</h1>
+    <main className="flex min-h-screen flex-col items-center py-8 px-4 bg-white">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <Image 
+              src="/images/dollarchain-logo.png" 
+              alt="Dollarchain Logo" 
+              width={60} 
+              height={60} 
+            />
+          </div>
           
-          {user?.hasAddedApp ? (
-            <>
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h2 className="text-lg font-semibold mb-2">How it works:</h2>
-                <p className="text-gray-700">
-                  Start a team with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
-                </p>
-              </div>
-              
-              <div className="mb-6">
-                <p className="font-bold text-lg mb-2">Join the waitlist</p>
-                <DepositButton onDepositSuccess={handleDepositSuccess} />
-              </div>
-              
-              {/* Display waitlist users for all authenticated users */}
-              <div className="mt-8 w-full">
-                <WaitlistUsers refreshTrigger={refreshWaitlist} />
-              </div>
-              
-              {!user.hasEnabledNotifications && (
+          <h1 className="text-3xl font-bold mb-2">Dollarchain, a social coordination game.</h1>
+        </div>
+        
+        {user?.hasAddedApp ? (
+          <>
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <h2 className="text-lg font-semibold mb-2">How it works:</h2>
+              <p className="text-gray-700">
+                Start a team with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
+              </p>
+            </div>
+            
+            <div className="mb-6 text-center">
+              <p className="font-bold text-lg mb-3">Join the waitlist</p>
+              <DepositButton onDepositSuccess={handleDepositSuccess} />
+            </div>
+            
+            {/* Display waitlist users for all authenticated users */}
+            <div className="mt-8 w-full">
+              <WaitlistUsers refreshTrigger={refreshWaitlist} />
+            </div>
+            
+            {!user.hasEnabledNotifications && (
+              <div className="text-center mt-6">
                 <button
                   onClick={handleRequestNotifications}
                   disabled={isRequestingNotifications}
-                  className="mt-6 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
                   {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
                 </button>
-              )}
-            </>
-          ) : (
-            <div className="animate-pulse text-purple-600">
-              Loading...
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="animate-pulse text-purple-600 text-center">
+            Loading...
+          </div>
+        )}
       </div>
     </main>
   );
