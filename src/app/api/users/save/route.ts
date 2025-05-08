@@ -13,11 +13,12 @@ export async function POST(request: Request) {
       );
     }
     
-    // Save to Supabase
+    // Save to Supabase - explicitly set waitlist to false for new users
     const result = await saveUser({
       fid: userData.fid,
       username: userData.username,
       avatar_url: userData.avatar_url,
+      waitlist: false, // Explicitly set to false for new users
     });
     
     return NextResponse.json({ success: true, user: result.data });

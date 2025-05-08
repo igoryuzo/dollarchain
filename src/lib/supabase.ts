@@ -22,11 +22,13 @@ export async function saveUser(userData: {
   fid: number;
   username: string;
   avatar_url?: string;
+  waitlist?: boolean;
 }) {
   return supabaseAdmin
     .from('users')
     .upsert({
       ...userData,
+      waitlist: userData.waitlist || false, // Default to false if not provided
       updated_at: new Date().toISOString(),
     })
     .select();

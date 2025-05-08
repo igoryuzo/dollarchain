@@ -2,11 +2,33 @@
 
 import { useState } from 'react';
 import { sdk } from '@farcaster/frame-sdk';
+import { getUser } from '@/lib/auth';
 
 export default function DepositButton() {
   const [isDepositing, setIsDepositing] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const updateWaitlistStatus = async (fid: number) => {
+    try {
+      const response = await fetch('/api/user/update-waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fid }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update waitlist status');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error updating waitlist status:', error);
+      return false;
+    }
+  };
 
   const handleDeposit = async () => {
     try {
@@ -25,6 +47,13 @@ export default function DepositButton() {
       if (result.success) {
         console.log("🎉 Deposit successful:", result.send.transaction);
         setTransactionHash(result.send.transaction);
+        
+        // Get the current user
+        const user = getUser();
+        if (user && user.fid) {
+          // Update the user's waitlist status in Supabase
+          await updateWaitlistStatus(user.fid);
+        }
       } else {
         console.error("❌ Deposit failed:", result.reason, result.error);
         setError(`Failed to deposit: ${result.reason}`);
@@ -47,6 +76,7 @@ export default function DepositButton() {
             </svg>
           </div>
           <p className="text-lg font-medium mb-2">Deposit Successful!</p>
+          <p className="text-sm text-gray-500 mb-4">You&apos;ve joined the waitlist!</p>
         </div>
       ) : (
         <>
