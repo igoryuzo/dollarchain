@@ -273,9 +273,6 @@ export async function promptAddFrameAndNotifications(): Promise<{
     if (isAdded && !hasNotifications && updatedContext?.user?.fid) {
       console.log("Frame added but missing notification details. Explicitly requesting notifications...");
       
-      // Wait a moment before requesting notifications (gives UI time to update)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       // Make explicit request for notification permissions
       const notificationsEnabled = await requestNotificationPermissions();
       
@@ -349,9 +346,6 @@ export async function sendWelcomeNotification(fid: number): Promise<boolean> {
   console.log(`🎉 Explicitly sending welcome notification to FID ${fid}...`);
   
   try {
-    // Add a slight delay before sending notification (helps with race conditions)
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
     // Try to get the latest context to see if notification permissions were granted
     try {
       const context = await sdk.context;
