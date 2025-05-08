@@ -17,11 +17,13 @@ import {
 } from '@/lib/auth';
 import { sdk } from '@farcaster/frame-sdk';
 import DepositButton from './components/DepositButton';
+import WaitlistUsers from './components/WaitlistUsers';
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
+  const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -51,6 +53,12 @@ export default function Home() {
     } finally {
       setIsRequestingNotifications(false);
     }
+  };
+
+  // Function to handle successful deposit
+  const handleDepositSuccess = () => {
+    // Increment the refresh trigger to force the waitlist to reload
+    setRefreshWaitlist(prev => prev + 1);
   };
 
   // Initialize Frame SDK and handle automatic authentication
@@ -176,7 +184,12 @@ export default function Home() {
               
               <div className="mb-6">
                 <p className="font-bold text-lg mb-2">Join the waitlist</p>
-                <DepositButton />
+                <DepositButton onDepositSuccess={handleDepositSuccess} />
+              </div>
+              
+              {/* Display waitlist users for all authenticated users */}
+              <div className="mt-8 w-full">
+                <WaitlistUsers refreshTrigger={refreshWaitlist} />
               </div>
               
               {!user.hasEnabledNotifications && (

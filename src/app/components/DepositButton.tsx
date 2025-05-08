@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { sdk } from '@farcaster/frame-sdk';
 import { getUser } from '@/lib/auth';
 
-export default function DepositButton() {
+type DepositButtonProps = {
+  onDepositSuccess?: () => void; // Callback when deposit is successful
+};
+
+export default function DepositButton({ onDepositSuccess }: DepositButtonProps) {
   const [isDepositing, setIsDepositing] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +57,11 @@ export default function DepositButton() {
         if (user && user.fid) {
           // Update the user's waitlist status in Supabase
           await updateWaitlistStatus(user.fid);
+          
+          // Notify parent component that deposit was successful
+          if (onDepositSuccess) {
+            onDepositSuccess();
+          }
         }
       } else {
         console.error("❌ Deposit failed:", result.reason, result.error);
