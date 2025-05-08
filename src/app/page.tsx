@@ -189,7 +189,7 @@ export default function Home() {
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <h2 className="text-lg font-semibold mb-2">How it works:</h2>
               <p className="text-gray-700">
-                Start a team with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
+              Start a team chain with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
               </p>
             </div>
             
