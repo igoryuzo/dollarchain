@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "DollarChain - Farcaster Mini App",
-  description: "A Farcaster Mini App with authentication, notifications, and Supabase integration",
+  description: "A Farcaster Mini App with authentication, , and Supabase integration",
   metadataBase: new URL('https://www.dollarchain.xyz/'),
   openGraph: {
     title: "DollarChain - Farcaster Mini App",
