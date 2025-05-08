@@ -12,4 +12,4 @@ export const config = createConfig({
     [base.id]: http(),
     [optimism.id]: http(),
   },
-}); 
+});
