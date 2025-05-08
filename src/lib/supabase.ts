@@ -23,12 +23,14 @@ export async function saveUser(userData: {
   username: string;
   avatar_url?: string;
   waitlist?: boolean;
+  follower_count?: number;
 }) {
   return supabaseAdmin
     .from('users')
     .upsert({
       ...userData,
       waitlist: userData.waitlist || false, // Default to false if not provided
+      follower_count: userData.follower_count || 0, // Default to 0 if not provided
       updated_at: new Date().toISOString(),
     })
     .select();

@@ -115,4 +115,47 @@ export const getUserProfile = async (fid: number) => {
     console.error(`Error fetching user profile for FID ${fid}:`, error);
     return null;
   }
+};
+
+// Define an interface for the user data structure
+interface NeynarUser {
+  fid: number;
+  username: string;
+  display_name?: string;
+  pfp_url?: string;
+  follower_count: number;
+  following_count?: number;
+  custody_address?: string;
+  // For other properties that may exist but we don't need to type strictly
+  [key: string]: unknown; 
+}
+
+// Get user data with follower count for one or more FIDs
+export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarUser[] | null> => {
+  try {
+    const apiKey = process.env.NEYNAR_API_KEY;
+    if (!apiKey) {
+      console.error('Neynar API key is missing');
+      return null;
+    }
+    
+    // Use Neynar v2 API to fetch bulk user data including follower count
+    const fidsParam = fids.join(',');
+    const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
+      headers: {
+        'accept': 'application/json',
+        'api_key': apiKey
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user data: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.users;
+  } catch (error) {
+    console.error(`Error fetching user data for FIDs:`, error);
+    return null;
+  }
 }; 
