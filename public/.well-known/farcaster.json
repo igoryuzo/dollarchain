@@ -6,18 +6,18 @@
   },
   "frame": {
     "version": "1",
-    "name": "DollarChain",
+    "name": "Dollarchain",
     "iconUrl": "https://www.dollarchain.xyz/images/dollarchain-logo.png",
     "homeUrl": "https://www.dollarchain.xyz/",
     "imageUrl": "https://www.dollarchain.xyz/images/dollarchain-logo.png",
-    "buttonTitle": "Continue Chain",
+    "buttonTitle": "Join Waitlist",
     "splashImageUrl": "https://www.dollarchain.xyz/images/dollarchain-logo.png",
     "splashBackgroundColor": "#0f172a",
     "webhookUrl": "https://api.neynar.com/f/app/04093a6d-63e1-4ddc-a625-5e50a2c8f1d2/event",
-    "subtitle": "Farcaster Mini App Demo",
-    "description": "A sample Farcaster Mini App with authentication and notifications",
-    "primaryCategory": "developer-tools",
-    "tags": ["demo", "auth", "notifications", "supabase"],
-    "tagline": "Your Farcaster Mini App"
+    "subtitle": "A social coordination game.",
+    "description": "Start a team with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.",
+    "primaryCategory": "social",
+    "tags": ["social", "game", "notifications", "users"],
+    "tagline": "A social coordination game."
   }
 } 

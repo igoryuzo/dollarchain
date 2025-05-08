@@ -5,14 +5,14 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DollarChain - Farcaster Mini App",
-  description: "A Farcaster Mini App with authentication, , and Supabase integration",
+  title: "Dollarchain - A social coordination game.",
+  description: "A social coordination game.",
   metadataBase: new URL('https://www.dollarchain.xyz/'),
   openGraph: {
-    title: "DollarChain - Farcaster Mini App",
-    description: "A Farcaster Mini App with authentication, notifications, and Supabase integration",
+    title: "Dollarchain - A social coordination game.",
+    description: "A social coordination game.",
     url: 'https://www.dollarchain.xyz/',
-    siteName: 'DollarChain',
+    siteName: 'Dollarchain',
     images: [
       {
         url: 'https://www.dollarchain.xyz/images/dollarchain-logo.png',
@@ -28,10 +28,10 @@ export const metadata: Metadata = {
       version: "next",
       imageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
       button: {
-        title: "Continue Chain",
+        title: "Join Waitlist",
         action: {
           type: "launch_frame",
-          name: "DollarChain",
+          name: "Dollarchain",
           url: "https://www.dollarchain.xyz/",
           splashImageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
           splashBackgroundColor: "#0f172a"

@@ -21,7 +21,6 @@ import DepositButton from './components/DepositButton';
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAddingApp, setIsAddingApp] = useState(false);
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
 
   // Function to handle notification request
@@ -97,7 +96,6 @@ export default function Home() {
           if (!isCurrentlyAdded) {
             console.log("App not added, prompting automatically...");
             try {
-              if (mounted) setIsAddingApp(true);
               const result = await promptAddFrameAndNotifications();
               console.log("Add frame result:", JSON.stringify(result, null, 2));
 
@@ -124,8 +122,6 @@ export default function Home() {
               }
             } catch (addError) {
               console.error("Error adding frame:", addError);
-            } finally {
-              if (mounted) setIsAddingApp(false);
             }
           }
         }
@@ -165,43 +161,39 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="text-center max-w-md">
-        <h1 className="text-4xl font-bold mb-2">DollarChain</h1>
-        <p className="text-lg mb-6">Hello, {user?.username || 'Guest'}!</p>
-        
-        {user?.hasAddedApp ? (
-          <>
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <h2 className="text-lg font-semibold mb-2">How it works:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                <li>Deposit $1 USDC to join the chain</li>
-                <li>Each deposit adds to the pool</li>
-                <li>A random participant wins the entire pool</li>
-              </ol>
-            </div>
-            
-            <div className="mb-6">
-              <DepositButton />
-            </div>
-            
-            {!user.hasEnabledNotifications && (
-              <button
-                onClick={handleRequestNotifications}
-                disabled={isRequestingNotifications}
-                className="mt-6 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-              >
-                {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
-              </button>
-            )}
-          </>
-        ) : (
-          <>
-            <p className="text-xl mb-6">Adding Mini App automatically...</p>
+      <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-6">Dollarchain, a social coordination game.</h1>
+          
+          {user?.hasAddedApp ? (
+            <>
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h2 className="text-lg font-semibold mb-2">How it works:</h2>
+                <p className="text-gray-700">
+                  Start a team with a $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <DepositButton />
+              </div>
+              
+              {!user.hasEnabledNotifications && (
+                <button
+                  onClick={handleRequestNotifications}
+                  disabled={isRequestingNotifications}
+                  className="mt-6 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
+                </button>
+              )}
+            </>
+          ) : (
             <div className="animate-pulse text-purple-600">
-              {isAddingApp ? "Prompting to add Mini App..." : "Initializing..."}
+              Loading...
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </main>
   );

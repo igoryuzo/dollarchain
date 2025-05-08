@@ -15,8 +15,8 @@ export async function POST(request: Request) {
     // Send a test notification using Neynar
     const success = await sendNotification(
       fid,
-      '🪙 DollarChain Test',
-      'This is a test notification from DollarChain',
+      '🪙 Dollarchain Test',
+      'This is a test notification from Dollarchain',
       `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.dollarchain.xyz'}/notification`
     );
 

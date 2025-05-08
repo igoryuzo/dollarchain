@@ -18,7 +18,7 @@ export default function DepositButton() {
         token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         // 1 USDC (6 decimals)
         amount: "1000000",
-        // DollarChain treasury address
+        // Dollarchain treasury address
         recipientAddress: "0xe5C3AF9a546b095B9a750193D6b41f1Ae6B3a062"
       });
       
@@ -47,13 +47,6 @@ export default function DepositButton() {
             </svg>
           </div>
           <p className="text-lg font-medium mb-2">Deposit Successful!</p>
-          <p className="text-sm text-gray-500 mb-4">You&apos;ve joined the DollarChain</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
-          >
-            Start Over
-          </button>
         </div>
       ) : (
         <>

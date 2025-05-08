@@ -29,8 +29,8 @@ export async function POST(request: Request) {
     switch (category as NotificationCategory) {
       case 'welcome':
         notification = {
-          title: 'Welcome to DollarChain! 🎉',
-          body: 'Start or join a chain to win!',
+          title: 'Welcome to Dollarchain! 🎉',
+          body: 'Thanks for joining the waitlist!',
           target_url: `${baseUrl}/`,
         };
         break;

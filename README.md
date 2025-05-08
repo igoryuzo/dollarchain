@@ -1,6 +1,6 @@
-# DollarChain - Farcaster Mini App
+# Dollarchain - A social coordination game
 
-A Hello World Farcaster Mini App with authentication, notifications, and Supabase integration.
+A social coordination game.
 
 ## Features
 
