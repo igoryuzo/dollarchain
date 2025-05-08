@@ -69,7 +69,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
       }
     } catch (error) {
       console.error("Error during deposit:", error);
-      setError("An unexpected error occurred. Please try again.");
+      setError("Need USDC on Warpcast Wallet.");
     } finally {
       setIsDepositing(false);
     }
