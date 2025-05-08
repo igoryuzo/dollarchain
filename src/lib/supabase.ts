@@ -25,14 +25,40 @@ export async function saveUser(userData: {
   waitlist?: boolean;
   follower_count?: number;
 }) {
+  // If waitlist is undefined, we need to ensure we don't override the existing value
+  const { waitlist, ...otherUserData } = userData;
+  
+  const updateData = {
+    ...otherUserData,
+    updated_at: new Date().toISOString(),
+  };
+  
+  // Only include waitlist in the update if it was explicitly provided
+  if (waitlist !== undefined) {
+    Object.assign(updateData, { waitlist });
+  } else {
+    // Otherwise, fetch the current value to preserve it
+    const { data } = await supabaseAdmin
+      .from('users')
+      .select('waitlist')
+      .eq('fid', userData.fid)
+      .single();
+      
+    if (data) {
+      Object.assign(updateData, { waitlist: data.waitlist });
+    } else {
+      Object.assign(updateData, { waitlist: false });
+    }
+  }
+  
+  // Include follower_count with a default of 0 if not provided
+  if (updateData.follower_count === undefined) {
+    updateData.follower_count = 0;
+  }
+  
   return supabaseAdmin
     .from('users')
-    .upsert({
-      ...userData,
-      waitlist: userData.waitlist || false, // Default to false if not provided
-      follower_count: userData.follower_count || 0, // Default to 0 if not provided
-      updated_at: new Date().toISOString(),
-    })
+    .upsert(updateData)
     .select();
 }
 

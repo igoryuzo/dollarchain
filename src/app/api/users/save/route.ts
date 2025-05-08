@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { saveUser } from '@/lib/supabase';
 import { getUsersWithFollowerCount } from '@/lib/neynar';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
@@ -26,12 +27,19 @@ export async function POST(request: Request) {
       // Continue even if we can't get follower count
     }
     
-    // Save to Supabase - explicitly set waitlist to false for new users and include follower count
+    // Check if user already exists to preserve their waitlist status
+    const { data: existingUser } = await supabaseAdmin
+      .from('users')
+      .select('waitlist')
+      .eq('fid', userData.fid)
+      .single();
+    
+    // Save to Supabase - only set waitlist to false for new users
     const result = await saveUser({
       fid: userData.fid,
       username: userData.username,
       avatar_url: userData.avatar_url,
-      waitlist: false, // Explicitly set to false for new users
+      waitlist: existingUser ? existingUser.waitlist : false, // Preserve waitlist status for existing users
       follower_count: followerCount,
     });
     
