@@ -118,16 +118,62 @@ export const getUserProfile = async (fid: number) => {
 };
 
 // Define an interface for the user data structure
-interface NeynarUser {
+export interface NeynarUser {
+  object: string;
   fid: number;
   username: string;
   display_name?: string;
+  custody_address?: string;
   pfp_url?: string;
+  profile?: {
+    bio?: {
+      text?: string;
+      mentioned_profiles?: Record<string, unknown>[];
+      mentioned_profiles_ranges?: { start: number; end: number }[];
+      mentioned_channels?: Record<string, unknown>[];
+      mentioned_channels_ranges?: { start: number; end: number }[];
+    };
+    location?: {
+      latitude?: number;
+      longitude?: number;
+      address?: {
+        city?: string;
+        state?: string;
+        state_code?: string;
+        country?: string;
+        country_code?: string;
+      };
+    };
+  };
   follower_count: number;
   following_count?: number;
-  custody_address?: string;
-  // For other properties that may exist but we don't need to type strictly
-  [key: string]: unknown; 
+  verifications?: string[];
+  verified_addresses?: {
+    eth_addresses?: string[];
+    sol_addresses?: string[];
+    primary?: {
+      eth_address?: string;
+      sol_address?: string;
+    };
+  };
+  verified_accounts?: {
+    platform: string;
+    username: string;
+  }[];
+  power_badge?: boolean;
+  experimental?: {
+    deprecation_notice?: string;
+    neynar_user_score?: number;
+  };
+  score?: number;
+  viewer_context?: {
+    following?: boolean;
+    followed_by?: boolean;
+    blocking?: boolean;
+    blocked_by?: boolean;
+  };
+  // For other properties that may exist
+  [key: string]: unknown;
 }
 
 // Get user data with follower count for one or more FIDs
@@ -161,6 +207,24 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
     if (data.users && data.users.length > 0) {
       data.users.forEach((user: NeynarUser) => {
         console.log(`Full Neynar user object for FID ${user.fid}:`, user);
+        
+        // Specifically log custody address information
+        console.log(`Custody address for FID ${user.fid} (@${user.username}):`, {
+          custody_address: user.custody_address || 'Not available',
+          has_custody_address: !!user.custody_address,
+        });
+        
+        // Log verified addresses
+        console.log(`Verified addresses for FID ${user.fid}:`, {
+          eth_addresses: user.verified_addresses?.eth_addresses || [],
+          sol_addresses: user.verified_addresses?.sol_addresses || [],
+          primary_eth: user.verified_addresses?.primary?.eth_address || 'Not available',
+          primary_sol: user.verified_addresses?.primary?.sol_address || 'Not available',
+          verifications: user.verifications || []
+        });
+        
+        // Log all properties for inspection
+        console.log(`All properties for FID ${user.fid}:`, Object.keys(user));
       });
     }
     
