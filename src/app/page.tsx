@@ -225,7 +225,6 @@ export default function Home() {
             </div>
             
             <div className="mb-6 text-center">
-              <p className="font-bold text-lg mb-3">Join the waitlist</p>
               <DepositButton onDepositSuccess={handleDepositSuccess} />
             </div>
             
