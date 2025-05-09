@@ -219,4 +219,48 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
     console.error(`❌ NEYNAR API ERROR:`, error);
     return null;
   }
+};
+
+// Get Neynar data for waitlist users without logging sensitive information
+export const getWaitlistUsersNeynarData = async (fids: number[]): Promise<NeynarUser[] | null> => {
+  try {
+    if (!fids.length) {
+      console.log('No FIDs provided for waitlist users');
+      return null;
+    }
+
+    const apiKey = process.env.NEYNAR_API_KEY;
+    if (!apiKey) {
+      console.error('Neynar API key is missing');
+      return null;
+    }
+    
+    // Use Neynar v2 API to fetch bulk user data
+    const fidsParam = fids.join(',');
+    console.log(`Fetching Neynar data for ${fids.length} waitlist users`);
+    
+    const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
+      headers: {
+        'accept': 'application/json',
+        'api_key': apiKey
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch waitlist user data: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.users || data.users.length === 0) {
+      console.log(`No Neynar data found for provided waitlist FIDs`);
+      return [];
+    }
+    
+    console.log(`Successfully fetched ${data.users.length} Neynar user profiles for waitlist users`);
+    return data.users;
+  } catch (error) {
+    console.error(`Error fetching Neynar data for waitlist users:`, error);
+    return null;
+  }
 }; 

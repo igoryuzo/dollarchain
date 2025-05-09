@@ -105,12 +105,8 @@ export default function Home() {
           if (currentUser.fid) {
             try {
               console.log(`🔍 Fetching Neynar data for all waitlist users...`);
-              const waitlistResponse = await fetch('/api/waitlist-neynar-data');
-              if (waitlistResponse.ok) {
-                const waitlistData = await waitlistResponse.json();
-                console.log(`📊 ALL WAITLIST USERS WITH NEYNAR DATA:`, JSON.stringify(waitlistData.raw_neynar_data, null, 2));
-                console.log(`Found ${waitlistData.raw_neynar_data.length} waitlist users with full Neynar data`);
-              }
+              await fetch('/api/waitlist-neynar-data');
+              // No logging of response data to keep sensitive information private
             } catch (waitlistError) {
               console.error('Error loading waitlist Neynar data:', waitlistError);
             }
