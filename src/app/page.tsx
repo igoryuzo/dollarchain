@@ -16,9 +16,10 @@ import {
   requestNotificationPermissions
 } from '@/lib/auth';
 import { sdk } from '@farcaster/frame-sdk';
-import Image from 'next/image';
 import DepositButton from './components/DepositButton';
 import WaitlistUsers from './components/WaitlistUsers';
+import WaitlistCounter from './components/WaitlistCounter';
+import ShareButton from './components/ShareButton';
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -171,16 +172,9 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center py-8 px-4 bg-white">
       <div className="max-w-md w-full">
+        {user?.hasAddedApp && <WaitlistCounter refreshTrigger={refreshWaitlist} />}
+        
         <div className="text-center mb-6">
-          <div className="flex justify-center mb-4">
-            <Image 
-              src="/images/dollarchain-logo.png" 
-              alt="Dollarchain Logo" 
-              width={60} 
-              height={60} 
-            />
-          </div>
-          
           <h1 className="text-3xl font-bold mb-2">Dollarchain, a social coordination game.</h1>
         </div>
         
@@ -189,13 +183,14 @@ export default function Home() {
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <h2 className="text-lg font-semibold mb-2">How it works:</h2>
               <p className="text-gray-700">
-              Start a team chain with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
+                Start a team chain with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
               </p>
             </div>
             
             <div className="mb-6 text-center">
               <p className="font-bold text-lg mb-3">Join the waitlist</p>
               <DepositButton onDepositSuccess={handleDepositSuccess} />
+              <ShareButton />
             </div>
             
             {/* Display waitlist users for all authenticated users */}
