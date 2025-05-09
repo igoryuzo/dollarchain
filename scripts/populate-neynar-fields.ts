@@ -1,6 +1,6 @@
-// Import using require syntax for CommonJS compatibility
-const { supabaseAdmin } = require('../src/lib/supabase');
-const { getUsersWithFollowerCount } = require('../src/lib/neynar');
+// Import using ES module syntax for TypeScript
+import { supabaseAdmin } from '../src/lib/supabase';
+import { getUsersWithFollowerCount } from '../src/lib/neynar';
 
 async function populateNeynarFields() {
   console.log('🔄 Starting to populate Neynar fields for all users...');
@@ -30,7 +30,7 @@ async function populateNeynarFields() {
       console.log(`🔄 Processing batch ${batchIndex + 1}/${totalBatches} (${batch.length} users)`);
       
       // Get all FIDs in this batch
-      const fids = batch.map(user => user.fid);
+      const fids = batch.map((user: { fid: number }) => user.fid);
       
       // Fetch Neynar data for these users
       const neynarUsers = await getUsersWithFollowerCount(fids);
