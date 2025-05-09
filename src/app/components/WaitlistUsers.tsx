@@ -23,25 +23,32 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
   useEffect(() => {
     const fetchWaitlistUsers = async () => {
       try {
+        console.log('[WAITLIST-COMPONENT] Starting to fetch waitlist users');
         setIsLoading(true);
         const response = await fetch('/api/waitlist');
         
+        console.log(`[WAITLIST-COMPONENT] API response status: ${response.status}`);
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch waitlist users');
+          throw new Error(`Failed to fetch waitlist users: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log(`[WAITLIST-COMPONENT] API response parsed successfully`);
         
         if (data.success && data.users) {
+          console.log(`[WAITLIST-COMPONENT] Found ${data.users.length} waitlist users`);
           setUsers(data.users);
         } else {
+          console.error(`[WAITLIST-COMPONENT] API response indicated failure: ${data.error || 'No error details provided'}`);
           throw new Error(data.error || 'Failed to fetch waitlist data');
         }
       } catch (err) {
-        console.error('Error fetching waitlist users:', err);
+        console.error('[WAITLIST-COMPONENT] Error fetching waitlist users:', err);
         setError('Failed to load waitlist users. Please try again later.');
       } finally {
         setIsLoading(false);
+        console.log('[WAITLIST-COMPONENT] Finished fetching waitlist users');
       }
     };
 

@@ -104,11 +104,27 @@ export default function Home() {
           // Fetch Neynar data for all waitlist users when app loads
           if (currentUser.fid) {
             try {
-              console.log(`🔍 Fetching Neynar data for all waitlist users...`);
-              await fetch('/api/waitlist-neynar-data');
-              // No logging of response data to keep sensitive information private
+              console.log(`🔍 [PAGE] Fetching Neynar data for all waitlist users...`);
+              const waitlistResponse = await fetch('/api/waitlist-neynar-data');
+              console.log(`🔍 [PAGE] Waitlist API response status: ${waitlistResponse.status}`);
+              
+              if (!waitlistResponse.ok) {
+                console.error(`❌ [PAGE] Error fetching waitlist Neynar data: ${waitlistResponse.status}`);
+                const errorText = await waitlistResponse.text();
+                console.error(`❌ [PAGE] Error details: ${errorText}`);
+              } else {
+                const waitlistData = await waitlistResponse.json();
+                console.log(`✅ [PAGE] Waitlist API response received`);
+                
+                if (waitlistData.success) {
+                  const neynarDataLength = waitlistData.raw_neynar_data?.length || 0;
+                  console.log(`✅ [PAGE] Successfully fetched raw Neynar data for ${neynarDataLength} waitlist users`);
+                } else {
+                  console.error(`❌ [PAGE] API reported failure: ${waitlistData.error || 'No error details provided'}`);
+                }
+              }
             } catch (waitlistError) {
-              console.error('Error loading waitlist Neynar data:', waitlistError);
+              console.error('❌ [PAGE] Error loading waitlist Neynar data:', waitlistError);
             }
           }
 
