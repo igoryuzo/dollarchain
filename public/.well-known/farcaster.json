@@ -17,7 +17,7 @@
     "subtitle": "A social coordination game.",
     "description": "Start a team with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.",
     "primaryCategory": "social",
-    "tags": ["social", "game", "notifications", "users"],
+    "tags": ["social", "game", "notifications", "user"],
     "tagline": "A social coordination game."
   }
 } 
