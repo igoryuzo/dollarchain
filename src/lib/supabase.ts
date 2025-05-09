@@ -24,6 +24,8 @@ export async function saveUser(userData: {
   avatar_url?: string;
   waitlist?: boolean;
   follower_count?: number;
+  neynar_score?: number;
+  primary_eth_address?: string;
 }) {
   // If waitlist is undefined, we need to ensure we don't override the existing value
   const { waitlist, ...otherUserData } = userData;
