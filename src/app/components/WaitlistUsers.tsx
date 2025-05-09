@@ -33,6 +33,11 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
         const data = await response.json();
         
         if (data.success && data.users) {
+          console.log(`Fetched ${data.users.length} waitlist users from database:`, data.users);
+          // Log each individual user for better visibility
+          data.users.forEach((user: WaitlistUser) => {
+            console.log(`Waitlist user from DB - FID ${user.fid} (@${user.username}):`, user);
+          });
           setUsers(data.users);
         } else {
           throw new Error(data.error || 'Failed to fetch waitlist data');
