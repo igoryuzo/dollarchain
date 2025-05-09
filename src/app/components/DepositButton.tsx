@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sdk } from '@farcaster/frame-sdk';
 import { getUser } from '@/lib/auth';
 
@@ -12,6 +12,39 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
   const [isDepositing, setIsDepositing] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isOnWaitlist, setIsOnWaitlist] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check if user is already on waitlist
+  useEffect(() => {
+    const checkWaitlistStatus = async () => {
+      try {
+        const user = getUser();
+        if (!user || !user.fid) return;
+
+        const response = await fetch('/api/user/get-waitlist-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fid: user.fid }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to check waitlist status');
+        }
+
+        const data = await response.json();
+        setIsOnWaitlist(data.waitlist);
+      } catch (error) {
+        console.error('Error checking waitlist status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkWaitlistStatus();
+  }, []);
 
   const updateWaitlistStatus = async (fid: number) => {
     try {
@@ -57,6 +90,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
         if (user && user.fid) {
           // Update the user's waitlist status in Supabase
           await updateWaitlistStatus(user.fid);
+          setIsOnWaitlist(true);
           
           // Notify parent component that deposit was successful
           if (onDepositSuccess) {
@@ -74,6 +108,28 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
       setIsDepositing(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="animate-pulse w-full py-3 bg-gray-300 rounded-md"></div>
+      </div>
+    );
+  }
+
+  if (isOnWaitlist) {
+    return (
+      <div className="text-center">
+        <div className="flex items-center justify-center mb-3">
+          <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <p className="text-md font-medium mb-1">You&apos;re on the waitlist!</p>
+        <p className="text-sm text-gray-500">Thanks for joining!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center">
