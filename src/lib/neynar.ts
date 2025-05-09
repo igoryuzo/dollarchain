@@ -187,7 +187,7 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
     
     // Use Neynar v2 API to fetch bulk user data including follower count
     const fidsParam = fids.join(',');
-    console.log(`Fetching Neynar user data for FIDs: ${fidsParam}`);
+    console.log(`Fetching raw Neynar user data for FIDs: ${fidsParam}`);
     
     const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
       headers: {
@@ -201,36 +201,20 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
     }
     
     const data = await response.json();
-    console.log(`Neynar users data:`, data.users);
     
-    // Log each user's full object structure
+    // Log the entire raw API response
+    console.log(`NEYNAR RAW API RESPONSE:`, data);
+    
+    // Log each raw user object from Neynar
     if (data.users && data.users.length > 0) {
-      data.users.forEach((user: NeynarUser) => {
-        console.log(`Full Neynar user object for FID ${user.fid}:`, user);
-        
-        // Specifically log custody address information
-        console.log(`Custody address for FID ${user.fid} (@${user.username}):`, {
-          custody_address: user.custody_address || 'Not available',
-          has_custody_address: !!user.custody_address,
-        });
-        
-        // Log verified addresses
-        console.log(`Verified addresses for FID ${user.fid}:`, {
-          eth_addresses: user.verified_addresses?.eth_addresses || [],
-          sol_addresses: user.verified_addresses?.sol_addresses || [],
-          primary_eth: user.verified_addresses?.primary?.eth_address || 'Not available',
-          primary_sol: user.verified_addresses?.primary?.sol_address || 'Not available',
-          verifications: user.verifications || []
-        });
-        
-        // Log all properties for inspection
-        console.log(`All properties for FID ${user.fid}:`, Object.keys(user));
+      data.users.forEach((user: Record<string, unknown>) => {
+        console.log(`NEYNAR RAW USER OBJECT FOR FID ${user.fid as number}:`, user);
       });
     }
     
     return data.users;
   } catch (error) {
-    console.error(`Error fetching user data for FIDs:`, error);
+    console.error(`Error fetching user data from Neynar:`, error);
     return null;
   }
 }; 
