@@ -15,6 +15,7 @@ import {
   sendWelcomeNotification,
   requestNotificationPermissions
 } from '@/lib/auth';
+import { NeynarUser } from '@/lib/neynar';
 import { sdk } from '@farcaster/frame-sdk';
 import DepositButton from './components/DepositButton';
 import WaitlistUsers from './components/WaitlistUsers';
@@ -119,6 +120,16 @@ export default function Home() {
                 if (waitlistData.success) {
                   const neynarDataLength = waitlistData.raw_neynar_data?.length || 0;
                   console.log(`✅ [PAGE] Successfully fetched raw Neynar data for ${neynarDataLength} waitlist users`);
+                  
+                  // Log the complete raw Neynar data for all users
+                  console.log(`📊 ALL WAITLIST USERS NEYNAR RAW DATA:`, waitlistData.raw_neynar_data);
+                  
+                  // Log each user individually for easier exploration
+                  if (waitlistData.raw_neynar_data && waitlistData.raw_neynar_data.length > 0) {
+                    waitlistData.raw_neynar_data.forEach((user: NeynarUser, index: number) => {
+                      console.log(`👤 Neynar User #${index + 1} (FID: ${user.fid}, Username: ${user.username}):`, user);
+                    });
+                  }
                 } else {
                   console.error(`❌ [PAGE] API reported failure: ${waitlistData.error || 'No error details provided'}`);
                 }
