@@ -18,16 +18,17 @@ export async function POST(request: Request) {
     // Fetch follower count from Neynar
     let followerCount = 0;
     try {
-      console.log(`Getting raw Neynar data for FID ${userData.fid}...`);
+      console.log(`🔄 API ROUTE: Fetching Neynar data for user ${userData.username} (FID: ${userData.fid})`);
       const users = await getUsersWithFollowerCount([userData.fid]);
       
       if (users && users.length > 0) {
         followerCount = users[0].follower_count || 0;
+        console.log(`✅ API ROUTE: Successfully fetched Neynar data for FID ${userData.fid}`);
       } else {
-        console.log(`No Neynar data found for FID ${userData.fid}`);
+        console.log(`⚠️ API ROUTE: No Neynar data found for FID ${userData.fid}`);
       }
     } catch (error) {
-      console.error(`Error fetching data from Neynar for FID ${userData.fid}:`, error);
+      console.error(`❌ API ROUTE: Error fetching data from Neynar for FID ${userData.fid}:`, error);
       // Continue even if we can't get follower count
     }
     

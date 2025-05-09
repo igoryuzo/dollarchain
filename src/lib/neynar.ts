@@ -187,7 +187,7 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
     
     // Use Neynar v2 API to fetch bulk user data including follower count
     const fidsParam = fids.join(',');
-    console.log(`Fetching raw Neynar user data for FIDs: ${fidsParam}`);
+    console.log(`🔍 NEYNAR API CALL: Fetching data for FIDs: ${fidsParam}`);
     
     const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
       headers: {
@@ -202,19 +202,21 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
     
     const data = await response.json();
     
-    // Log the entire raw API response
-    console.log(`NEYNAR RAW API RESPONSE:`, data);
+    // Always log the complete raw API response
+    console.log(`📊 NEYNAR API COMPLETE RESPONSE:`, JSON.stringify(data, null, 2));
     
-    // Log each raw user object from Neynar
+    // Log each individual user with clear formatting
     if (data.users && data.users.length > 0) {
       data.users.forEach((user: Record<string, unknown>) => {
-        console.log(`NEYNAR RAW USER OBJECT FOR FID ${user.fid as number}:`, user);
+        console.log(`👤 NEYNAR USER [FID ${user.fid as number}]:`, JSON.stringify(user, null, 2));
       });
+    } else {
+      console.log(`⚠️ NEYNAR API: No users found for FIDs: ${fidsParam}`);
     }
     
     return data.users;
   } catch (error) {
-    console.error(`Error fetching user data from Neynar:`, error);
+    console.error(`❌ NEYNAR API ERROR:`, error);
     return null;
   }
 }; 

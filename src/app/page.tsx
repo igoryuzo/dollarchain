@@ -101,6 +101,21 @@ export default function Home() {
             setUser({...currentUser});
           }
 
+          // Fetch Neynar data for all waitlist users when app loads
+          if (currentUser.fid) {
+            try {
+              console.log(`🔍 Fetching Neynar data for all waitlist users...`);
+              const waitlistResponse = await fetch('/api/waitlist-neynar-data');
+              if (waitlistResponse.ok) {
+                const waitlistData = await waitlistResponse.json();
+                console.log(`📊 ALL WAITLIST USERS WITH NEYNAR DATA:`, JSON.stringify(waitlistData.raw_neynar_data, null, 2));
+                console.log(`Found ${waitlistData.raw_neynar_data.length} waitlist users with full Neynar data`);
+              }
+            } catch (waitlistError) {
+              console.error('Error loading waitlist Neynar data:', waitlistError);
+            }
+          }
+
           // If the app is not added, automatically prompt to add it
           if (!isCurrentlyAdded) {
             console.log("App not added, prompting automatically...");
@@ -192,9 +207,9 @@ export default function Home() {
             </div>
             
             {/* Display waitlist users for all authenticated users */}
-            <div className="mt-8 w-full">
+            {user?.fid && (
               <WaitlistUsers refreshTrigger={refreshWaitlist} />
-            </div>
+            )}
             
             {!user.hasEnabledNotifications && (
               <div className="text-center mt-6">
