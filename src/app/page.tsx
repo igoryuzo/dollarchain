@@ -19,7 +19,6 @@ import { sdk } from '@farcaster/frame-sdk';
 import DepositButton from './components/DepositButton';
 import WaitlistUsers from './components/WaitlistUsers';
 import WaitlistCounter from './components/WaitlistCounter';
-import ShareButton from './components/ShareButton';
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -190,7 +189,6 @@ export default function Home() {
             <div className="mb-6 text-center">
               <p className="font-bold text-lg mb-3">Join the waitlist</p>
               <DepositButton onDepositSuccess={handleDepositSuccess} />
-              <ShareButton />
             </div>
             
             {/* Display waitlist users for all authenticated users */}
