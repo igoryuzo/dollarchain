@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 type WaitlistUser = {
@@ -20,6 +20,20 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
   const [users, setUsers] = useState<WaitlistUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const infoRef = useRef<HTMLSpanElement>(null);
+
+  // Close tooltip on outside click
+  useEffect(() => {
+    if (!infoOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [infoOpen]);
 
   useEffect(() => {
     const fetchWaitlistUsers = async () => {
@@ -97,7 +111,40 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
       <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100">
         <div className="col-span-1 text-center">#</div>
         <div className="col-span-5">User</div>
-        <div className="col-span-2 text-right">Neynar Score</div>
+        <div className="col-span-2 text-right flex items-center justify-end gap-1">
+          Neynar Score
+          <span
+            ref={infoRef}
+            className="relative group cursor-pointer select-none"
+            tabIndex={0}
+            onClick={() => setInfoOpen((v) => !v)}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setInfoOpen(v => !v); }}
+            aria-label="What is Neynar Score?"
+          >
+            {/* Info icon SVG */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 text-gray-400 inline-block ml-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" />
+            </svg>
+            {/* Tooltip: show on hover (desktop) or click (mobile) */}
+            <span
+              className={`absolute right-0 z-10 w-64 p-2 text-xs text-white bg-gray-900 rounded shadow-lg mt-2
+                ${infoOpen ? 'block' : 'hidden'}
+                group-hover:block
+              `}
+              style={{ minWidth: '200px' }}
+            >
+              Your Neynar score (0–1) reflects your user quality—closer to 1 means higher quality.
+            </span>
+          </span>
+        </div>
       </div>
       
       <ul className="divide-y divide-gray-100">
