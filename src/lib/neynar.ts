@@ -225,66 +225,44 @@ export const getUsersWithFollowerCount = async (fids: number[]): Promise<NeynarU
 export const getWaitlistUsersNeynarData = async (fids: number[]): Promise<NeynarUser[] | null> => {
   try {
     console.log(`[NEYNAR DEBUG] getWaitlistUsersNeynarData called with ${fids.length} FIDs`);
-    
     if (!fids.length) {
       console.log('[NEYNAR DEBUG] No FIDs provided for waitlist users');
       return null;
     }
-
     const apiKey = process.env.NEYNAR_API_KEY;
     if (!apiKey) {
       console.error('[NEYNAR DEBUG] Neynar API key is missing');
       return null;
     }
-    
-    // Use Neynar v2 API to fetch bulk user data
-    const fidsParam = fids.join(',');
-    console.log(`[NEYNAR DEBUG] Fetching Neynar data for ${fids.length} waitlist users`);
-    console.log(`[NEYNAR DEBUG] API request URL: https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`);
-    console.log(`[NEYNAR DEBUG] API key present: ${apiKey ? 'Yes' : 'No'}`);
-    
-    const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
-      headers: {
-        'accept': 'application/json',
-        'api_key': apiKey
+    // Batch FIDs into groups of 100
+    const batchSize = 100;
+    const batches: number[][] = [];
+    for (let i = 0; i < fids.length; i += batchSize) {
+      batches.push(fids.slice(i, i + batchSize));
+    }
+    let allUsers: NeynarUser[] = [];
+    for (const batch of batches) {
+      const fidsParam = batch.join(',');
+      console.log(`[NEYNAR DEBUG] Fetching Neynar data for batch of ${batch.length} FIDs`);
+      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
+        headers: {
+          'accept': 'application/json',
+          'api_key': apiKey
+        }
+      });
+      console.log(`[NEYNAR DEBUG] API response status: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[NEYNAR DEBUG] API error details: ${errorText}`);
+        throw new Error(`Failed to fetch waitlist user data: ${response.status}`);
       }
-    });
-    
-    console.log(`[NEYNAR DEBUG] API response status: ${response.status}`);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[NEYNAR DEBUG] API error details: ${errorText}`);
-      throw new Error(`Failed to fetch waitlist user data: ${response.status}`);
+      const data = await response.json();
+      if (data.users && Array.isArray(data.users)) {
+        allUsers = allUsers.concat(data.users);
+      }
     }
-    
-    const data = await response.json();
-    console.log(`[NEYNAR DEBUG] API response parsed successfully`);
-    
-    if (!data.users) {
-      console.log(`[NEYNAR DEBUG] No users property in API response`);
-      console.log(`[NEYNAR DEBUG] API response structure: ${JSON.stringify(Object.keys(data))}`);
-      return [];
-    }
-    
-    if (data.users.length === 0) {
-      console.log(`[NEYNAR DEBUG] API returned empty users array`);
-      return [];
-    }
-    
-    console.log(`[NEYNAR DEBUG] Received ${data.users.length} users from Neynar API (requested ${fids.length})`);
-    
-    if (data.users.length !== fids.length) {
-      console.warn(`[NEYNAR DEBUG] Warning: Received fewer users than requested`);
-      
-      // Check which FIDs are missing
-      const returnedFids = data.users.map((user: NeynarUser) => user.fid);
-      const missingFids = fids.filter(fid => !returnedFids.includes(fid));
-      console.log(`[NEYNAR DEBUG] Missing FIDs: ${missingFids.join(', ')}`);
-    }
-    
-    console.log(`[NEYNAR DEBUG] Successfully fetched ${data.users.length} Neynar user profiles for waitlist users`);
-    return data.users;
+    console.log(`[NEYNAR DEBUG] Successfully fetched ${allUsers.length} Neynar user profiles for waitlist users`);
+    return allUsers;
   } catch (error) {
     console.error(`[NEYNAR DEBUG] Error fetching Neynar data for waitlist users:`, error);
     return null;
