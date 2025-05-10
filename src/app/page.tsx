@@ -250,7 +250,7 @@ export default function Home() {
             </>
           ) : (
             <div className="animate-pulse text-purple-600 text-center">
-              [STAGINGV2] Loading...
+              [STAGINGV3] Loading...
             </div>
           )}
         </div>
