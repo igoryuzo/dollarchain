@@ -14,7 +14,7 @@ export default function ShareButton() {
       setError(null);
       
       const result = await sdk.actions.composeCast({ 
-        text: "Join Dollarchain, once 100 people are on the waitlist, the game starts!",
+        text: "Join Dollarchain, a social coordination game on Farcaster!",
         embeds: ["https://warpcast.com/miniapps/7eNXGhDOacyz/dollarchain"]
       });
       

@@ -49,7 +49,7 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
       setShareError(null);
       
       const result = await sdk.actions.composeCast({ 
-        text: "Join Dollarchain, once 100 people are on the waitlist, the game starts!",
+        text: "Join Dollarchain, a social coordination game on Farcaster!",
         embeds: ["https://warpcast.com/miniapps/7eNXGhDOacyz/dollarchain"]
       });
       
@@ -76,19 +76,11 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
     return null;
   }
 
-  const progress = Math.min(100, Math.max(0, (count / 100) * 100));
-
   return (
     <div className="text-center mb-8">
       <div className="flex items-center justify-center space-x-3">
-        <div className="relative h-7 w-40 bg-gray-100 rounded-full overflow-hidden">
-          <div 
-            className="absolute top-0 left-0 h-full bg-emerald-500 transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          ></div>
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-sm font-medium">
-            {count} / 100 players
-          </div>
+        <div className="px-4 py-1 bg-purple-100 text-purple-800 rounded-full font-medium">
+          {count} players on waitlist
         </div>
         
         {shared ? (

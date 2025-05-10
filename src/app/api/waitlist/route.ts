@@ -9,7 +9,7 @@ export async function GET() {
       .select('fid, username, avatar_url, created_at, follower_count, neynar_score')
       .eq('waitlist', true)
       .order('follower_count', { ascending: false })
-      .limit(100);
+      .limit(150);
     
     if (error) {
       throw error;

@@ -20,6 +20,7 @@ import { sdk } from '@farcaster/frame-sdk';
 import DepositButton from './components/DepositButton';
 import WaitlistUsers from './components/WaitlistUsers';
 import WaitlistCounter from './components/WaitlistCounter';
+import GameBanner from './components/GameBanner';
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -207,50 +208,53 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center py-8 px-4 bg-white">
-      <div className="max-w-md w-full">
-        {user?.hasAddedApp && <WaitlistCounter refreshTrigger={refreshWaitlist} />}
-        
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold mb-2">Dollarchain, a social coordination game.</h1>
-        </div>
-        
-        {user?.hasAddedApp ? (
-          <>
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <h2 className="text-lg font-semibold mb-2">How it works:</h2>
-              <p className="text-gray-700">
-                Start a team chain with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
-              </p>
-            </div>
-            
-            <div className="mb-6 text-center">
-              <DepositButton onDepositSuccess={handleDepositSuccess} />
-            </div>
-            
-            {/* Display waitlist users for all authenticated users */}
-            {user?.fid && (
-              <WaitlistUsers refreshTrigger={refreshWaitlist} />
-            )}
-            
-            {!user.hasEnabledNotifications && (
-              <div className="text-center mt-6">
-                <button
-                  onClick={handleRequestNotifications}
-                  disabled={isRequestingNotifications}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                >
-                  {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="animate-pulse text-purple-600 text-center">
-            Loading...
+    <>
+      <GameBanner />
+      <main className="flex min-h-screen flex-col items-center pt-16 py-8 px-4 bg-white">
+        <div className="max-w-md w-full">
+          {user?.hasAddedApp && <WaitlistCounter refreshTrigger={refreshWaitlist} />}
+          
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold mb-2">Dollarchain, a social coordination game.</h1>
           </div>
-        )}
-      </div>
-    </main>
+          
+          {user?.hasAddedApp ? (
+            <>
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h2 className="text-lg font-semibold mb-2">How it works:</h2>
+                <p className="text-gray-700">
+                  Start a team chain with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.
+                </p>
+              </div>
+              
+              <div className="mb-6 text-center">
+                <DepositButton onDepositSuccess={handleDepositSuccess} />
+              </div>
+              
+              {/* Display waitlist users for all authenticated users */}
+              {user?.fid && (
+                <WaitlistUsers refreshTrigger={refreshWaitlist} />
+              )}
+              
+              {!user.hasEnabledNotifications && (
+                <div className="text-center mt-6">
+                  <button
+                    onClick={handleRequestNotifications}
+                    disabled={isRequestingNotifications}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  >
+                    {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="animate-pulse text-purple-600 text-center">
+              Loading...
+            </div>
+          )}
+        </div>
+      </main>
+    </>
   );
 }
