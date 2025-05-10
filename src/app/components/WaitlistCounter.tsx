@@ -79,7 +79,7 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
   return (
     <div className="text-center mb-8">
       <div className="flex items-center justify-center space-x-3">
-        <div className="px-4 py-1 bg-[#5ee6c6] bg-opacity-20 text-[#5ee6c6] rounded-full font-medium">
+        <div className="px-4 py-1 bg-[#5ee6c6] rounded-full font-medium text-white">
           {count} players on waitlist
         </div>
         
