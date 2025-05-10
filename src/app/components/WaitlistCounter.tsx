@@ -79,12 +79,12 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
   return (
     <div className="text-center mb-8">
       <div className="flex items-center justify-center space-x-5">
-        <div className="px-4 py-1 font-medium text-[#85BB65] text-base">
+        <div className="px-4 py-1 font-medium text-[#00C853] text-base">
           {count} players on waitlist
         </div>
         
         {shared ? (
-          <div className="inline-flex items-center px-3 py-2 rounded-md text-sm bg-[#85BB65] text-white">
+          <div className="inline-flex items-center px-3 py-2 rounded-md text-sm bg-[#00C853] text-white">
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
@@ -94,7 +94,7 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
           <button
             onClick={handleShare}
             disabled={isSharing}
-            className="inline-flex items-center px-5 py-2 text-sm font-medium rounded-md text-white bg-[#85BB65] hover:bg-opacity-90 focus:outline-none transition-colors"
+            className="inline-flex items-center px-5 py-2 text-sm font-medium rounded-md text-white bg-[#00C853] hover:bg-opacity-90 focus:outline-none transition-colors"
           >
             {isSharing ? "..." : "Share"}
           </button>

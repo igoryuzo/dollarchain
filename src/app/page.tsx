@@ -241,7 +241,7 @@ export default function Home() {
                   <button
                     onClick={handleRequestNotifications}
                     disabled={isRequestingNotifications}
-                    className="px-4 py-2 bg-[#85BB65] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="px-4 py-2 bg-[#00C853] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
                   >
                     {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
                   </button>
