@@ -79,12 +79,12 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
   return (
     <div className="text-center mb-8">
       <div className="flex items-center justify-center space-x-3">
-        <div className="px-4 py-1 bg-[#5ee6c6] rounded-full font-medium text-white">
+        <div className="px-4 py-1 bg-[#85BB65] rounded-full font-medium text-white">
           {count} players on waitlist
         </div>
         
         {shared ? (
-          <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-[#5ee6c6] bg-opacity-20 text-[#5ee6c6]">
+          <div className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-[#85BB65] bg-opacity-20 text-[#85BB65]">
             <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
             </svg>
@@ -94,7 +94,7 @@ export default function WaitlistCounter({ refreshTrigger = 0 }: WaitlistCounterP
           <button
             onClick={handleShare}
             disabled={isSharing}
-            className="inline-flex items-center px-3 py-1 border border-[#5ee6c6] text-xs font-medium rounded-md text-[#5ee6c6] bg-white hover:bg-[#5ee6c6] hover:bg-opacity-10 focus:outline-none transition-colors"
+            className="inline-flex items-center px-3 py-1 border border-[#85BB65] text-xs font-medium rounded-md text-[#85BB65] bg-white hover:bg-[#85BB65] hover:bg-opacity-10 focus:outline-none transition-colors"
           >
             {isSharing ? "..." : "Share"}
           </button>

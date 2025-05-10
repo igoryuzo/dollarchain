@@ -121,12 +121,12 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
     return (
       <div className="text-center">
         <div className="flex items-center justify-center mb-3">
-          <svg className="w-6 h-6 text-[#5ee6c6]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-6 h-6 text-[#85BB65]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
           </svg>
         </div>
         <p className="text-md font-medium mb-1">You&apos;re on the waitlist!</p>
-        <p className="text-sm text-gray-500">Thanks for joining!</p>
+        <p className="text-sm text-[#C1B18B]">Thanks for joining!</p>
       </div>
     );
   }
@@ -138,19 +138,19 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
         {transactionHash ? (
           <div className="text-center">
             <div className="flex items-center justify-center mb-3">
-              <svg className="w-6 h-6 text-[#5ee6c6]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-6 h-6 text-[#85BB65]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
             <p className="text-md font-medium mb-1">Deposit Successful!</p>
-            <p className="text-sm text-gray-500">You&apos;ve joined the waitlist!</p>
+            <p className="text-sm text-[#C1B18B]">You&apos;ve joined the waitlist!</p>
           </div>
         ) : (
           <>
             <button
               onClick={handleDeposit}
               disabled={isDepositing}
-              className="w-full py-3 bg-[#5ee6c6] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-base flex items-center justify-center transition-all"
+              className="w-full py-3 bg-[#85BB65] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-base flex items-center justify-center transition-all"
             >
               {isDepositing ? (
                 <>
