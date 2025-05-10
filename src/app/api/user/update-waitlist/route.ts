@@ -72,7 +72,7 @@ export async function POST(request: Request) {
             parsed &&
             parsed.name === 'Transfer' &&
             parsed.args.to.toLowerCase() === TREASURY_ADDRESS &&
-            parsed.args.value.gte(MIN_AMOUNT)
+            BigInt(parsed.args.value.toString()) >= BigInt(MIN_AMOUNT.toString())
           ) {
             validTransfer = true;
             break;
