@@ -28,7 +28,7 @@ export default function LaunchPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <h1 className="text-2xl">
-        {user ? `hello @${user.username}` : 'hello'}
+        {user ? `hello we are in staging @${user.username}` : 'hello'}
       </h1>
     </div>
   );
