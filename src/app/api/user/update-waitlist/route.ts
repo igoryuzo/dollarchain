@@ -18,6 +18,9 @@ const ERC20_ABI = [
 const BASE_RPC = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
 const provider = new JsonRpcProvider(BASE_RPC);
 
+// Helper: sleep for ms milliseconds
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -32,15 +35,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch the transaction receipt
-    let receipt;
-    try {
-      receipt = await provider.getTransactionReceipt(transactionHash);
-      if (!receipt) throw new Error('No receipt found');
-    } catch (err) {
-      console.error('[WAITLIST] 400 error: Could not fetch transaction receipt', { transactionHash, err });
+    // Add initial delay before first attempt
+    await sleep(4000); // 4 seconds
+
+    // Retry logic for fetching transaction receipt
+    let receipt = null;
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        receipt = await provider.getTransactionReceipt(transactionHash);
+        if (receipt) break;
+      } catch (err) {
+        console.error(`[WAITLIST] Attempt ${attempt}: Error fetching receipt`, { transactionHash, err });
+      }
+      if (!receipt && attempt < maxAttempts) {
+        await sleep(3000); // 3 seconds between retries
+      }
+    }
+
+    if (!receipt) {
+      console.error('[WAITLIST] 400 error: Could not fetch transaction receipt after retries', { transactionHash });
       return NextResponse.json(
-        { success: false, error: 'Could not fetch transaction receipt', transactionHash },
+        { success: false, error: 'Could not fetch transaction receipt after retries', transactionHash },
         { status: 400 }
       );
     }
