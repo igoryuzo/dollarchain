@@ -10,6 +10,7 @@ type DepositButtonProps = {
 
 export default function DepositButton({ onDepositSuccess }: DepositButtonProps) {
   const [isDepositing, setIsDepositing] = useState(false);
+  const [isConfirmingOnchain, setIsConfirmingOnchain] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOnWaitlist, setIsOnWaitlist] = useState(false);
@@ -46,23 +47,30 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
     checkWaitlistStatus();
   }, []);
 
-  const updateWaitlistStatus = async (fid: number) => {
+  const updateWaitlistStatus = async (fid: number, transactionHash: string) => {
     try {
       const response = await fetch('/api/user/update-waitlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fid }),
+        body: JSON.stringify({ fid, transactionHash }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update waitlist status');
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update waitlist status');
       }
 
       return true;
-    } catch (error) {
-      console.error('Error updating waitlist status:', error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+        console.error('Error updating waitlist status:', error);
+      } else {
+        setError('Error updating waitlist status');
+        console.error('Error updating waitlist status:', error);
+      }
       return false;
     }
   };
@@ -84,17 +92,19 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
       if (result.success) {
         console.log("🎉 Deposit successful:", result.send.transaction);
         setTransactionHash(result.send.transaction);
-        
+        setIsConfirmingOnchain(true);
         // Get the current user
         const user = getUser();
         if (user && user.fid) {
-          // Update the user's waitlist status in Supabase
-          await updateWaitlistStatus(user.fid);
-          setIsOnWaitlist(true);
-          
-          // Notify parent component that deposit was successful
-          if (onDepositSuccess) {
-            onDepositSuccess();
+          // Update the user's waitlist status in Supabase, passing the transaction hash
+          const success = await updateWaitlistStatus(user.fid, result.send.transaction);
+          setIsConfirmingOnchain(false);
+          if (success) {
+            setIsOnWaitlist(true);
+            // Notify parent component that deposit was successful
+            if (onDepositSuccess) {
+              onDepositSuccess();
+            }
           }
         }
       } else {
@@ -135,7 +145,9 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
     <div>
       <p className="font-bold text-lg mb-3">Join the waitlist</p>
       <div className="flex flex-col items-center">
-        {transactionHash ? (
+        {isConfirmingOnchain ? (
+          <div className="text-center text-[#263238] font-medium mb-3 animate-pulse">Confirming onchain...</div>
+        ) : transactionHash ? (
           <div className="text-center">
             <div className="flex items-center justify-center mb-3">
               <svg className="w-6 h-6 text-[#00C853]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
