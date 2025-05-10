@@ -12,7 +12,7 @@ export default function GameBanner() {
   );
   
   return (
-    <div className="fixed top-0 left-0 right-0 py-3 px-4 bg-[#FFD600] text-white text-center z-10 shadow-md">
+    <div className="fixed top-0 left-0 right-0 py-3 px-4 bg-[#263238] text-white text-center z-10 shadow-md">
       {isTrustedUser ? (
         <Link href="/launch" className="hover:underline">
           {bannerContent}

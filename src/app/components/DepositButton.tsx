@@ -126,7 +126,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
           </svg>
         </div>
         <p className="text-md font-medium mb-1">You&apos;re on the waitlist!</p>
-        <p className="text-sm text-[#FFD600]">Thanks for joining!</p>
+        <p className="text-sm text-[#263238]">Thanks for joining!</p>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
               </svg>
             </div>
             <p className="text-md font-medium mb-1">Deposit Successful!</p>
-            <p className="text-sm text-[#FFD600]">You&apos;ve joined the waitlist!</p>
+            <p className="text-sm text-[#263238]">You&apos;ve joined the waitlist!</p>
           </div>
         ) : (
           <>
