@@ -20,11 +20,14 @@ const provider = new JsonRpcProvider(BASE_RPC);
 
 export async function POST(request: Request) {
   try {
-    const { fid, transactionHash } = await request.json();
+    const body = await request.json();
+    console.log('[WAITLIST] Incoming request body:', body);
+    const { fid, transactionHash } = body;
     
     if (!fid || typeof fid !== 'number' || !transactionHash) {
+      console.error('[WAITLIST] 400 error: Invalid or missing fid or transactionHash', { fid, transactionHash });
       return NextResponse.json(
-        { success: false, error: 'Invalid or missing fid or transactionHash' },
+        { success: false, error: 'Invalid or missing fid or transactionHash', received: { fid, transactionHash } },
         { status: 400 }
       );
     }
@@ -34,9 +37,10 @@ export async function POST(request: Request) {
     try {
       receipt = await provider.getTransactionReceipt(transactionHash);
       if (!receipt) throw new Error('No receipt found');
-    } catch {
+    } catch (err) {
+      console.error('[WAITLIST] 400 error: Could not fetch transaction receipt', { transactionHash, err });
       return NextResponse.json(
-        { success: false, error: 'Could not fetch transaction receipt' },
+        { success: false, error: 'Could not fetch transaction receipt', transactionHash },
         { status: 400 }
       );
     }
@@ -57,13 +61,16 @@ export async function POST(request: Request) {
             validTransfer = true;
             break;
           }
-        } catch {}
+        } catch (err) {
+          console.error('[WAITLIST] Error parsing log:', { log, err });
+        }
       }
     }
 
     if (!validTransfer) {
+      console.error('[WAITLIST] 400 error: No valid USDC transfer of at least 1 USDC to treasury found in transaction.', { transactionHash });
       return NextResponse.json(
-        { success: false, error: 'No valid USDC transfer of at least 1 USDC to treasury found in transaction.' },
+        { success: false, error: 'No valid USDC transfer of at least 1 USDC to treasury found in transaction.', transactionHash },
         { status: 400 }
       );
     }
@@ -87,16 +94,15 @@ export async function POST(request: Request) {
         })
         .eq('fid', fid);
     } else {
-      // We need user data which we don't have, so we'll have to fetch it
-      // In a real app, you'd probably want to handle this case differently
-      // or ensure users are always created before attempting to update them
+      console.error('[WAITLIST] 404 error: User not found', { fid });
       return NextResponse.json(
-        { success: false, error: 'User not found' },
+        { success: false, error: 'User not found', fid },
         { status: 404 }
       );
     }
     
     if (result.error) {
+      console.error('[WAITLIST] 500 error: Supabase update error', { error: result.error });
       throw result.error;
     }
     
@@ -105,10 +111,9 @@ export async function POST(request: Request) {
       message: 'User waitlist status updated'
     });
   } catch (error) {
-    console.error('Error updating waitlist status:', error);
-    
+    console.error('[WAITLIST] 500 error: Exception thrown', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update waitlist status' },
+      { success: false, error: 'Failed to update waitlist status', details: error instanceof Error ? error.message : error },
       { status: 500 }
     );
   }
