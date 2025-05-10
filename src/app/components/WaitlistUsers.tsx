@@ -7,6 +7,7 @@ type WaitlistUser = {
   fid: number;
   username: string;
   follower_count: number;
+  neynar_score?: number;
   avatar_url?: string;
   created_at: string;
 };
@@ -93,6 +94,12 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
         <p className="text-sm text-purple-600 mt-1">Members get a head start.</p>
       </div>
       
+      <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100">
+        <div className="col-span-1 text-center">#</div>
+        <div className="col-span-5">User</div>
+        <div className="col-span-2 text-right">Neynar Score</div>
+      </div>
+      
       <ul className="divide-y divide-gray-100">
         {users.map((user, index) => (
           <li key={user.fid} className="hover:bg-gray-50">
@@ -100,30 +107,35 @@ export default function WaitlistUsers({ refreshTrigger = 0 }: WaitlistUsersProps
               href={`https://warpcast.com/${user.username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-4 py-3 group"
+              className="grid grid-cols-8 gap-2 items-center px-4 py-3 group"
             >
-              <div className="flex-shrink-0 w-6 text-right mr-3">
+              <div className="col-span-1 text-center">
                 <span className="text-sm text-gray-400 font-medium">{index + 1}</span>
               </div>
-              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
-                {user.avatar_url ? (
-                  <Image
-                    src={user.avatar_url}
-                    alt={`${user.username}'s avatar`}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 object-cover"
-                    unoptimized // Add unoptimized to fix avatar loading issues
-                  />
-                ) : (
-                  <div className="h-10 w-10 flex items-center justify-center bg-purple-100 text-purple-800 font-bold">
-                    {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
-                  </div>
-                )}
-              </div>
-              <div className="ml-3">
-                <span className="text-sm font-medium text-purple-700 group-hover:text-purple-900">
+              <div className="col-span-5 flex items-center">
+                <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
+                  {user.avatar_url ? (
+                    <Image
+                      src={user.avatar_url}
+                      alt={`${user.username}'s avatar`}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 object-cover"
+                      unoptimized // Add unoptimized to fix avatar loading issues
+                    />
+                  ) : (
+                    <div className="h-10 w-10 flex items-center justify-center bg-purple-100 text-purple-800 font-bold">
+                      {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
+                    </div>
+                  )}
+                </div>
+                <span className="ml-3 text-sm font-medium text-purple-700 group-hover:text-purple-900">
                   @{user.username}
+                </span>
+              </div>
+              <div className="col-span-2 text-right">
+                <span className="text-sm text-gray-600">
+                  {user.neynar_score ? user.neynar_score.toFixed(2) : '-'}
                 </span>
               </div>
             </a>

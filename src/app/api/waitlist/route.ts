@@ -6,7 +6,7 @@ export async function GET() {
     // Get all users who have joined the waitlist
     const { data, error } = await supabaseAdmin
       .from('users')
-      .select('fid, username, avatar_url, created_at, follower_count')
+      .select('fid, username, avatar_url, created_at, follower_count, neynar_score')
       .eq('waitlist', true)
       .order('follower_count', { ascending: false })
       .limit(100);
