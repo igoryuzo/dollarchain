@@ -121,7 +121,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
     return (
       <div className="text-center">
         <div className="flex items-center justify-center mb-3">
-          <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-6 h-6 text-[#5ee6c6]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
           </svg>
         </div>
@@ -138,7 +138,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
         {transactionHash ? (
           <div className="text-center">
             <div className="flex items-center justify-center mb-3">
-              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-6 h-6 text-[#5ee6c6]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
@@ -150,7 +150,7 @@ export default function DepositButton({ onDepositSuccess }: DepositButtonProps) 
             <button
               onClick={handleDeposit}
               disabled={isDepositing}
-              className="w-full py-3 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-base flex items-center justify-center"
+              className="w-full py-3 bg-[#5ee6c6] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-base flex items-center justify-center transition-all"
             >
               {isDepositing ? (
                 <>
