@@ -180,7 +180,12 @@ export default function GameRules() {
 
         <div className="mt-6 text-center text-sm text-gray-400">
           <p>
-            Join <a href="https://warpcast.com/~/channel/dollarchain" target="_blank" rel="noopener noreferrer" className="underline text-[#00C853] hover:text-[#00b34d]">/dollarchain</a> channel for updates & feedback.
+            Join <a
+              href="https://warpcast.com/~/channel/dollarchain"
+              className="underline text-[#00C853] hover:text-[#00b34d]"
+            >
+              /dollarchain
+            </a> channel for updates & feedback.
           </p>
         </div>
       </main>
