@@ -181,8 +181,12 @@ export default function GameRules() {
         <div className="mt-6 text-center text-sm text-gray-400">
           <p>
             Join <a
-              href="/~/channel/dollarchain"
+              href="https://warpcast.com/~/channel/dollarchain"
               className="underline text-[#00C853] hover:text-[#00b34d]"
+              onClick={e => {
+                e.preventDefault();
+                window.location.href = "https://warpcast.com/~/channel/dollarchain";
+              }}
             >
               /dollarchain
             </a> channel for updates & feedback.
