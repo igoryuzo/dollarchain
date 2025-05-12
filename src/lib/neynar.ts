@@ -61,7 +61,7 @@ export const sendBulkNotifications = async (
     if (!fids.length) {
       console.warn('No FIDs provided for bulk notification');
       return false;
-    }
+  }
 
     const client = getNeynarClient();
     if (!client) {
@@ -70,8 +70,8 @@ export const sendBulkNotifications = async (
     }
 
     const notification = {
-      title,
-      body,
+        title,
+        body,
       target_url: targetUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://localhost:3000',
     };
 
@@ -255,7 +255,7 @@ export const getWaitlistUsersNeynarData = async (fids: number[]): Promise<Neynar
         const errorText = await response.text();
         console.error(`[NEYNAR DEBUG] API error details: ${errorText}`);
         throw new Error(`Failed to fetch waitlist user data: ${response.status}`);
-      }
+  }
       const data = await response.json();
       if (data.users && Array.isArray(data.users)) {
         allUsers = allUsers.concat(data.users);

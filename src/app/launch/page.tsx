@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { ChevronDown, ChevronUp, DollarSign, Trophy, Users } from "lucide-react"
 import { sdk } from "@farcaster/frame-sdk"
-import { getUser } from "../../lib/auth"
+// import { getUser } from "../../lib/auth"
 
-const APP_URL = "https://www.dollarchain.xyz/"
+// const APP_URL = "https://www.dollarchain.xyz/"
 
 export default function GameRules() {
   const [expandedSection, setExpandedSection] = useState<string | null>("overview")
@@ -61,18 +61,18 @@ export default function GameRules() {
           >
             <div className="flex items-center">
               <Users className="mr-2 h-5 w-5" />
-              <span className="font-bold">Team Selection</span>
+              <span className="font-bold">Team Formation</span>
             </div>
             {expandedSection === "teams" ? <ChevronUp /> : <ChevronDown />}
           </button>
 
           {expandedSection === "teams" && (
             <div className="p-4 animate-fadeIn">
-              <p className="mb-3">Players have three options when joining the game:</p>
+              <p className="mb-3">Players deposit $1 to start a new team chain:</p>
               <ul className="list-disc pl-5 mb-3 space-y-2">
-                <li>Start a new team chain</li>
-                <li>Join an existing team chain</li>
-                <li>Get randomly assigned to a team</li>
+                <li>If you joined the waitlist, you can start a new team chain for free and get a multiplier bonus</li>
+                <li>After you start a team chain, you can invite others to join and deposit $1 to make the team chain longer</li>
+                <li>At the end of 48 hours, the team chain with the most deposits wins all deposited money and game restarts</li>
               </ul>
             </div>
           )}
@@ -150,6 +150,21 @@ export default function GameRules() {
           )}
         </div>
 
+        {/* Point System Section */}
+        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
+          <div className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white">
+            <div className="flex items-center">
+              <span className="font-bold">Point System</span>
+            </div>
+          </div>
+          <div className="p-4 animate-fadeIn">
+            <p className="mb-3">Each deposit earns points based on the following formula:</p>
+            <div className="bg-[#2c3a41] p-4 rounded-md flex flex-col items-center">
+              <span className="text-3xl font-mono text-white mb-2">$1 deposit × Chain Size Multiplier × Neynar Score</span>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
           <button
             className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
@@ -175,8 +190,7 @@ export default function GameRules() {
               </div>
 
               <p className="text-sm text-gray-300">
-                This chart shows how different team chains perform over time. Each line represents one of the top
-                performing chains out of 100 simulated chains.
+                This chart is a theoretical simulation of how the game would play out over 48 hours with 100 team chains. The closer the chains are the more competitive the game is.
               </p>
             </div>
           )}
@@ -184,26 +198,31 @@ export default function GameRules() {
 
         <div className="mt-6 text-center text-sm text-gray-400">
           <p>
-            Join <a
-              href="https://warpcast.com/~/channel/dollarchain"
-              className="underline text-[#00C853] hover:text-[#00b34d]"
-              onClick={e => {
+            Join
+            <button
+              type="button"
+              className="underline text-[#00C853] hover:text-[#00b34d] ml-1 cursor-pointer bg-transparent border-none p-0"
+              onClick={async (e) => {
                 e.preventDefault();
-                window.location.href = "https://warpcast.com/~/channel/dollarchain";
+                await sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain");
               }}
             >
               /dollarchain
-            </a> channel for updates & feedback.
+            </button>
+            channel for updates & feedback.
           </p>
         </div>
       </main>
+      {/*
       <div className="fixed bottom-0 left-0 w-full bg-[#1e272c] p-4 flex justify-center shadow-inner z-20">
         <ShareProfileButton />
       </div>
+      */}
     </div>
   )
 }
 
+/*
 function ShareProfileButton() {
   const [loading, setLoading] = useState(false)
 
@@ -237,4 +256,5 @@ function ShareProfileButton() {
       {loading ? "Opening Composer..." : "Share Profile"}
     </button>
   )
-} 
+}
+*/ 

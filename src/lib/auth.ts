@@ -159,7 +159,7 @@ async function handleFrameRemoved(fid: number): Promise<void> {
   }
   
   console.log(`Handling app removal for FID ${fid}`);
-  
+
   // Update current user if exists
   if (currentUser) {
     console.log(`Updating current user status for FID ${fid}`);
@@ -336,8 +336,8 @@ export async function promptAddFrameAndNotifications(): Promise<{
   } catch (error) {
     console.error("Error in promptAddFrameAndNotifications:", error);
     return { added: false };
-  }
-}
+      }
+    }
 
 /**
  * Send a welcome notification to a user
