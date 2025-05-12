@@ -191,13 +191,22 @@ export async function POST(req: NextRequest) {
       .update({ points_earned })
       .eq("id", deposit.id);
 
-    // 11. Update team stats
+    // 1. Get the sum of team points from the RPC
+    const { data: sumPoints, error: sumPointsError } = await supabase
+      .rpc('sum_team_points', { teamid: team_id, gameid: game.id });
+
+    if (sumPointsError) {
+      console.error("[DEPOSIT] sum_team_points RPC error", { sumPointsError });
+      return NextResponse.json({ error: sumPointsError.message }, { status: 500 });
+    }
+
+    // 2. Use the value in your update
     const { data: team, error: teamError } = await supabase
       .from("teams")
       .update({
         chain_length: chainLength,
         chain_multiplier,
-        total_points: supabase.rpc('sum_team_points', { teamid: team_id, gameid: game.id }),
+        total_points: sumPoints,
         total_deposits: chainLength,
       })
       .eq("id", team_id)
