@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { ChevronDown, ChevronUp, DollarSign, Trophy, Users } from "lucide-react"
 import { sdk } from "@farcaster/frame-sdk"
-// import { getUser } from "../../lib/auth"
+import { getUser } from "../../lib/auth"
 
 // const APP_URL = "https://www.dollarchain.xyz/"
 
@@ -21,8 +21,17 @@ export default function GameRules() {
   return (
     <div className="min-h-screen bg-[#263238] text-white font-sans">
       {/* Header */}
-      <header className="bg-[#00C853] text-white p-4 sticky top-0 z-10 shadow-md">
-        <h1 className="text-2xl font-bold text-center">Dollarchain Rules</h1>
+      <header className="bg-[#00C853] text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-center flex-1">Dollarchain Rules</h1>
+        {typeof window !== 'undefined' && getUser()?.fid === 17714 && (
+          <a
+            href="/game"
+            className="underline text-[#263238] font-semibold ml-4 text-base hover:text-[#00b34d]"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Game Dev
+          </a>
+        )}
       </header>
 
       {/* Main Content */}
