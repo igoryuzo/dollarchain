@@ -70,7 +70,7 @@ export default function GameRules() {
             <div className="p-4 animate-fadeIn">
               <p className="mb-3">Players deposit $1 to start a new team chain:</p>
               <ul className="list-disc pl-5 mb-3 space-y-2">
-                <li>If you joined the waitlist, you can start a new team chain for free and get a multiplier bonus</li>
+                <li>If you joined the waitlist, you can start a new team chain for free and you get a multiplier bonus</li>
                 <li>After you start a team chain, you can invite others to join and deposit $1 to make the team chain longer</li>
                 <li>At the end of 48 hours, the team chain with the most points wins all the deposited money.</li>
               </ul>
