@@ -1,4 +1,6 @@
 import { sdk } from '@farcaster/frame-sdk';
+import jwt from "jsonwebtoken";
+import { NextRequest, NextResponse } from "next/server";
 
 export interface AuthUser {
   fid: number;
@@ -17,6 +19,8 @@ export interface FrameNotificationDetails {
 
 // Store user in memory (not localStorage for better security)
 let currentUser: AuthUser | null = null;
+
+const secret = process.env.JWT_SECRET!;
 
 // Generate a secure nonce
 function generateNonce(): string {
@@ -336,8 +340,8 @@ export async function promptAddFrameAndNotifications(): Promise<{
   } catch (error) {
     console.error("Error in promptAddFrameAndNotifications:", error);
     return { added: false };
-      }
-    }
+  }
+}
 
 /**
  * Send a welcome notification to a user
@@ -419,5 +423,27 @@ export async function sendWelcomeNotification(fid: number): Promise<boolean> {
   } catch (error) {
     console.error("❌ Error in sendWelcomeNotification:", error);
     return false;
+  }
+}
+
+export function setAuthCookie(res: NextResponse, user: { fid: number }) {
+  const token = jwt.sign({ fid: user.fid }, secret, { expiresIn: "7d" });
+  res.cookies.set("auth_token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
+}
+
+export function getServerUser(req: NextRequest) {
+  const token = req.cookies.get("auth_token")?.value;
+  if (!token) return null;
+  try {
+    const payload = jwt.verify(token, secret) as { fid: number };
+    return { fid: payload.fid };
+  } catch {
+    return null;
   }
 } 
