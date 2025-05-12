@@ -72,7 +72,7 @@ export default function GameRules() {
               <ul className="list-disc pl-5 mb-3 space-y-2">
                 <li>If you joined the waitlist, you can start a new team chain for free and get a multiplier bonus</li>
                 <li>After you start a team chain, you can invite others to join and deposit $1 to make the team chain longer</li>
-                <li>At the end of 48 hours, the team chain with the most deposits wins all deposited money and game restarts</li>
+                <li>At the end of 48 hours, the team chain with the most points wins all the deposited money.</li>
               </ul>
             </div>
           )}
@@ -150,19 +150,31 @@ export default function GameRules() {
           )}
         </div>
 
-        {/* Point System Section */}
         <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <div className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white">
+          <button
+            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
+            onClick={() => toggleSection("pointsystem")}
+          >
             <div className="flex items-center">
+              <span className="mr-2 text-2xl font-bold leading-none" style={{ fontFamily: 'serif' }}>∑</span>
               <span className="font-bold">Point System</span>
             </div>
-          </div>
-          <div className="p-4 animate-fadeIn">
-            <p className="mb-3">Each deposit earns points based on the following formula:</p>
-            <div className="bg-[#2c3a41] p-4 rounded-md flex flex-col items-center">
-              <span className="text-3xl font-mono text-white mb-2">$1 deposit × Chain Size Multiplier × Neynar Score</span>
+            {expandedSection === "pointsystem" ? <ChevronUp /> : <ChevronDown />}
+          </button>
+          {expandedSection === "pointsystem" && (
+            <div className="p-4 animate-fadeIn">
+              <p className="mb-3">Each deposit earns points based on the following formula:</p>
+              <div className="bg-[#2c3a41] p-3 rounded-md flex flex-col items-center">
+                <span className="text-lg font-mono text-white font-semibold">
+                  <span>$1 deposit</span>
+                  <span className="mx-2">×</span>
+                  <span>Chain Size Multiplier</span>
+                  <span className="mx-2">×</span>
+                  <span>Neynar Score</span>
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
@@ -208,8 +220,7 @@ export default function GameRules() {
               }}
             >
               /dollarchain
-            </button>
-            channel for updates & feedback.
+            </button>{' '}channel for updates & feedback.
           </p>
         </div>
       </main>
