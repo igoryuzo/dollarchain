@@ -67,7 +67,8 @@ export default function GamePage() {
         setError(data.error || "Deposit failed");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      console.error("Unexpected error in /api/deposits/create:", err);
+      setError("Internal server error");
     } finally {
       setDepositLoading(false);
     }
