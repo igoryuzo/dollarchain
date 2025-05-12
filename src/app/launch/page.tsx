@@ -189,7 +189,7 @@ export default function GameRules() {
               }}
             >
               /dollarchain
-            </a> channel for updates & feedback.
+            </a> channel for updates & feedbackkkkkkk.
           </p>
         </div>
       </main>
