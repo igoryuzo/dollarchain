@@ -115,6 +115,13 @@ export async function signIn(): Promise<AuthUser | null> {
         console.warn("Failed to save user to Supabase", saveData);
         // Continue with auth flow even if save fails
       }
+
+      // After saving user to Supabase, set the JWT cookie for server-side auth
+      await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fid }),
+      });
     } catch (error) {
       console.error("Error saving user to Supabase:", error);
       // Continue with auth flow even if save fails
