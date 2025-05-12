@@ -2,6 +2,10 @@
 
 import { useState } from "react"
 import { ChevronDown, ChevronUp, DollarSign, Trophy, Users } from "lucide-react"
+import { sdk } from "@farcaster/frame-sdk"
+import { getUser } from "../../lib/auth"
+
+const APP_URL = "https://www.dollarchain.xyz/"
 
 export default function GameRules() {
   const [expandedSection, setExpandedSection] = useState<string | null>("overview")
@@ -193,6 +197,44 @@ export default function GameRules() {
           </p>
         </div>
       </main>
+      <div className="fixed bottom-0 left-0 w-full bg-[#1e272c] p-4 flex justify-center shadow-inner z-20">
+        <ShareProfileButton />
+      </div>
     </div>
+  )
+}
+
+function ShareProfileButton() {
+  const [loading, setLoading] = useState(false)
+
+  const handleShare = async () => {
+    setLoading(true)
+    try {
+      const user = getUser()
+      if (!user || !user.fid) {
+        alert("User not authenticated.")
+        setLoading(false)
+        return
+      }
+      const imageUrl = `${APP_URL}/api/opengraph-image?fid=${user.fid}`
+      await sdk.actions.composeCast({
+        text: "Check out my Dollarchain profile!",
+        embeds: [imageUrl],
+      })
+    } catch {
+      alert("Failed to open cast composer.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      className="bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150 disabled:opacity-60"
+      onClick={handleShare}
+      disabled={loading}
+    >
+      {loading ? "Opening Composer..." : "Share Profile"}
+    </button>
   )
 } 
