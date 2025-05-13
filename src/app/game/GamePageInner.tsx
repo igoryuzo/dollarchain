@@ -23,7 +23,7 @@ export default function GamePageInner() {
     async function checkMyTeam() {
       setCheckingTeam(true);
       try {
-        const res = await fetch("/api/teams/my-team");
+        const res = await fetch("/api/teams/my-team", { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           if (data.team && data.team.id) {
@@ -61,6 +61,7 @@ export default function GamePageInner() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ team_id: teamId, transactionHash: sendResult.send.transaction }),
+        credentials: "include"
       });
       const data = await res.json();
       setDepositResult(data);
