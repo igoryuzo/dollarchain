@@ -1,20 +1,33 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 import { getUserByFid } from '../../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const fid = searchParams.get('fid');
+  const teamId = searchParams.get('team_id');
 
   let user = null;
+  let team = null;
   if (fid) {
     user = await getUserByFid(Number(fid));
+  }
+  if (teamId) {
+    // Fetch team info from Supabase
+    const { data: teamData } = await supabase
+      .from('teams')
+      .select('*')
+      .eq('id', teamId)
+      .single();
+    team = teamData;
   }
 
   const avatarUrl = user?.avatar_url || 'https://www.dollarchain.xyz/default-avatar.png';
   const username = user?.username || 'Dollarchain User';
+  const teamName = team?.team_name || (teamId ? `Team #${teamId}` : "Team");
 
   return new ImageResponse(
     (
@@ -23,7 +36,7 @@ export async function GET(request: NextRequest) {
           <img src={avatarUrl} alt="Profile" tw="w-full h-full object-cover" />
         </div>
         <h1 tw="text-6xl text-white font-bold mb-2">{username}</h1>
-        <p tw="text-3xl text-[#00C853] font-semibold">Dollarchain Profile</p>
+        <p tw="text-9xl text-[#00C853] font-semibold">Team: {teamName}</p>
       </div>
     ),
     {
