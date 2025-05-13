@@ -60,7 +60,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/teams/get?team_id=${teamId}`);
+        const res = await fetch(`/api/teams/get?team_id=${teamId}`, { credentials: "include" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to fetch team");
         setTeam(data.team);
@@ -103,6 +103,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ team_id: teamId, transactionHash: sendResult.send.transaction }),
+        credentials: "include"
       });
       const data = await res.json();
       setDepositResult(data);

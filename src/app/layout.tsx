@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   manifest: "/.well-known/farcaster.json",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
