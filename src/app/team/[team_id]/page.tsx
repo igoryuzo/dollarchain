@@ -2,27 +2,20 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
-import { getUser } from "@/lib/auth";
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
-type Team = { id: number; team_name: string; [key: string]: unknown };
+type Team = { id: number; team_name: string; owner_fid: number; [key: string]: unknown };
 type Member = { user_fid: number; role: string; joined_at: string };
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
 
-function ShareTeamButton({ teamId, teamName }: { teamId: string; teamName: string }) {
+function ShareTeamButton({ teamId, teamName, ownerFid }: { teamId: string; teamName: string; ownerFid: number }) {
   const [loading, setLoading] = useState(false);
 
   const handleShare = async () => {
     setLoading(true);
     try {
-      const user = getUser();
-      if (!user || !user.fid) {
-        alert("User not authenticated.");
-        setLoading(false);
-        return;
-      }
-      const imageUrl = `${APP_URL}/api/opengraph-image?fid=${user.fid}`;
+      const imageUrl = `${APP_URL}/api/opengraph-image?fid=${ownerFid}`;
       const teamUrl = `${APP_URL}team/${teamId}`;
       await sdk.actions.composeCast({
         text: `Join my Dollarchain team: ${teamName}!`,
@@ -151,7 +144,7 @@ export default function TeamPage() {
           {JSON.stringify(depositResult, null, 2)}
         </pre>
       )}
-      {team && <ShareTeamButton teamId={String(team.id)} teamName={team.team_name} />}
+      {team && <ShareTeamButton teamId={String(team.id)} teamName={team.team_name} ownerFid={team.owner_fid} />}
     </div>
   );
 } 
