@@ -23,6 +23,9 @@ export async function GET(request: NextRequest) {
       .eq('id', teamId)
       .single();
     team = teamData;
+    if (team) {
+      console.log('[OG IMAGE] team.team_name:', team.team_name);
+    }
   }
 
   const avatarUrl = user?.avatar_url || 'https://www.dollarchain.xyz/default-avatar.png';
