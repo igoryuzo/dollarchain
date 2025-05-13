@@ -77,10 +77,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { team_id, transactionHash } = await req.json();
-    if (!team_id || !transactionHash) {
-      console.error("[DEPOSIT] Missing team_id or transactionHash", { team_id, transactionHash });
-      return NextResponse.json({ error: "Missing team_id or transactionHash" }, { status: 400 });
+    const { team_id: incomingTeamId, transactionHash } = await req.json();
+    if (!transactionHash) {
+      console.error("[DEPOSIT] Missing transactionHash", { transactionHash });
+      return NextResponse.json({ error: "Missing transactionHash" }, { status: 400 });
     }
 
     // 1. Find the current active game
@@ -116,14 +116,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Transaction already used" }, { status: 400 });
     }
 
-    // 4. Verify onchain transaction
-    const isValid = await verifyOnchainUSDCDeposit({ transactionHash, userEthAddress: dbUser.primary_eth_address });
-    if (!isValid) {
-      console.error("[DEPOSIT] Onchain verification failed", { transactionHash, userEthAddress: dbUser.primary_eth_address });
-      return NextResponse.json({ error: "Onchain verification failed" }, { status: 400 });
-    }
-
-    // 5. Check user's last deposit for this game
+    // 4. Enforce global deposit rate limit (across all teams)
     const { data: lastDeposit } = await supabase
       .from("deposits")
       .select("created_at")
@@ -135,24 +128,69 @@ export async function POST(req: NextRequest) {
     if (lastDeposit) {
       const last = new Date(lastDeposit.created_at).getTime();
       const now = Date.now();
-      if (now - last < 60 * 1000) {
-        console.error("[DEPOSIT] Deposit too soon (1/minute rule)", { lastDeposit, now });
-        return NextResponse.json({ error: "You can only deposit $1 per minute (testing mode)." }, { status: 403 });
+      if (now - last < 60 * 1000) { // Change to 60 * 60 * 1000 for 1 hour in prod
+        console.error("[DEPOSIT] Deposit too soon (global 1/hr rule)", { lastDeposit, now });
+        return NextResponse.json({ error: "You can only deposit $1 per hour (testing: per minute)." }, { status: 403 });
       }
     }
 
-    // 6. Enforce 48 deposits/game rule
-    const { count: depositCount } = await supabase
-      .from("deposits")
-      .select("id", { count: "exact", head: true })
-      .eq("user_fid", user.fid)
-      .eq("game_id", game.id);
-    if ((depositCount ?? 0) >= 48) {
-      console.error("[DEPOSIT] Max deposits reached", { user, game });
-      return NextResponse.json({ error: "You have reached the maximum of 48 deposits for this game." }, { status: 403 });
+    // 5. Verify onchain transaction
+    const isValid = await verifyOnchainUSDCDeposit({ transactionHash, userEthAddress: dbUser.primary_eth_address });
+    if (!isValid) {
+      console.error("[DEPOSIT] Onchain verification failed", { transactionHash, userEthAddress: dbUser.primary_eth_address });
+      return NextResponse.json({ error: "Onchain verification failed" }, { status: 400 });
     }
 
-    // 7. Insert deposit
+    let team_id = incomingTeamId;
+    let team;
+    // 6. If no team_id, create a new team and add user as owner/member
+    if (!team_id) {
+      const { data: newTeam, error: teamError } = await supabase
+        .from("teams")
+        .insert({
+          game_id: game.id,
+          owner_fid: user.fid,
+          team_name: `Team #${Math.floor(Math.random() * 100000)}`,
+          is_active: true,
+        })
+        .select()
+        .single();
+      if (teamError || !newTeam) {
+        console.error("[DEPOSIT] Team creation error", { teamError });
+        return NextResponse.json({ error: teamError?.message || "Failed to create team" }, { status: 500 });
+      }
+      team_id = newTeam.id;
+      team = newTeam;
+    } else {
+      // Fetch the team for return value
+      const { data: existingTeam, error: fetchTeamError } = await supabase
+        .from("teams")
+        .select("*")
+        .eq("id", team_id)
+        .single();
+      if (fetchTeamError || !existingTeam) {
+        console.error("[DEPOSIT] Team fetch error", { fetchTeamError });
+        return NextResponse.json({ error: fetchTeamError?.message || "Team not found" }, { status: 404 });
+      }
+      team = existingTeam;
+    }
+
+    // 7. Add user to team_members if not already present
+    const { count: memberCount } = await supabase
+      .from("team_members")
+      .select("id", { count: "exact", head: true })
+      .eq("user_fid", user.fid)
+      .eq("team_id", team_id);
+    if ((memberCount ?? 0) === 0) {
+      await supabase.from("team_members").insert({
+        user_fid: user.fid,
+        team_id,
+        joined_at: new Date().toISOString(),
+        role: team.owner_fid === user.fid ? "owner" : "member",
+      });
+    }
+
+    // 8. Insert deposit
     const { data: deposit, error: depositError } = await supabase
       .from("deposits")
       .insert({
@@ -171,7 +209,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: depositError.message }, { status: 500 });
     }
 
-    // 8. Calculate chain size and multiplier
+    // 9. Calculate chain size and multiplier
     const { count: chainLength } = await supabase
       .from("deposits")
       .select("id", { count: "exact", head: true })
@@ -182,26 +220,25 @@ export async function POST(req: NextRequest) {
     else if (chainLength && chainLength <= 10) chain_multiplier = 3;
     else if (chainLength && chainLength <= 15) chain_multiplier = 2;
 
-    // 9. Calculate points (no Neynar score for now)
+    // 10. Calculate points (no Neynar score for now)
     const points_earned = 1 * chain_multiplier;
 
-    // 10. Update deposit with points_earned
+    // 11. Update deposit with points_earned
     await supabase
       .from("deposits")
       .update({ points_earned })
       .eq("id", deposit.id);
 
-    // 1. Get the sum of team points from the RPC
+    // 12. Get the sum of team points from the RPC
     const { data: sumPoints, error: sumPointsError } = await supabase
       .rpc('sum_team_points', { teamid: team_id, gameid: game.id });
-
     if (sumPointsError) {
       console.error("[DEPOSIT] sum_team_points RPC error", { sumPointsError });
       return NextResponse.json({ error: sumPointsError.message }, { status: 500 });
     }
 
-    // 2. Use the value in your update
-    const { data: team, error: teamError } = await supabase
+    // 13. Update team stats
+    const { data: updatedTeam, error: teamUpdateError } = await supabase
       .from("teams")
       .update({
         chain_length: chainLength,
@@ -212,12 +249,14 @@ export async function POST(req: NextRequest) {
       .eq("id", team_id)
       .select()
       .single();
-    if (teamError) {
-      console.error("[DEPOSIT] Team update error", { teamError });
-      return NextResponse.json({ error: teamError.message }, { status: 500 });
+    if (teamUpdateError) {
+      console.error("[DEPOSIT] Team update error", { teamUpdateError });
+      return NextResponse.json({ error: teamUpdateError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ deposit: { ...deposit, points_earned }, team });
+    // 14. Return deposit, team, and shareable link
+    const shareableLink = `/team/${team_id}`;
+    return NextResponse.json({ deposit: { ...deposit, points_earned }, team: updatedTeam, shareableLink });
   } catch (err) {
     console.error("[DEPOSIT] Unexpected error in /api/deposits/create", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
