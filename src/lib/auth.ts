@@ -122,6 +122,7 @@ export async function signIn(): Promise<AuthUser | null> {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fid }),
+        credentials: "include"
       });
     } catch (error) {
       console.error("Error saving user to Supabase:", error);
@@ -439,8 +440,9 @@ export function setAuthCookie(res: NextResponse, user: { fid: number }) {
   res.cookies.set("auth_token", token, {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "none",
     path: "/",
+    domain: ".dollarchain.xyz",
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 }
