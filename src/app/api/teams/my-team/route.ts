@@ -3,6 +3,14 @@ import { getServerUser } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {
+  // Log all cookies and the auth_token specifically
+  const allCookies = req.cookies;
+  const authToken = req.cookies.get("auth_token")?.value;
+  console.log("[/api/teams/my-team] Incoming request");
+  console.log("Headers:", JSON.stringify(Object.fromEntries(req.headers.entries()), null, 2));
+  console.log("All cookies:", JSON.stringify(Object.fromEntries(allCookies), null, 2));
+  console.log("auth_token:", authToken);
+
   const user = getServerUser(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
