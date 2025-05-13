@@ -23,7 +23,7 @@ export default function GameRules() {
       {/* Header */}
       <header className="bg-[#00C853] text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
         <h1 className="text-2xl font-bold text-center flex-1">Dollarchain Rules</h1>
-        {typeof window !== 'undefined' && getUser()?.fid === 17714 && (
+        {typeof window !== 'undefined' && (getUser()?.fid === 17714 || getUser()?.fid === 1077224) && (
           <a
             href="/game"
             className="underline text-[#263238] font-semibold ml-4 text-base hover:text-[#00b34d]"
