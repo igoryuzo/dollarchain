@@ -2,13 +2,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
-import { getUser } from "@/lib/auth";
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
 type Team = { id: number; team_name: string; owner_fid: number; [key: string]: unknown };
 type Member = { user_fid: number; role: string; joined_at: string };
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
+
+type TeamPageClientProps = {
+  teamId: string;
+  currentFid: number | null;
+};
 
 function ShareTeamButton({ teamName, ownerFid }: { teamName: string; ownerFid: number }) {
   const [loading, setLoading] = useState(false);
@@ -39,7 +43,7 @@ function ShareTeamButton({ teamName, ownerFid }: { teamName: string; ownerFid: n
   );
 }
 
-export default function TeamPageClient({ teamId }: { teamId: string }) {
+export default function TeamPageClient({ teamId, currentFid }: TeamPageClientProps) {
   const router = useRouter();
   const [team, setTeam] = useState<Team | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -47,15 +51,8 @@ export default function TeamPageClient({ teamId }: { teamId: string }) {
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentFid, setCurrentFid] = useState<number | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [isMember, setIsMember] = useState(false);
-
-  // Fetch current user FID on mount
-  useEffect(() => {
-    const user = getUser();
-    setCurrentFid(user?.fid ?? null);
-  }, []);
 
   // Fetch team info and members
   useEffect(() => {

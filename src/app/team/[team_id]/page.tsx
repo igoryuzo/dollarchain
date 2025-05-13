@@ -1,4 +1,6 @@
 import TeamPageClient from "./TeamPageClient";
+import { cookies } from "next/headers";
+import { getServerUser } from "@/lib/auth";
 
 export async function generateMetadata({ params }: { params: Promise<{ team_id: string }> }) {
   const { team_id } = await params;
@@ -70,5 +72,9 @@ export async function generateMetadata({ params }: { params: Promise<{ team_id: 
 
 export default async function TeamPage({ params }: { params: Promise<{ team_id: string }> }) {
   const { team_id } = await params;
-  return <TeamPageClient teamId={team_id} />;
+  // Get the current user's FID from the cookie (SSR)
+  const cookieStore = await cookies();
+  const user = getServerUser(cookieStore);
+  const currentFid = user?.fid ?? null;
+  return <TeamPageClient teamId={team_id} currentFid={currentFid} />;
 } 

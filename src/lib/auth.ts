@@ -1,6 +1,7 @@
 import { sdk } from '@farcaster/frame-sdk';
 import jwt from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export interface AuthUser {
   fid: number;
@@ -444,8 +445,20 @@ export function setAuthCookie(res: NextResponse, user: { fid: number }) {
   });
 }
 
-export function getServerUser(req: NextRequest) {
-  const token = req.cookies.get("auth_token")?.value;
+export function getServerUser(reqOrCookies: NextRequest | ReadonlyRequestCookies) {
+  // If it's a NextRequest
+  if ("cookies" in reqOrCookies) {
+    const token = reqOrCookies.cookies.get("auth_token")?.value;
+    if (!token) return null;
+    try {
+      const payload = jwt.verify(token, secret) as { fid: number };
+      return { fid: payload.fid };
+    } catch {
+      return null;
+    }
+  }
+  // If it's a cookies object
+  const token = reqOrCookies.get("auth_token")?.value;
   if (!token) return null;
   try {
     const payload = jwt.verify(token, secret) as { fid: number };
