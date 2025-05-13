@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sdk } from "@farcaster/frame-sdk";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -11,11 +11,33 @@ export default function GamePageInner() {
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
+  const [checkingTeam, setCheckingTeam] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
 
   // Get team_id from URL if present
   const teamId = searchParams.get("team_id") || null;
+
+  // On mount, check if user already has a team for the current game
+  useEffect(() => {
+    async function checkMyTeam() {
+      setCheckingTeam(true);
+      try {
+        const res = await fetch("/api/teams/my-team");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.team && data.team.id) {
+            router.replace(`/team/${data.team.id}`);
+            return;
+          }
+        }
+      } catch {}
+      setCheckingTeam(false);
+    }
+    // Only check if not joining a team via shared link
+    if (!teamId) checkMyTeam();
+    else setCheckingTeam(false);
+  }, [teamId, router]);
 
   // Unified deposit handler
   const handleDeposit = async () => {
@@ -60,6 +82,10 @@ export default function GamePageInner() {
 
   // Headline logic
   const headline = teamId ? "Join This Team Chain" : "Start A Team Chain";
+
+  if (checkingTeam) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Checking your team...</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white">
