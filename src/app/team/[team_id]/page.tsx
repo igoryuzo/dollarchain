@@ -22,14 +22,33 @@ export async function generateMetadata({ params }: { params: Promise<{ team_id: 
     openGraph: {
       title: `Join ${teamName} on Dollarchain`,
       description: `Join this team chain and help us win the pot!`,
-      images: [imageUrl],
       url: `${APP_URL}team/${team_id}`,
+      siteName: 'Dollarchain',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+        }
+      ],
+      locale: 'en_US',
+      type: 'website',
     },
-    twitter: {
-      card: "summary_large_image",
-      title: `Join ${teamName} on Dollarchain`,
-      description: `Join this team chain and help us win the pot!`,
-      images: [imageUrl],
+    other: {
+      'fc:frame': JSON.stringify({
+        version: "next",
+        imageUrl: imageUrl,
+        button: {
+          title: "Join Team",
+          action: {
+            type: "launch_frame",
+            name: teamName,
+            url: `${APP_URL}team/${team_id}`,
+            splashImageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
+            splashBackgroundColor: "#ffffff"
+          }
+        }
+      })
     },
   };
 }
