@@ -14,16 +14,17 @@ type TeamPageClientProps = {
   currentFid: number | null;
 };
 
-function ShareTeamButton({ teamName, ownerFid }: { teamName: string; ownerFid: number }) {
+function ShareTeamButton({ teamName, teamId }: { teamName: string; teamId: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleShare = async () => {
     setLoading(true);
     try {
-      const imageUrl = `${APP_URL}/api/opengraph-image?fid=${ownerFid}`;
+      // Use the team page URL as the embed for Farcaster Frame
+      const teamUrl = `${APP_URL}team/${teamId}`;
       await sdk.actions.composeCast({
         text: `Join my Dollarchain team: ${teamName}!`,
-        embeds: [imageUrl],
+        embeds: [teamUrl],
       });
     } catch {
       alert("Failed to open cast composer.");
@@ -163,7 +164,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
           {JSON.stringify(depositResult, null, 2)}
         </pre>
       )}
-      {team && <ShareTeamButton teamName={team.team_name} ownerFid={team.owner_fid} />}
+      {team && <ShareTeamButton teamName={team.team_name} teamId={teamId} />}
     </div>
   );
 } 
