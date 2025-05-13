@@ -2,10 +2,49 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
+import { getUser } from "@/lib/auth";
+
+const APP_URL = "https://www.dollarchain.xyz/";
 
 type Team = { id: number; team_name: string; [key: string]: unknown };
 type Member = { user_fid: number; role: string; joined_at: string };
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
+
+function ShareTeamButton({ teamId, teamName }: { teamId: string; teamName: string }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleShare = async () => {
+    setLoading(true);
+    try {
+      const user = getUser();
+      if (!user || !user.fid) {
+        alert("User not authenticated.");
+        setLoading(false);
+        return;
+      }
+      const imageUrl = `${APP_URL}/api/opengraph-image?fid=${user.fid}`;
+      const teamUrl = `${APP_URL}team/${teamId}`;
+      await sdk.actions.composeCast({
+        text: `Join my Dollarchain team: ${teamName}!`,
+        embeds: [imageUrl, teamUrl],
+      });
+    } catch {
+      alert("Failed to open cast composer.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      className="bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150 disabled:opacity-60 mt-4"
+      onClick={handleShare}
+      disabled={loading}
+    >
+      {loading ? "Opening Composer..." : "Share Team"}
+    </button>
+  );
+}
 
 export default function TeamPage() {
   const { team_id } = useParams();
@@ -112,6 +151,7 @@ export default function TeamPage() {
           {JSON.stringify(depositResult, null, 2)}
         </pre>
       )}
+      {team && <ShareTeamButton teamId={String(team.id)} teamName={team.team_name} />}
     </div>
   );
 } 
