@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ team_id: 
             type: "launch_frame",
             name: teamName,
             url: `${APP_URL}team/${team_id}`,
-            splashImageUrl: imageUrl,
+            splashImageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
             splashBackgroundColor: "#ffffff"
           }
         }
