@@ -27,7 +27,10 @@ export async function GET(request: NextRequest) {
 
   const avatarUrl = user?.avatar_url || 'https://www.dollarchain.xyz/default-avatar.png';
   const username = user?.username || 'Dollarchain User';
-  const teamName = team?.team_name || (teamId ? `Team #${teamId}` : "Team");
+  let teamName = team?.team_name;
+  if (!teamName) {
+    teamName = teamId ? `Team` : "Team";
+  }
 
   return new ImageResponse(
     (

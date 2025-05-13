@@ -6,12 +6,17 @@ type Team = { id: number; team_name: string; [key: string]: unknown };
 type TeamResult = { team?: Team; error?: string; shareableLink?: string } | null;
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
 
+const teamNames = [
+  "Cash Cows", "Loose Change", "Stimmy Squad", "Pay Pals", "Coin Lords", "Bill Bros", "Bankrupt Ballers", "Debt Collectors", "Fiscal Fools", "Cha-Ching", "DAO Boys", "Token Bros", "Chain Gang", "Rainmakers", "Gas Hogs", "ETH Heads", "Stake Club", "Coin Goblins", "Dollar Dogs", "Low Effort", "Top Chain", "Big Brain", "Degens United", "Simp Nation", "Liquidity Boys", "Dollar Ducks", "Coin Cats", "Dollar Drama", "Tip Jar", "Rich-ish", "Rug Buds", "Cash Queens", "Budget Babes", "Dolla Divas", "Tip Hogs", "Coin Cuties", "Fee Freaks", "Tax Dodgers", "Satoshi's Angels", "Bear Babes", "Bull Babes", "Rich Girlz", "Broke Icons", "Shmoney Gang", "Chain Smokers", "$1 Direction", "Drake Deposits", "Revenue Rookies", "Net Loss", "Dolla Llamas", "Wallet Weasels", "Coin Coyotes", "Fiat Ferrets", "Stonk Skunks", "Piggy Punks", "Token Tacos", "Risky Pickles", "Vault Vultures", "Rug Rabbits", "Gwei Gals", "Lady Ledgers", "Airdrop Addicts", "Feds Watching", "404 Gains", "KYC Rejects", "Protocol Pimps", "WAGMI Wrecked", "Dump Club", "Bag Holders", "Click Farm", "Chain Freaks", "Real Rekt", "NFA Club", "Max Drawdown", "Refund Gang", "Dust Collectors", "Pool Drainers", "Insane Apez", "Crybabies Club", "NFTy Wifeys", "Pepe Payroll", "Wojak Wealth", "Zoom Out", "Credit Rejects", "Margin Misfits", "Drip Deficit", "Hedge Fundies", "ATM Addicts", "Free Mintz", "Top Signal", "Bottom Callers", "Next Cycle", "Deadbeats Inc", "Doja Dump", "Smokey Snoop", "Zuck Chain", "Gaga Gas", "Ariana Airdrop", "Bad Bunnybags", "Posty Protocol"
+];
+
 export default function GamePageInner() {
   const [result, setResult] = useState<TeamResult>(null);
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkingTeam, setCheckingTeam] = useState(true);
+  const [usedNames, setUsedNames] = useState<string[]>([]);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -39,6 +44,24 @@ export default function GamePageInner() {
     else setCheckingTeam(false);
   }, [teamId, router]);
 
+  // Fetch used team names on mount if starting a new team
+  useEffect(() => {
+    if (!teamId) {
+      fetch("/api/teams/used-names", { credentials: "include" })
+        .then(res => res.json())
+        .then(data => setUsedNames(data.usedNames || []));
+    }
+  }, [teamId]);
+
+  function getRandomTeamName() {
+    const available = teamNames.filter(name => !usedNames.includes(name));
+    if (available.length === 0) {
+      // All names used, fallback to random 5-digit number
+      return `Team #${Math.floor(10000 + Math.random() * 90000)}`;
+    }
+    return available[Math.floor(Math.random() * available.length)];
+  }
+
   // Unified deposit handler
   const handleDeposit = async () => {
     setDepositLoading(true);
@@ -56,11 +79,15 @@ export default function GamePageInner() {
         setDepositLoading(false);
         return;
       }
-      // 2. Send transaction hash to backend
+      // 2. Send transaction hash and team name to backend
+      const body: { team_id: string | null, transactionHash: string, team_name?: string } =
+        !teamId
+          ? { team_id: teamId, transactionHash: sendResult.send.transaction, team_name: getRandomTeamName() }
+          : { team_id: teamId, transactionHash: sendResult.send.transaction };
       const res = await fetch("/api/deposits/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ team_id: teamId, transactionHash: sendResult.send.transaction }),
+        body: JSON.stringify(body),
         credentials: "include"
       });
       const data = await res.json();

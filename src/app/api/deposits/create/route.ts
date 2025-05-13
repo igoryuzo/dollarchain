@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { team_id: incomingTeamId, transactionHash } = await req.json();
+    const body = await req.json();
+    const { team_id: incomingTeamId, transactionHash, team_name } = body;
     if (!transactionHash) {
       console.error("[DEPOSIT] Missing transactionHash", { transactionHash });
       return NextResponse.json({ error: "Missing transactionHash" }, { status: 400 });
@@ -145,12 +146,26 @@ export async function POST(req: NextRequest) {
     let team;
     // 6. If no team_id, create a new team and add user as owner/member
     if (!team_id) {
+      // Check if the provided team_name is already used
+      let finalTeamName = team_name;
+      if (finalTeamName) {
+        const { count: nameCount } = await supabase
+          .from("teams")
+          .select("id", { count: "exact", head: true })
+          .eq("team_name", finalTeamName);
+        if ((nameCount ?? 0) > 0) {
+          // Name already used, fallback to random 5-digit number
+          finalTeamName = `Team #${Math.floor(10000 + Math.random() * 90000)}`;
+        }
+      } else {
+        finalTeamName = `Team #${Math.floor(10000 + Math.random() * 90000)}`;
+      }
       const { data: newTeam, error: teamError } = await supabase
         .from("teams")
         .insert({
           game_id: game.id,
           owner_fid: user.fid,
-          team_name: `Team #${Math.floor(Math.random() * 100000)}`,
+          team_name: finalTeamName,
           is_active: true,
         })
         .select()
