@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
+import { getUser } from "@/lib/auth";
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
@@ -46,6 +47,15 @@ export default function TeamPageClient({ teamId }: { teamId: string }) {
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentFid, setCurrentFid] = useState<number | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [isMember, setIsMember] = useState(false);
+
+  // Fetch current user FID on mount
+  useEffect(() => {
+    const user = getUser();
+    setCurrentFid(user?.fid ?? null);
+  }, []);
 
   // Fetch team info and members
   useEffect(() => {
@@ -58,6 +68,14 @@ export default function TeamPageClient({ teamId }: { teamId: string }) {
         if (!res.ok) throw new Error(data.error || "Failed to fetch team");
         setTeam(data.team);
         setMembers(data.members || []);
+        // Determine if current user is owner or member
+        if (currentFid) {
+          setIsOwner(data.team.owner_fid === currentFid);
+          setIsMember((data.members || []).some((m: Member) => m.user_fid === currentFid));
+        } else {
+          setIsOwner(false);
+          setIsMember(false);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
       } finally {
@@ -65,7 +83,8 @@ export default function TeamPageClient({ teamId }: { teamId: string }) {
       }
     }
     if (teamId) fetchTeam();
-  }, [teamId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamId, currentFid]);
 
   // Deposit handler (always to this team)
   const handleDeposit = async () => {
@@ -127,6 +146,7 @@ export default function TeamPageClient({ teamId }: { teamId: string }) {
           ))}
         </ul>
       </div>
+      <div className="mb-2 text-sm text-gray-400">Your FID: {currentFid ?? 'Not signed in'}</div>
       <div className="flex flex-col items-center gap-2 mb-4">
         <button
           className="bg-[#0091EA] hover:bg-[#007bb5] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150"
@@ -135,6 +155,9 @@ export default function TeamPageClient({ teamId }: { teamId: string }) {
         >
           {depositLoading ? "Depositing..." : "Deposit $1 USDC"}
         </button>
+        {isOwner && <div className="text-green-400 text-sm">You are the team owner.</div>}
+        {!isOwner && isMember && <div className="text-blue-400 text-sm">You are a team member.</div>}
+        {!isOwner && !isMember && <div className="text-yellow-400 text-sm">You are not a member of this team.</div>}
         {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
       </div>
       {depositResult && (
