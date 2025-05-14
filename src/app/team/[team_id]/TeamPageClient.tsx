@@ -63,6 +63,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       try {
         const res = await fetch(`/api/teams/get?team_id=${teamId}`, { credentials: "include" });
         const data = await res.json();
+        console.log('[TeamPageClient] API response:', data);
         if (!res.ok) throw new Error(data.error || "Failed to fetch team");
         setTeam(data.team);
         setMembers(data.members || []);
@@ -70,9 +71,11 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         if (currentFid) {
           setIsOwner(data.team.owner_fid === currentFid);
           setIsMember((data.members || []).some((m: Member) => m.user_fid === currentFid));
+          console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => m.user_fid === currentFid));
         } else {
           setIsOwner(false);
           setIsMember(false);
+          console.log('[TeamPageClient] currentFid is null (not signed in)');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
@@ -129,6 +132,10 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   }
   if (!team) {
     return <div className="min-h-screen flex items-center justify-center text-white">Team not found.</div>;
+  }
+  if (currentFid === null) {
+    // This should never happen in the mini app; log for debugging.
+    console.error("[TeamPageClient] currentFid is null - this should not happen in the mini app.");
   }
 
   return (
