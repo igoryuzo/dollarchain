@@ -22,6 +22,16 @@ export default function GameRules() {
     <div className="min-h-screen bg-[#263238] text-white font-sans">
       {/* Header */}
       <header className="bg-[#00C853] text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
+        {typeof window !== 'undefined' && (getUser()?.fid === 17714 || getUser()?.fid === 1077224) && (
+          <a
+            href="/leaderboard"
+            className="mr-4 text-[#263238] font-semibold text-base underline opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity duration-200"
+            style={{ whiteSpace: 'nowrap' }}
+            tabIndex={0}
+          >
+            LB
+          </a>
+        )}
         <h1 className="text-2xl font-bold text-center flex-1">Dollarchain Rules</h1>
         {typeof window !== 'undefined' && (getUser()?.fid === 17714 || getUser()?.fid === 1077224) && (
           <a
