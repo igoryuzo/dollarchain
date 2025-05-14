@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ team_id: 
   } catch (err) {
     console.log("[generateMetadata] fetch error:", err);
   }
-  const imageUrl = ownerFid
-    ? `${APP_URL}api/opengraph-image?fid=${ownerFid}`
+  const imageUrl = ownerFid && team_id
+    ? `${APP_URL}api/opengraph-image?fid=${ownerFid}&team_id=${team_id}`
     : `${APP_URL}images/dollarchain-logo.png`;
   console.log("[generateMetadata] teamName:", teamName);
   console.log("[generateMetadata] ownerFid:", ownerFid);
