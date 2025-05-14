@@ -110,6 +110,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         setDepositLoading(false);
         return;
       }
+      setDepositLoading(true); // Show processing state
       const res = await fetch("/api/deposits/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,8 +122,9 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       if (!res.ok) {
         setError(data.error || "Deposit failed");
       } else {
-        // Optionally, refresh team info after deposit
-        router.refresh();
+        // Refresh team info after deposit to update membership
+        await router.refresh();
+        // Optionally, re-fetch team data here if router.refresh does not update state
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -168,18 +170,13 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
           onClick={handleDeposit}
           disabled={depositLoading}
         >
-          {depositLoading ? "Depositing..." : "Deposit $1 USDC"}
+          {depositLoading ? (depositResult ? "Processing tx..." : "Depositing...") : "Deposit $1 USDC"}
         </button>
         {isOwner && <div className="text-green-400 text-sm">You are the team owner.</div>}
         {!isOwner && isMember && <div className="text-blue-400 text-sm">You are a team member.</div>}
-        {!isOwner && !isMember && <div className="text-yellow-400 text-sm">You are not a member of this team.</div>}
+        {!isOwner && !isMember && !depositLoading && <div className="text-yellow-400 text-sm">You are not a member of this team.</div>}
         {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
       </div>
-      {depositResult && (
-        <pre className="bg-[#1e272c] p-4 rounded-lg mt-4 max-w-xl overflow-x-auto text-sm">
-          {JSON.stringify(depositResult, null, 2)}
-        </pre>
-      )}
       {team && <ShareTeamButton teamName={team.team_name} teamId={teamId} />}
     </div>
   );
