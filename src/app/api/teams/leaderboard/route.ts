@@ -14,7 +14,7 @@ export async function GET() {
   // 2. Get all teams for this game, join users for owner username
   const { data: teams, error } = await supabase
     .from("teams")
-    .select("id, team_name, owner_fid, chain_length, total_points, users:owner_fid(username)")
+    .select("id, team_name, owner_fid, chain_length, total_points, users:owner_fid (username, avatar_url, follower_count, neynar_score)")
     .eq("game_id", game.id)
     .order("total_points", { ascending: false })
     .order("chain_length", { ascending: false });
