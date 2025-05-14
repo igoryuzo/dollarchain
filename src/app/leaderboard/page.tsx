@@ -12,6 +12,7 @@ interface Team {
 
 export default function LeaderboardPage() {
   const [teams, setTeams] = useState<Team[]>([]);
+  const [potAmount, setPotAmount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +26,8 @@ export default function LeaderboardPage() {
         console.log('[Leaderboard] API response:', data);
         if (!res.ok) throw new Error(data.error || "Failed to fetch leaderboard");
         setTeams(data.teams || []);
-        console.log('[Leaderboard] Set teams:', data.teams);
+        setPotAmount(data.pot_amount ?? null);
+        console.log('[Leaderboard] Set potAmount:', data.pot_amount);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
         console.log('[Leaderboard] Error:', err);
@@ -43,7 +45,12 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-white text-gray-900 w-full py-8">
-      <h1 className="text-3xl font-bold mb-6 text-[#00C853]">Leaderboard</h1>
+      {potAmount !== null && (
+        <div className="mb-4 text-2xl font-extrabold text-center">
+          <span className="bg-[#00C853] text-white px-4 py-2 rounded-lg shadow">💰 ${Math.floor(Number(potAmount))}</span>
+        </div>
+      )}
+      <h1 className="text-3xl font-bold mb-2 text-[#00C853]">Leaderboard</h1>
       <div className="w-full max-w-2xl">
         <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-md">
           <div className="col-span-1 text-center">#</div>

@@ -5,7 +5,7 @@ export async function GET() {
   // 1. Find the current active game
   const { data: game, error: gameError } = await supabase
     .from("games")
-    .select("id")
+    .select("id, pot_amount")
     .eq("status", "active")
     .single();
   if (gameError || !game) {
@@ -21,5 +21,5 @@ export async function GET() {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ teams });
+  return NextResponse.json({ teams, pot_amount: game.pot_amount });
 } 
