@@ -21,11 +21,11 @@ export default function GameRules() {
   return (
     <div className="min-h-screen bg-[#263238] text-white font-sans">
       {/* Header */}
-      <header className="text-[#263238] p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
+      <header className="bg-[#00C853] text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
         {typeof window !== 'undefined' && (getUser()?.fid === 17714 || getUser()?.fid === 1077224) && (
           <a
             href="/leaderboard"
-            className="mr-4 text-[#263238] font-semibold text-base underline opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity duration-200"
+            className="underline text-[#263238] font-semibold mr-4 text-base hover:text-[#00b34d]"
             style={{ whiteSpace: 'nowrap' }}
             tabIndex={0}
           >
