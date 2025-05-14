@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
+import Image from 'next/image';
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
 type Team = { id: number; team_name: string; owner_fid: number; [key: string]: unknown };
-type Member = { user_fid: number; role: string; joined_at: string };
+type Member = { user_fid: number; role: string; joined_at: string; users?: { username: string; avatar_url: string; follower_count: number; neynar_score?: number; }[] };
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
 
 type TeamPageClientProps = {
@@ -150,17 +151,64 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white">
-      <h1 className="text-3xl font-bold mb-4">Team: {team.team_name}</h1>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Members</h2>
-        <ul className="bg-[#1e272c] rounded-lg p-4 min-w-[300px]">
-          {members.length === 0 && <li>No members yet.</li>}
-          {members.map((m) => (
-            <li key={m.user_fid} className="mb-1">
-              FID: {m.user_fid} <span className="text-xs text-gray-400">({m.role})</span>
-            </li>
-          ))}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white w-full">
+      <h1 className="text-4xl font-extrabold mb-2 text-center">{team.team_name}</h1>
+      <div className="w-full max-w-xl mt-2 mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-2xl font-bold">Members</h2>
+        </div>
+        <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-800 text-xs font-medium text-gray-300 rounded-t-lg">
+          <div className="col-span-1 text-center">#</div>
+          <div className="col-span-5">User</div>
+          <div className="col-span-2 text-right flex items-center justify-end gap-1">
+            Neynar Score
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" /></svg>
+          </div>
+        </div>
+        <ul className="divide-y divide-gray-700 bg-gray-900 rounded-b-lg">
+          {members.map((member, index) => {
+            const user = member.users?.[0];
+            if (!user) return null;
+            const isOwner = member.role === 'owner';
+            return (
+              <li key={member.user_fid} className="hover:bg-gray-800">
+                <div className="grid grid-cols-8 gap-2 items-center px-4 py-3 group">
+                  <div className="col-span-1 text-center">
+                    <span className="text-sm text-gray-400 font-medium">{index + 1}</span>
+                  </div>
+                  <div className="col-span-5 flex items-center">
+                    <div className={`h-10 w-10 rounded-full bg-gray-200 overflow-hidden border-4 ${isOwner ? 'border-green-400' : 'border-transparent'}`}>
+                      {user.avatar_url ? (
+                        <Image
+                          src={user.avatar_url}
+                          alt={`${user.username}'s avatar`}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="h-10 w-10 flex items-center justify-center bg-purple-100 text-purple-800 font-bold">
+                          {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
+                        </div>
+                      )}
+                    </div>
+                    <span className="ml-3 text-sm font-medium text-purple-200 group-hover:text-purple-400">
+                      <a href={`https://warpcast.com/${user.username}`} target="_blank" rel="noopener noreferrer">
+                        @{user.username}
+                      </a>
+                      <span className={`ml-2 text-xs ${isOwner ? 'text-green-400' : 'text-blue-400'}`}>({isOwner ? 'owner' : 'member'})</span>
+                    </span>
+                  </div>
+                  <div className="col-span-2 text-right">
+                    <span className="text-sm text-gray-200">
+                      {user.neynar_score !== undefined ? Number(user.neynar_score).toFixed(2) : '-'}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div className="mb-2 text-sm text-gray-400">Your FID: {currentFid ?? 'Not signed in'}</div>

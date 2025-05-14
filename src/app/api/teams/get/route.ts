@@ -15,13 +15,19 @@ export async function GET(req: NextRequest) {
   if (teamError || !team) {
     return NextResponse.json({ error: teamError?.message || "Team not found" }, { status: 404 });
   }
-  // Fetch members
+  // Fetch members with user info
   const { data: members, error: membersError } = await supabase
     .from("team_members")
-    .select("user_fid, role, joined_at")
+    .select("user_fid, role, joined_at, users: user_fid (username, avatar_url, follower_count, neynar_score)")
     .eq("team_id", team_id);
   if (membersError) {
     return NextResponse.json({ error: membersError.message }, { status: 500 });
   }
-  return NextResponse.json({ team, members });
+  // Sort: owner first, then by follower_count desc
+  const sortedMembers = [...(members || [])].sort((a, b) => {
+    if (a.role === "owner") return -1;
+    if (b.role === "owner") return 1;
+    return ((b.users?.[0]?.follower_count || 0) - (a.users?.[0]?.follower_count || 0));
+  });
+  return NextResponse.json({ team, members: sortedMembers });
 } 
