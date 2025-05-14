@@ -224,6 +224,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: depositError.message }, { status: 500 });
     }
 
+    // 8.1. Update game pot_amount (sum of all deposits for this game)
+    const { data: potSumResult, error: potSumError } = await supabase
+      .from("deposits")
+      .select("amount")
+      .eq("game_id", game.id);
+    if (potSumError) {
+      console.error("[DEPOSIT] Error calculating game pot sum", { potSumError });
+    } else {
+      const potAmount = (potSumResult || []).reduce((sum, d) => sum + (d.amount || 0), 0);
+      await supabase
+        .from("games")
+        .update({ pot_amount: potAmount })
+        .eq("id", game.id);
+    }
+
     // 9. Calculate chain size and multiplier
     const { count: chainLength } = await supabase
       .from("deposits")
