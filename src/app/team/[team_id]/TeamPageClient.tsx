@@ -155,9 +155,9 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       <h1 className="text-4xl font-extrabold mb-2 text-center">{team.team_name}</h1>
       <div className="w-full max-w-xl mt-2 mb-8">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-2xl font-bold">Members</h2>
+          <h2 className="text-lg font-medium text-gray-800">Members</h2>
         </div>
-        <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-800 text-xs font-medium text-gray-300 rounded-t-lg">
+        <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-md">
           <div className="col-span-1 text-center">#</div>
           <div className="col-span-5">User</div>
           <div className="col-span-2 text-right flex items-center justify-end gap-1">
@@ -165,19 +165,24 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" /></svg>
           </div>
         </div>
-        <ul className="divide-y divide-gray-700 bg-gray-900 rounded-b-lg">
+        <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
           {members.map((member, index) => {
             const user = member.users?.[0];
             if (!user) return null;
             const isOwner = member.role === 'owner';
             return (
-              <li key={member.user_fid} className="hover:bg-gray-800">
-                <div className="grid grid-cols-8 gap-2 items-center px-4 py-3 group">
+              <li key={member.user_fid} className="hover:bg-gray-50">
+                <a
+                  href={`https://warpcast.com/${user.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid grid-cols-8 gap-2 items-center px-4 py-3 group"
+                >
                   <div className="col-span-1 text-center">
                     <span className="text-sm text-gray-400 font-medium">{index + 1}</span>
                   </div>
                   <div className="col-span-5 flex items-center">
-                    <div className={`h-10 w-10 rounded-full bg-gray-200 overflow-hidden border-4 ${isOwner ? 'border-green-400' : 'border-transparent'}`}>
+                    <div className={`h-10 w-10 rounded-full bg-gray-200 overflow-hidden ${isOwner ? 'border-4 border-green-400' : ''}`}>
                       {user.avatar_url ? (
                         <Image
                           src={user.avatar_url}
@@ -193,19 +198,17 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                         </div>
                       )}
                     </div>
-                    <span className="ml-3 text-sm font-medium text-purple-200 group-hover:text-purple-400">
-                      <a href={`https://warpcast.com/${user.username}`} target="_blank" rel="noopener noreferrer">
-                        @{user.username}
-                      </a>
+                    <span className="ml-3 text-sm font-medium text-purple-700 group-hover:text-purple-900">
+                      @{user.username}
                       <span className={`ml-2 text-xs ${isOwner ? 'text-green-400' : 'text-blue-400'}`}>({isOwner ? 'owner' : 'member'})</span>
                     </span>
                   </div>
                   <div className="col-span-2 text-right">
-                    <span className="text-sm text-gray-200">
+                    <span className="text-sm text-gray-600">
                       {user.neynar_score !== undefined ? Number(user.neynar_score).toFixed(2) : '-'}
                     </span>
                   </div>
-                </div>
+                </a>
               </li>
             );
           })}
