@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
           <img src={avatarUrl} alt="Profile" tw="w-full h-full object-cover" />
         </div>
         <h1 tw="text-6xl text-white font-bold mb-2">{username}</h1>
-        <p tw="text-6xl text-[#00C853] font-bold">{teamName}</p>
+        <p tw="text-8xl text-[#00C853] font-bold font-extrabold">{teamName}</p>
       </div>
     ),
     {
