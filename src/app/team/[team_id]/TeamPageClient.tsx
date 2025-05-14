@@ -12,6 +12,7 @@ type Member = {
   role: string;
   joined_at: string;
   users?: { username: string; avatar_url: string; follower_count: number; neynar_score?: number };
+  total_deposit: number;
 };
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
 
@@ -58,6 +59,8 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
+  const [potAmount, setPotAmount] = useState<number | null>(null);
+  const [teamTotal, setTeamTotal] = useState<number | null>(null);
 
   // Fetch team info and members
   useEffect(() => {
@@ -72,6 +75,8 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         if (!res.ok) throw new Error(data.error || "Failed to fetch team");
         setTeam(data.team);
         setMembers(data.members || []);
+        setPotAmount(data.pot_amount ?? null);
+        setTeamTotal(data.team_total ?? null);
         if (currentFid) {
           console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => (m as Member).user_fid === currentFid));
         } else {
@@ -167,13 +172,14 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-medium text-gray-800">Members</h2>
         </div>
-        <div className="grid grid-cols-8 gap-2 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-md">
+        <div className="grid grid-cols-10 gap-2 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-md">
           <div className="col-span-1 text-center">#</div>
           <div className="col-span-5">User</div>
           <div className="col-span-2 text-right flex items-center justify-end gap-1">
             Neynar Score
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" /></svg>
           </div>
+          <div className="col-span-2 text-right">Potential Payout</div>
         </div>
         <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
           {members.map((member, index) => {
@@ -190,7 +196,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                   href={`https://warpcast.com/${user.username}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="grid grid-cols-8 gap-2 items-center px-4 py-3 group"
+                  className="grid grid-cols-10 gap-2 items-center px-4 py-3 group"
                 >
                   <div className="col-span-1 text-center">
                     <span className="text-sm text-gray-400 font-medium">{index + 1}</span>
@@ -220,6 +226,13 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                   <div className="col-span-2 text-right">
                     <span className="text-sm text-gray-600">
                       {user.neynar_score !== undefined ? Number(user.neynar_score).toFixed(2) : '-'}
+                    </span>
+                  </div>
+                  <div className="col-span-2 text-right">
+                    <span className="text-sm text-green-700 font-bold">
+                      {potAmount && teamTotal && member.total_deposit
+                        ? `$${(Number(potAmount) * (Number(member.total_deposit) / Number(teamTotal))).toFixed(2)}`
+                        : '-'}
                     </span>
                   </div>
                 </a>
