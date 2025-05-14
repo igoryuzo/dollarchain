@@ -41,7 +41,7 @@ function ShareTeamButton({ teamName, teamId }: { teamName: string; teamId: strin
 
   return (
     <button
-      className="bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150 disabled:opacity-60 mt-4"
+      className="w-64 bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150 mt-4"
       onClick={handleShare}
       disabled={loading}
     >
@@ -58,8 +58,6 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isOwner, setIsOwner] = useState(false);
-  const [isMember, setIsMember] = useState(false);
 
   // Fetch team info and members
   useEffect(() => {
@@ -75,12 +73,8 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         setTeam(data.team);
         setMembers(data.members || []);
         if (currentFid) {
-          setIsOwner(data.team.owner_fid === currentFid);
-          setIsMember((data.members || []).some((m: Member) => m.user_fid === currentFid));
           console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => (m as Member).user_fid === currentFid));
         } else {
-          setIsOwner(false);
-          setIsMember(false);
           console.log('[TeamPageClient] currentFid is null (not signed in)');
         }
       } catch (err) {
@@ -156,8 +150,19 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white w-full">
-      <h1 className="text-4xl font-extrabold mb-2 text-center">{team.team_name}</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 w-full">
+      <h1 className="text-4xl font-extrabold mb-4 text-center text-[#00C853]">{team.team_name}</h1>
+      <div className="flex flex-col items-center gap-2 mb-8">
+        <button
+          className="w-64 bg-[#0091EA] hover:bg-[#007bb5] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150"
+          onClick={handleDeposit}
+          disabled={depositLoading}
+        >
+          {depositLoading ? (depositResult ? "Processing tx..." : "Depositing...") : "Deposit $1 USDC"}
+        </button>
+        {team && <ShareTeamButton teamName={team.team_name} teamId={teamId} />}
+        {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+      </div>
       <div className="w-full max-w-xl mt-2 mb-8">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-medium text-gray-800">Members</h2>
@@ -223,21 +228,6 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
           })}
         </ul>
       </div>
-      <div className="mb-2 text-sm text-gray-400">Your FID: {currentFid ?? 'Not signed in'}</div>
-      <div className="flex flex-col items-center gap-2 mb-4">
-        <button
-          className="bg-[#0091EA] hover:bg-[#007bb5] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150"
-          onClick={handleDeposit}
-          disabled={depositLoading}
-        >
-          {depositLoading ? (depositResult ? "Processing tx..." : "Depositing...") : "Deposit $1 USDC"}
-        </button>
-        {isOwner && <div className="text-green-400 text-sm">You are the team owner.</div>}
-        {!isOwner && isMember && <div className="text-blue-400 text-sm">You are a team member.</div>}
-        {!isOwner && !isMember && !depositLoading && <div className="text-yellow-400 text-sm">You are not a member of this team.</div>}
-        {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
-      </div>
-      {team && <ShareTeamButton teamName={team.team_name} teamId={teamId} />}
     </div>
   );
 } 
