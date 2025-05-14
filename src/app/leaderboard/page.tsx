@@ -22,16 +22,24 @@ export default function LeaderboardPage() {
       try {
         const res = await fetch("/api/teams/leaderboard", { credentials: "include" });
         const data = await res.json();
+        console.log('[Leaderboard] API response:', data);
         if (!res.ok) throw new Error(data.error || "Failed to fetch leaderboard");
         setTeams(data.teams || []);
+        console.log('[Leaderboard] Set teams:', data.teams);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
+        console.log('[Leaderboard] Error:', err);
       } finally {
         setLoading(false);
+        console.log('[Leaderboard] Loading set to false');
       }
     }
     fetchTeams();
   }, []);
+
+  useEffect(() => {
+    console.log('[Leaderboard] Render: loading', loading, 'error', error, 'teams', teams);
+  }, [loading, error, teams]);
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-white text-gray-900 w-full py-8">
