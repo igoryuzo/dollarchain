@@ -7,7 +7,7 @@ interface Team {
   owner_fid: number;
   chain_length: number;
   total_points: number;
-  users?: { username: string }[];
+  users?: { username: string; avatar_url?: string; follower_count?: number; neynar_score?: number };
 }
 
 export default function LeaderboardPage() {
@@ -49,7 +49,7 @@ export default function LeaderboardPage() {
           <div className="col-span-1 text-center">#</div>
           <div className="col-span-3">Team Name</div>
           <div className="col-span-2">Owner</div>
-          <div className="col-span-1 text-center">Chain</div>
+          <div className="col-span-1 text-center">Chain Length</div>
           <div className="col-span-1 text-right">Points</div>
         </div>
         {loading ? (
@@ -70,7 +70,7 @@ export default function LeaderboardPage() {
                     {team.team_name}
                   </div>
                   <div className="col-span-2 text-sm text-gray-700 truncate">
-                    {team.users && team.users[0]?.username ? `@${team.users[0].username}` : '—'}
+                    {team.users && team.users.username ? `@${team.users.username}` : '—'}
                   </div>
                   <div className="col-span-1 text-center text-sm text-gray-600">
                     {team.chain_length ?? '-'}
