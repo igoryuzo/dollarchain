@@ -250,8 +250,15 @@ export async function POST(req: NextRequest) {
     else if (chainLength && chainLength <= 10) chain_multiplier = 3;
     else if (chainLength && chainLength <= 15) chain_multiplier = 2;
 
-    // 10. Calculate points (no Neynar score for now)
-    const points_earned = 1 * chain_multiplier;
+    // 10. Calculate points (now includes Neynar score)
+    // Fetch user's neynar_score from users table
+    const { data: userRow } = await supabase
+      .from("users")
+      .select("neynar_score")
+      .eq("fid", user.fid)
+      .single();
+    const neynarScore = userRow?.neynar_score ?? 1;
+    const points_earned = 1 * chain_multiplier * neynarScore;
 
     // 11. Update deposit with points_earned
     await supabase
