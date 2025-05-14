@@ -7,7 +7,12 @@ import Image from 'next/image';
 const APP_URL = "https://www.dollarchain.xyz/";
 
 type Team = { id: number; team_name: string; owner_fid: number; [key: string]: unknown };
-type Member = { user_fid: number; role: string; joined_at: string; users?: { username: string; avatar_url: string; follower_count: number; neynar_score?: number; }[] };
+type Member = {
+  user_fid: number;
+  role: string;
+  joined_at: string;
+  users?: { username: string; avatar_url: string; follower_count: number; neynar_score?: number };
+};
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
 
 type TeamPageClientProps = {
@@ -167,8 +172,12 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         </div>
         <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
           {members.map((member, index) => {
-            const user = member.users?.[0];
-            if (!user) return null;
+            console.log('Rendering member:', member);
+            const user = member.users;
+            if (!user) {
+              console.log('No user found for member:', member);
+              return null;
+            }
             const isOwner = member.role === 'owner';
             return (
               <li key={member.user_fid} className="hover:bg-gray-50">
