@@ -8,6 +8,8 @@ interface Team {
   chain_length: number;
   total_points: number;
   users?: { username: string; avatar_url?: string; follower_count?: number; neynar_score?: number };
+  members?: { user_fid: number; username: string; total_deposit: number }[];
+  team_total?: number;
 }
 
 export default function LeaderboardPage() {
@@ -15,6 +17,7 @@ export default function LeaderboardPage() {
   const [potAmount, setPotAmount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     async function fetchTeams() {
@@ -68,25 +71,50 @@ export default function LeaderboardPage() {
         ) : (
           <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
             {teams.map((team, idx) => (
-              <li key={team.id} className="hover:bg-gray-50">
-                <div className="grid grid-cols-8 gap-2 items-center px-4 py-3">
-                  <div className="col-span-1 text-center">
-                    <span className="text-sm text-gray-400 font-medium">{idx + 1}</span>
+              <React.Fragment key={team.id}>
+                <li className="hover:bg-gray-50">
+                  <div className="grid grid-cols-8 gap-2 items-center px-4 py-3">
+                    <div className="col-span-1 text-center">
+                      <span className="text-sm text-gray-400 font-medium">{idx + 1}</span>
+                    </div>
+                    <div className="col-span-3 font-semibold text-purple-700 truncate">
+                      {team.team_name}
+                    </div>
+                    <div className="col-span-2 text-sm text-gray-700 truncate">
+                      {team.users && team.users.username ? `@${team.users.username}` : '—'}
+                    </div>
+                    <div className="col-span-1 text-center text-sm text-gray-600">
+                      {team.chain_length ?? '-'}
+                    </div>
+                    <div className="col-span-1 text-right text-sm text-gray-900 font-bold">
+                      {team.total_points ?? '-'}
+                    </div>
                   </div>
-                  <div className="col-span-3 font-semibold text-purple-700 truncate">
-                    {team.team_name}
-                  </div>
-                  <div className="col-span-2 text-sm text-gray-700 truncate">
-                    {team.users && team.users.username ? `@${team.users.username}` : '—'}
-                  </div>
-                  <div className="col-span-1 text-center text-sm text-gray-600">
-                    {team.chain_length ?? '-'}
-                  </div>
-                  <div className="col-span-1 text-right text-sm text-gray-900 font-bold">
-                    {team.total_points ?? '-'}
-                  </div>
-                </div>
-              </li>
+                </li>
+                {/* Members and potential win table */}
+                {team.members && team.members.length > 0 && (
+                  <li className="bg-gray-50 px-4 py-2">
+                    <div className="grid grid-cols-3 gap-2 text-xs font-medium text-gray-500 border-b border-gray-100">
+                      <div>Member</div>
+                      <div className="text-center">Total Deposit</div>
+                      <div className="text-right">Potential Win</div>
+                    </div>
+                    <ul>
+                      {team.members.map((member: { user_fid: number; username: string; total_deposit: number }) => (
+                        <li key={member.user_fid} className="grid grid-cols-3 gap-2 items-center py-1">
+                          <div className="truncate">{member.username ? `@${member.username}` : member.user_fid}</div>
+                          <div className="text-center">${Number(member.total_deposit).toFixed(2)}</div>
+                          <div className="text-right text-green-700 font-bold">
+                            {team.team_total && potAmount
+                              ? `$${(Number(potAmount) * (Number(member.total_deposit) / Number(team.team_total))).toFixed(2)}`
+                              : '-'}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                )}
+              </React.Fragment>
             ))}
           </ul>
         )}
