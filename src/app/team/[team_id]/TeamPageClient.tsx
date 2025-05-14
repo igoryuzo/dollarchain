@@ -88,6 +88,12 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId, currentFid]);
 
+  useEffect(() => {
+    if (!loading && !error) {
+      sdk.actions.ready();
+    }
+  }, [loading, error]);
+
   // Deposit handler (always to this team)
   const handleDeposit = async () => {
     setDepositLoading(true);
