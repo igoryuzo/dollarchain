@@ -57,6 +57,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
 
   // Fetch team info and members
   useEffect(() => {
+    console.log('[TeamPageClient] useEffect fired', { teamId, currentFid });
     async function fetchTeam() {
       setLoading(true);
       setError(null);
@@ -67,11 +68,10 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         if (!res.ok) throw new Error(data.error || "Failed to fetch team");
         setTeam(data.team);
         setMembers(data.members || []);
-        // Determine if current user is owner or member
         if (currentFid) {
           setIsOwner(data.team.owner_fid === currentFid);
           setIsMember((data.members || []).some((m: Member) => m.user_fid === currentFid));
-          console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => m.user_fid === currentFid));
+          console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => (m as Member).user_fid === currentFid));
         } else {
           setIsOwner(false);
           setIsMember(false);
@@ -81,6 +81,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
+        console.log('[TeamPageClient] setLoading(false)');
       }
     }
     if (teamId) fetchTeam();
@@ -125,8 +126,10 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   };
 
   if (loading) {
+    console.log('[TeamPageClient] loading is true, rendering splash');
     return <div className="min-h-screen flex items-center justify-center text-white">Loading team...</div>;
   }
+  console.log('[TeamPageClient] loading is false, rendering main UI');
   if (error) {
     return <div className="min-h-screen flex items-center justify-center text-red-500">{error}</div>;
   }
