@@ -225,7 +225,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                   </div>
                   <div className="col-span-2 text-right">
                     <span className="text-xs text-gray-600">
-                      {user.neynar_score !== undefined ? Number(user.neynar_score).toFixed(1) : '-'}
+                      {user.neynar_score !== undefined ? Number(user.neynar_score).toFixed(2) : '-'}
                     </span>
                   </div>
                   <div className="col-span-3 text-right">
