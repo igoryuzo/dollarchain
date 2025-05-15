@@ -1,290 +1,74 @@
 "use client"
 
-import { useState } from "react"
-import { ChevronDown, ChevronUp, DollarSign, Trophy, Users } from "lucide-react"
-import { sdk } from "@farcaster/frame-sdk"
-import { getUser } from "../../lib/auth"
-
-// const APP_URL = "https://www.dollarchain.xyz/"
+import { Users, Link, Trophy, Clock, BarChart } from "lucide-react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function GameRules() {
-  const [expandedSection, setExpandedSection] = useState<string | null>("overview")
-
-  const toggleSection = (section: string) => {
-    if (expandedSection === section) {
-      setExpandedSection(null)
-    } else {
-      setExpandedSection(section)
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-[#263238] text-white font-sans">
-      {/* Header */}
-      <header className="bg-[#00C853] text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
-        {typeof window !== 'undefined' && (getUser()?.fid === 17714 || getUser()?.fid === 1077224) && (
-          <a
-            href="/leaderboard"
-            className="underline text-[#263238] font-semibold mr-4 text-base hover:text-[#00b34d]"
-            style={{ whiteSpace: 'nowrap' }}
-            tabIndex={0}
-          >
-            LB
-          </a>
-        )}
-        <h1 className="text-2xl font-bold text-center flex-1">Dollarchain Rules</h1>
-        {typeof window !== 'undefined' && (getUser()?.fid === 17714 || getUser()?.fid === 1077224) && (
-          <a
-            href="/game"
-            className="underline text-[#263238] font-semibold ml-4 text-base hover:text-[#00b34d]"
-            style={{ whiteSpace: 'nowrap' }}
-          >
-            Game Dev
-          </a>
-        )}
+    <main className="min-h-screen bg-white text-gray-900 px-4 py-8 max-w-md mx-auto">
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold mb-2">How to Play</h1>
+        <p className="text-gray-600">A simple guide to the chain game</p>
       </header>
 
-      {/* Main Content */}
-      <main className="p-4 max-w-md mx-auto">
-        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <button
-            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
-            onClick={() => toggleSection("overview")}
-          >
-            <div className="flex items-center">
-              <Trophy className="mr-2 h-5 w-5" />
-              <span className="font-bold">Game Overview</span>
-            </div>
-            {expandedSection === "overview" ? <ChevronUp /> : <ChevronDown />}
-          </button>
-
-          {expandedSection === "overview" && (
-            <div className="p-4 animate-fadeIn">
-              <p className="mb-3">
-                Dollarchain is a social coordination game where teams compete to earn the most points within 48 hours.
-              </p>
-              <p className="mb-3">
-                The team with the highest score on the leaderboard when the game ends wins all deposited money.
-              </p>
-              <div className="bg-[#2c3a41] p-3 rounded-md mb-3">
-                <p className="font-semibold text-[#00C853]">Game Duration: 48 hours</p>
+      <section className="space-y-6">
+        {/* Core Rules */}
+        <div className="space-y-4">
+          {ruleItems.map((item, index) => (
+            <div key={index} className="flex gap-4 items-start p-4 border border-gray-100 rounded-lg">
+              <div className="bg-gray-50 p-2 rounded-full">{item.icon}</div>
+              <div>
+                <h3 className="font-medium mb-1">{item.title}</h3>
+                <p className="text-sm text-gray-600">{item.description}</p>
               </div>
             </div>
-          )}
+          ))}
         </div>
 
-        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <button
-            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
-            onClick={() => toggleSection("teams")}
-          >
-            <div className="flex items-center">
-              <Users className="mr-2 h-5 w-5" />
-              <span className="font-bold">Team Formation</span>
-            </div>
-            {expandedSection === "teams" ? <ChevronUp /> : <ChevronDown />}
-          </button>
-
-          {expandedSection === "teams" && (
-            <div className="p-4 animate-fadeIn">
-              <p className="mb-3">Players deposit $1 to start a new team chain:</p>
-              <ul className="list-disc pl-5 mb-3 space-y-2">
-                <li>If you joined the waitlist, you can start a new team chain for free and you get a multiplier bonus</li>
-                <li>After you start a team chain, you can invite others to join and deposit $1 to make the team chain longer</li>
-                <li>At the end of 48 hours, the team chain with the most points wins all the deposited money.</li>
+        {/* Additional Details */}
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="text-sm font-medium">More Details</AccordionTrigger>
+            <AccordionContent>
+              <ul className="space-y-2 text-sm text-gray-600 pl-2">
+                <li>• Game duration: 48 hours</li>
+                <li>• Deposit limit: $1 USDC per hour</li>
+                <li>• Shorter chains get multipliers to stay competitive</li>
+                <li>• Neynar score affects point calculation</li>
+                <li>• All deposits go into the prize pot</li>
               </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <button
-            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
-            onClick={() => toggleSection("deposits")}
-          >
-            <div className="flex items-center">
-              <DollarSign className="mr-2 h-5 w-5" />
-              <span className="font-bold">Deposits</span>
-            </div>
-            {expandedSection === "deposits" ? <ChevronUp /> : <ChevronDown />}
-          </button>
-
-          {expandedSection === "deposits" && (
-            <div className="p-4 animate-fadeIn">
-              <p className="mb-3">
-                Players can deposit a maximum of $1 per hour for the entire 48-hour game duration to any chain.
-              </p>
-              <div className="bg-[#2c3a41] p-3 rounded-md">
-                <p className="font-semibold text-[#00C853]">Max Deposit: $1 per hour</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <button
-            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
-            onClick={() => toggleSection("multipliers")}
-          >
-            <div className="flex items-center">
-              <span className="mr-2 font-bold text-lg">×</span>
-              <span className="font-bold">Multiplier Tiers</span>
-            </div>
-            {expandedSection === "multipliers" ? <ChevronUp /> : <ChevronDown />}
-          </button>
-
-          {expandedSection === "multipliers" && (
-            <div className="p-4 animate-fadeIn">
-              <p className="mb-3">Shorter chains receive higher multipliers to incentivize deposits:</p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#00C853] text-white">
-                      <th className="p-2 text-left border border-[#1e272c]">Chain Size</th>
-                      <th className="p-2 text-left border border-[#1e272c]">Multiplier</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="bg-[#2c3a41]">
-                      <td className="p-2 border border-[#1e272c]">1-5 deposits</td>
-                      <td className="p-2 border border-[#1e272c] font-bold">×5</td>
-                    </tr>
-                    <tr className="bg-[#263238]">
-                      <td className="p-2 border border-[#1e272c]">6-10 deposits</td>
-                      <td className="p-2 border border-[#1e272c] font-bold">×3</td>
-                    </tr>
-                    <tr className="bg-[#2c3a41]">
-                      <td className="p-2 border border-[#1e272c]">11-15 deposits</td>
-                      <td className="p-2 border border-[#1e272c] font-bold">×2</td>
-                    </tr>
-                    <tr className="bg-[#263238]">
-                      <td className="p-2 border border-[#1e272c]">16+ deposits</td>
-                      <td className="p-2 border border-[#1e272c] font-bold">×1</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <button
-            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
-            onClick={() => toggleSection("pointsystem")}
-          >
-            <div className="flex items-center">
-              <span className="mr-2 text-2xl font-bold leading-none" style={{ fontFamily: 'serif' }}>∑</span>
-              <span className="font-bold">Point System</span>
-            </div>
-            {expandedSection === "pointsystem" ? <ChevronUp /> : <ChevronDown />}
-          </button>
-          {expandedSection === "pointsystem" && (
-            <div className="p-4 animate-fadeIn">
-              <p className="mb-3">Each deposit earns points based on the following formula:</p>
-              <div className="bg-[#2c3a41] p-3 rounded-md flex flex-col items-center">
-                <span className="text-lg font-mono text-white font-semibold">
-                  <span>$1 deposit</span>
-                  <span className="mx-2">×</span>
-                  <span>Chain Size Multiplier</span>
-                  <span className="mx-2">×</span>
-                  <span>Neynar Score</span>
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-[#1e272c] rounded-lg shadow-lg overflow-hidden mb-4">
-          <button
-            className="w-full p-4 flex justify-between items-center bg-[#00C853] text-white"
-            onClick={() => toggleSection("simulation")}
-          >
-            <div className="flex items-center">
-              <span className="mr-2 font-bold text-lg">📊</span>
-              <span className="font-bold">Simulation</span>
-            </div>
-            {expandedSection === "simulation" ? <ChevronUp /> : <ChevronDown />}
-          </button>
-
-          {expandedSection === "simulation" && (
-            <div className="p-4 animate-fadeIn">
-              <p className="mb-3">Simulation for 100 team chains over the 48-hour game period:</p>
-
-              <div className="rounded-lg overflow-hidden shadow-lg mb-3">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Top%2010%20Chain%20Weighted%20Values%20Over%20Time%20%28100%20Chains%29-IxLK6k9hcqyl0haPYT6aZ9LHsI57XJ.png"
-                  alt="Top 10 Chain Weighted Values Over Time (100 Chains)"
-                  className="w-full"
-                />
-              </div>
-
-              <p className="text-sm text-gray-300">
-                This chart is a theoretical simulation of how the game would play out over 48 hours with 100 team chains. The closer the chains are the more competitive the game is.
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-6 text-center text-sm text-gray-400">
-          <p>
-            Join
-            <button
-              type="button"
-              className="underline text-[#00C853] hover:text-[#00b34d] ml-1 cursor-pointer bg-transparent border-none p-0"
-              onClick={async (e) => {
-                e.preventDefault();
-                await sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain");
-              }}
-            >
-              /dollarchain
-            </button>{' '}channel for updates & feedback.
-          </p>
-        </div>
-      </main>
-      {/*
-      <div className="fixed bottom-0 left-0 w-full bg-[#1e272c] p-4 flex justify-center shadow-inner z-20">
-        <ShareProfileButton />
-      </div>
-      */}
-    </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+    </main>
   )
 }
 
-/*
-function ShareProfileButton() {
-  const [loading, setLoading] = useState(false)
-
-  const handleShare = async () => {
-    setLoading(true)
-    try {
-      const user = getUser()
-      if (!user || !user.fid) {
-        alert("User not authenticated.")
-        setLoading(false)
-        return
-      }
-      const imageUrl = `${APP_URL}/api/opengraph-image?fid=${user.fid}`
-      await sdk.actions.composeCast({
-        text: "Check out my Dollarchain profile!",
-        embeds: [imageUrl],
-      })
-    } catch {
-      alert("Failed to open cast composer.")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <button
-      className="bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150 disabled:opacity-60"
-      onClick={handleShare}
-      disabled={loading}
-    >
-      {loading ? "Opening Composer..." : "Share Profile"}
-    </button>
-  )
-}
-*/ 
+const ruleItems = [
+  {
+    icon: <Users size={20} />,
+    title: "Join or Create a Team",
+    description: "Deposit $1 USDC to join or start a new team.",
+  },
+  {
+    icon: <Link size={20} />,
+    title: "Share Your Link",
+    description: "Invite others to join your chain by sharing your team link.",
+  },
+  {
+    icon: <BarChart size={20} />,
+    title: "Earn Points",
+    description: "Longer chains and more deposits earn your team more points.",
+  },
+  {
+    icon: <Clock size={20} />,
+    title: "Deposit Regularly",
+    description: "You can deposit $1 every hour during the 48-hour game.",
+  },
+  {
+    icon: <Trophy size={20} />,
+    title: "Win the Pot",
+    description: "Teams compete for a share of all deposited USDC.",
+  },
+] 
