@@ -1,13 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Users, Link, Trophy, Clock, BarChart, ArrowLeft } from "lucide-react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Users, Link, Trophy, Clock, BarChart, ArrowLeft, ChevronDown } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function GameRules() {
   const router = useRouter()
-  const [accordionValue, setAccordionValue] = useState<string | null>(null)
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false)
+
+  const toggleAccordion = () => {
+    setIsAccordionOpen(!isAccordionOpen)
+  }
 
   return (
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 max-w-md mx-auto">
@@ -37,24 +40,27 @@ export default function GameRules() {
           ))}
         </div>
 
-        {/* Additional Details */}
-        <Accordion 
-          type="single" 
-          collapsible={true} 
-          className="w-full"
-          value={accordionValue}
-          onValueChange={setAccordionValue}
-        >
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-sm font-medium">Advanced Rules</AccordionTrigger>
-            <AccordionContent>
+        {/* Advanced Rules Accordion */}
+        <div className="border-b">
+          <button 
+            onClick={toggleAccordion}
+            className="flex w-full items-center justify-between py-4 text-sm font-medium"
+          >
+            Advanced Rules
+            <ChevronDown 
+              className={`h-4 w-4 shrink-0 transition-transform duration-200 ${isAccordionOpen ? 'rotate-180' : ''}`} 
+            />
+          </button>
+          
+          {isAccordionOpen && (
+            <div className="pb-4">
               <ul className="space-y-2 text-sm text-gray-600 pl-2">
                 <li>• Shorter chains get multipliers to stay competitive</li>
                 <li>• Neynar score affects point calculation</li>
               </ul>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            </div>
+          )}
+        </div>
       </section>
     </main>
   )
