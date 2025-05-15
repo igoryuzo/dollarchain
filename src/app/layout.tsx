@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       version: "next",
       imageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
       button: {
-        title: "Join Waitlist",
+        title: "Start Game",
         action: {
           type: "launch_frame",
           name: "Dollarchain",
