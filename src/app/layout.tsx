@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: 'Dollarchain',
     images: [
       {
-        url: 'https://www.dollarchain.xyz/images/dollarchain-logo.png',
+        url: 'https://www.dollarchain.xyz/images/game-starts.png',
         width: 1200,
         height: 630,
       }
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   other: {
     'fc:frame': JSON.stringify({
       version: "next",
-      imageUrl: "https://www.dollarchain.xyz/images/dollarchain-logo.png",
+      imageUrl: "https://www.dollarchain.xyz/images/game-starts.png",
       button: {
         title: "Start Game",
         action: {
