@@ -90,11 +90,11 @@ export default function LeaderboardPage() {
                     {team.chain_length ?? '-'}
                   </div>
                   <div className="col-span-1 text-right text-sm text-gray-900 font-bold">
-                    {team.total_points ?? '-'}
+                    {team.total_points !== undefined ? Number(team.total_points).toFixed(2) : '-'}
                   </div>
                   <div className="col-span-1 text-right text-green-700 font-bold">
                     {team.team_total && potAmount && team.team_total > 0
-                      ? `${Math.round(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100)}%`
+                      ? `${Number(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100).toFixed(2)}%`
                       : '-'}
                   </div>
                 </div>
