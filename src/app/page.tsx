@@ -32,7 +32,7 @@ function useCountdownToGameStart() {
     fetch('/api/game/active')
       .then(res => res.json())
       .then(data => {
-        if (data && data.active && data.start_time) {
+        if (data && data.start_time) {
           setTarget(new Date(data.start_time));
         } else {
           setTarget(null);
