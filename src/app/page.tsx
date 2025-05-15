@@ -244,7 +244,7 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/game/active')
       .then(res => res.json())
-      .then(data => setGameActive(!!data.active))
+      .then(data => setGameActive(!!data.button_active))
       .catch(() => setGameActive(false));
   }, []);
 
