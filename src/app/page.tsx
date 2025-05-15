@@ -17,16 +17,54 @@ import {
 } from '@/lib/auth';
 import { NeynarUser } from '@/lib/neynar';
 import { sdk } from '@farcaster/frame-sdk';
+import Image from 'next/image';
 // import DepositButton from './components/DepositButton';
 // import WaitlistUsers from './components/WaitlistUsers';
 // import WaitlistCounter from './components/WaitlistCounter';
 // import GameBanner from './components/GameBanner';
+
+function getNextNoonEastern() {
+  const now = new Date();
+  // Get current time in NY (Eastern)
+  const nowEastern = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  // Set target to today at 12:00pm Eastern
+  const targetEastern = new Date(nowEastern);
+  targetEastern.setHours(12, 0, 0, 0);
+  // If it's already past 12:00pm, set to tomorrow
+  if (nowEastern.getTime() >= targetEastern.getTime()) {
+    targetEastern.setDate(targetEastern.getDate() + 1);
+  }
+  // Convert targetEastern back to UTC
+  const targetUtc = new Date(targetEastern.toLocaleString('en-US', { timeZone: 'UTC' }));
+  return targetUtc;
+}
+
+function useCountdownToNoonEastern() {
+  const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    function updateCountdown() {
+      const now = new Date();
+      const target = getNextNoonEastern();
+      const diff = Math.max(0, target.getTime() - now.getTime());
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft({ hours, minutes, seconds });
+    }
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return timeLeft;
+}
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
+  const timeLeft = useCountdownToNoonEastern();
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -209,8 +247,18 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 flex flex-col items-center justify-center">
+      {/* Countdown Timer */}
+      <div className="mb-6 flex flex-col items-center">
+        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game starts in</span>
+        <span className="text-3xl font-mono font-bold text-[#00C853]">
+          {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}
+        </span>
+      </div>
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
-        <h1 className="text-3xl font-bold mb-8 text-center text-[#00C853]">Dollarchain</h1>
+        <div className="flex items-center justify-center mb-8">
+          <Image src="/images/dollarchain-logo.png" alt="Dollarchain Logo" width={40} height={40} className="h-10 w-10 mr-3" />
+          <h1 className="text-3xl font-bold text-center text-[#00C853]">Dollarchain</h1>
+        </div>
         <div className="flex flex-col gap-6 w-full">
           <a
             href="/game"
