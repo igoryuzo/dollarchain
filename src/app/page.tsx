@@ -58,7 +58,7 @@ function useCountdownToNoonEastern() {
       const now = new Date();
       const target = getNextNoonEastern();
       // Subtract 3 hours (in ms) from the difference
-      const diff = Math.max(0, target.getTime() - now.getTime() - 3 * 60 * 60 * 1000);
+      const diff = Math.max(0, target.getTime() - now.getTime());
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
