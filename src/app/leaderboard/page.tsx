@@ -19,7 +19,6 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     async function fetchTeams() {
       setLoading(true);
@@ -27,82 +26,76 @@ export default function LeaderboardPage() {
       try {
         const res = await fetch("/api/teams/leaderboard", { credentials: "include" });
         const data = await res.json();
-        console.log('[Leaderboard] API response:', data);
         if (!res.ok) throw new Error(data.error || "Failed to fetch leaderboard");
         setTeams(data.teams || []);
         setPotAmount(data.pot_amount ?? null);
-        console.log('[Leaderboard] Set potAmount:', data.pot_amount);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
-        console.log('[Leaderboard] Error:', err);
       } finally {
         setLoading(false);
-        console.log('[Leaderboard] Loading set to false');
       }
     }
     fetchTeams();
   }, []);
 
-  useEffect(() => {
-    console.log('[Leaderboard] Render: loading', loading, 'error', error, 'teams', teams);
-  }, [loading, error, teams]);
-
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white text-gray-900 w-full py-8 px-2">
-      {potAmount !== null && (
-        <div className="mb-4 text-2xl font-extrabold text-center">
-          <span className="bg-[#00C853] text-white px-4 py-2 rounded-lg shadow">💰 ${Math.floor(Number(potAmount))}</span>
-        </div>
-      )}
-      <h1 className="text-3xl font-bold mb-2 text-[#00C853]">Leaderboard</h1>
-      <div className="w-full max-w-2xl">
-        <div className="grid grid-cols-12 gap-1 py-2 px-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-md">
-          <div className="col-span-1 text-center">#</div>
-          <div className="col-span-3">Team</div>
-          <div className="col-span-3">Owner</div>
-          <div className="col-span-1 text-center">Chain</div>
-          <div className="col-span-2 text-right">Points</div>
-          <div className="col-span-2 text-right">%</div>
-        </div>
-        {loading ? (
-          <div className="flex items-center justify-center py-8 text-gray-400">Loading...</div>
-        ) : error ? (
-          <div className="flex items-center justify-center py-8 text-red-500">{error}</div>
-        ) : teams.length === 0 ? (
-          <div className="flex items-center justify-center py-8 text-gray-400">No teams yet.</div>
-        ) : (
-          <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
-            {teams.map((team, idx) => (
-              <li className="hover:bg-gray-50" key={team.id}>
-                <div className="grid grid-cols-12 gap-1 items-center px-2 py-2">
-                  <div className="col-span-1 text-center">
-                    <span className="text-xs text-gray-400 font-medium">{idx + 1}</span>
-                  </div>
-                  <div className="col-span-3 font-medium text-purple-700 truncate text-xs">
-                    <Link href={`/team/${team.id}`} className="hover:text-purple-900 hover:underline">
-                      {team.team_name}
-                    </Link>
-                  </div>
-                  <div className="col-span-3 text-xs text-gray-700 truncate">
-                    {team.users && team.users.username ? `@${team.users.username}` : '—'}
-                  </div>
-                  <div className="col-span-1 text-center text-xs text-gray-600">
-                    {team.chain_length ?? '-'}
-                  </div>
-                  <div className="col-span-2 text-right text-xs text-gray-900 font-bold">
-                    {team.total_points !== undefined ? Number(team.total_points).toFixed(2) : '-'}
-                  </div>
-                  <div className="col-span-2 text-right text-xs text-green-700 font-bold">
-                    {team.team_total && potAmount && team.team_total > 0
-                      ? `${Number(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100).toFixed(1)}%`
-                      : '-'}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+    <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 w-full flex flex-col items-center">
+      <div className="w-full max-w-5xl mx-auto">
+        {potAmount !== null && (
+          <div className="mb-4 text-2xl font-extrabold text-center">
+            <span className="bg-[#00C853] text-white px-4 py-2 rounded-lg shadow">💰 ${Math.floor(Number(potAmount))}</span>
+          </div>
         )}
+        <h1 className="text-3xl font-bold mb-6 text-center text-[#00C853]">Leaderboard</h1>
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 w-full">
+          <div className="grid grid-cols-12 gap-1 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-xl">
+            <div className="col-span-1 text-center">#</div>
+            <div className="col-span-3">Team</div>
+            <div className="col-span-3">Owner</div>
+            <div className="col-span-1 text-center">Chain</div>
+            <div className="col-span-2 text-right">Points</div>
+            <div className="col-span-2 text-right">%</div>
+          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-8 text-gray-400">Loading...</div>
+          ) : error ? (
+            <div className="flex items-center justify-center py-8 text-red-500">{error}</div>
+          ) : teams.length === 0 ? (
+            <div className="flex items-center justify-center py-8 text-gray-400">No teams yet.</div>
+          ) : (
+            <ul className="divide-y divide-gray-100 bg-white rounded-b-xl">
+              {teams.map((team, idx) => (
+                <li className="hover:bg-gray-50 transition-colors" key={team.id}>
+                  <div className="grid grid-cols-12 gap-1 items-center px-4 py-3">
+                    <div className="col-span-1 text-center">
+                      <span className="text-xs text-gray-400 font-medium">{idx + 1}</span>
+                    </div>
+                    <div className="col-span-3 font-medium text-purple-700 truncate text-xs">
+                      <Link href={`/team/${team.id}`} className="hover:text-purple-900 hover:underline">
+                        {team.team_name}
+                      </Link>
+                    </div>
+                    <div className="col-span-3 text-xs text-gray-700 truncate">
+                      {team.users && team.users.username ? `@${team.users.username}` : '—'}
+                    </div>
+                    <div className="col-span-1 text-center text-xs text-gray-600">
+                      {team.chain_length ?? '-'}
+                    </div>
+                    <div className="col-span-2 text-right text-xs text-gray-900 font-bold">
+                      {team.total_points !== undefined ? Number(team.total_points).toFixed(2) : '-'}
+                    </div>
+                    <div className="col-span-2 text-right text-xs text-green-700 font-bold">
+                      {team.team_total && potAmount && team.team_total > 0
+                        ? `${Number(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100).toFixed(1)}%`
+                        : '-'}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
-    </div>
+    </main>
   );
 } 
