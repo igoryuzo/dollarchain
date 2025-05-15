@@ -23,41 +23,31 @@ import Image from 'next/image';
 // import WaitlistCounter from './components/WaitlistCounter';
 // import GameBanner from './components/GameBanner';
 
-function getNextNoonEastern() {
-  // Get the current time in NY
-  const now = new Date();
-  const nowNY = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-
-  // Determine if it's already past noon in NY
-  const targetNY = new Date(nowNY);
-  targetNY.setHours(12, 0, 0, 0);
-  if (nowNY.getHours() >= 12) {
-    targetNY.setDate(targetNY.getDate() + 1);
-  }
-
-  // Get the components for the next noon in NY
-  const year = targetNY.getFullYear();
-  const month = String(targetNY.getMonth() + 1).padStart(2, '0');
-  const day = String(targetNY.getDate()).padStart(2, '0');
-  const dateString = `${year}-${month}-${day}T12:00:00`;
-
-  // Create a Date object for noon NY time, then get its UTC equivalent
-  // by formatting it as NY time and parsing as UTC
-  const utcDate = new Date(
-    new Date(dateString + 'Z').toLocaleString('en-US', { timeZone: 'America/New_York' })
-  );
-
-  return utcDate;
-}
-
-function useCountdownToNoonEastern() {
+function useCountdownToGameStart() {
   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
+  const [target, setTarget] = useState<Date | null>(null);
+
+  useEffect(() => {
+    // Fetch start_time from API
+    fetch('/api/game/active')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.active && data.start_time) {
+          setTarget(new Date(data.start_time));
+        } else {
+          setTarget(null);
+        }
+      })
+      .catch(() => setTarget(null));
+  }, []);
 
   useEffect(() => {
     function updateCountdown() {
+      if (!target) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
       const now = new Date();
-      const target = getNextNoonEastern();
-      // Subtract 3 hours (in ms) from the difference
       const diff = Math.max(0, target.getTime() - now.getTime());
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -67,7 +57,7 @@ function useCountdownToNoonEastern() {
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [target]);
   return timeLeft;
 }
 
@@ -77,7 +67,7 @@ export default function Home() {
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
   const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
-  const timeLeft = useCountdownToNoonEastern();
+  const timeLeft = useCountdownToGameStart();
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
