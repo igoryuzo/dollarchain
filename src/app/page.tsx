@@ -24,24 +24,30 @@ import Image from 'next/image';
 // import GameBanner from './components/GameBanner';
 
 function getNextNoonEastern() {
-  // Get current time in NY (Eastern)
+  // Get the current time in NY
   const now = new Date();
-  // Get NY offset in minutes for now
-  const nyOffsetMinutes = -new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' })).getTimezoneOffset();
-  // Get current NY time
-  const nowInNY = new Date(now.getTime() + (nyOffsetMinutes - now.getTimezoneOffset()) * 60000);
+  const nowNY = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
-  // Set target to today at 12:00pm NY time
-  const targetNY = new Date(nowInNY);
+  // Determine if it's already past noon in NY
+  const targetNY = new Date(nowNY);
   targetNY.setHours(12, 0, 0, 0);
-  if (nowInNY.getHours() >= 12) {
-    // If it's already past noon, set to tomorrow
+  if (nowNY.getHours() >= 12) {
     targetNY.setDate(targetNY.getDate() + 1);
   }
 
-  // Get the UTC time for targetNY
-  const targetUtc = new Date(targetNY.getTime() - (nyOffsetMinutes * 60000));
-  return targetUtc;
+  // Get the components for the next noon in NY
+  const year = targetNY.getFullYear();
+  const month = String(targetNY.getMonth() + 1).padStart(2, '0');
+  const day = String(targetNY.getDate()).padStart(2, '0');
+  const dateString = `${year}-${month}-${day}T12:00:00`;
+
+  // Create a Date object for noon NY time, then get its UTC equivalent
+  // by formatting it as NY time and parsing as UTC
+  const utcDate = new Date(
+    new Date(dateString + 'Z').toLocaleString('en-US', { timeZone: 'America/New_York' })
+  );
+
+  return utcDate;
 }
 
 function useCountdownToNoonEastern() {
