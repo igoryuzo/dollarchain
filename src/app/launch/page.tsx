@@ -1,14 +1,26 @@
 "use client"
 
-import { Users, Link, Trophy, Clock, BarChart } from "lucide-react"
+import { useState } from "react"
+import { Users, Link, Trophy, Clock, BarChart, ArrowLeft } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useRouter } from "next/navigation"
 
 export default function GameRules() {
+  const router = useRouter()
+  const [accordionValue, setAccordionValue] = useState<string | null>(null)
+
   return (
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 max-w-md mx-auto">
       <header className="mb-8">
+        <button 
+          onClick={() => router.push('/')}
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+        >
+          <ArrowLeft size={16} className="mr-1" />
+          <span>Back to Home</span>
+        </button>
         <h1 className="text-2xl font-bold mb-2">How to Play</h1>
-        <p className="text-gray-600">A simple guide to the chain game</p>
+        <p className="text-gray-600">Dollarchain is a 48-hour social coordination game.</p>
       </header>
 
       <section className="space-y-6">
@@ -26,16 +38,19 @@ export default function GameRules() {
         </div>
 
         {/* Additional Details */}
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion 
+          type="single" 
+          collapsible={true} 
+          className="w-full"
+          value={accordionValue}
+          onValueChange={setAccordionValue}
+        >
           <AccordionItem value="item-1">
-            <AccordionTrigger className="text-sm font-medium">More Details</AccordionTrigger>
+            <AccordionTrigger className="text-sm font-medium">Advanced Rules</AccordionTrigger>
             <AccordionContent>
               <ul className="space-y-2 text-sm text-gray-600 pl-2">
-                <li>• Game duration: 48 hours</li>
-                <li>• Deposit limit: $1 USDC per hour</li>
                 <li>• Shorter chains get multipliers to stay competitive</li>
                 <li>• Neynar score affects point calculation</li>
-                <li>• All deposits go into the prize pot</li>
               </ul>
             </AccordionContent>
           </AccordionItem>
