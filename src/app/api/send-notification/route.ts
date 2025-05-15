@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       case 'welcome':
         notification = {
           title: 'Welcome to Dollarchain! 🎉',
-          body: 'Thanks for joining the waitlist!',
+          body: 'A 48-hour social coordination game, goodluck!',
           target_url: `${baseUrl}/`,
         };
         break;

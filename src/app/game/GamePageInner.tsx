@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { sdk } from "@farcaster/frame-sdk";
 import { useSearchParams, useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 type Team = { id: number; team_name: string; [key: string]: unknown };
 type TeamResult = { team?: Team; error?: string; shareableLink?: string } | null;
@@ -116,7 +117,14 @@ export default function GamePageInner() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white px-4 pb-16">
+      <button
+        onClick={() => router.push("/")}
+        className="self-start flex items-center text-gray-200 hover:text-white mb-8 mt-4 transition-colors"
+      >
+        <ArrowLeft size={18} className="mr-2" />
+        <span>Back to Home</span>
+      </button>
       <h1 className="text-3xl font-bold mb-8">{headline}</h1>
       <div className="flex flex-col items-center gap-2 mb-4">
         <button

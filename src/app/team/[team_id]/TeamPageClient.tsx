@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
 import Image from 'next/image';
+import { ArrowLeft } from "lucide-react";
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
@@ -169,7 +170,14 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 w-full px-2">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 w-full px-2 pb-16">
+      <button
+        onClick={() => router.push("/")}
+        className="self-start flex items-center text-gray-600 hover:text-gray-900 mb-8 mt-4 transition-colors"
+      >
+        <ArrowLeft size={18} className="mr-2" />
+        <span>Back to Home</span>
+      </button>
       <h1 className="text-4xl font-extrabold mb-4 text-center text-[#00C853]">{team.team_name}</h1>
       <div className="flex flex-col items-center gap-2 mb-8">
         <button
