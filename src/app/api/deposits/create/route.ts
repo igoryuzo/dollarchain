@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
     if (lastDeposit) {
       const last = new Date(lastDeposit.created_at).getTime();
       const now = Date.now();
-      if (now - last < 60 * 1000) { // Change to 60 * 60 * 1000 for 1 hour in prod
+      if (now - last < 60 * 60 * 1000) { // 1 hour rule
         console.error("[DEPOSIT] Deposit too soon (global 1/hr rule)", { lastDeposit, now });
         return NextResponse.json({ error: "You can only deposit $1 per hour (testing: per minute)." }, { status: 403 });
       }
