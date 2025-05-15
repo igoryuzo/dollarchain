@@ -260,7 +260,7 @@ export default function Home() {
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 flex flex-col items-center justify-center">
       {/* Countdown Timer */}
       <div className="mb-6 flex flex-col items-center">
-        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game starts in</span>
+        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Ends In</span>
         <span className="text-3xl font-mono font-bold text-[#00C853]">
           {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
         </span>
