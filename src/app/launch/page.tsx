@@ -13,7 +13,7 @@ export default function GameRules() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-gray-900 px-4 py-8 max-w-md mx-auto">
+    <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 max-w-md mx-auto">
       <header className="mb-8">
         <button 
           onClick={() => router.push('/')}
@@ -26,7 +26,7 @@ export default function GameRules() {
         <p className="text-gray-600">Dollarchain is a 48-hour social coordination game.</p>
       </header>
 
-      <section className="space-y-6">
+      <section className="space-y-6 mb-10">
         {/* Core Rules */}
         <div className="space-y-4">
           {ruleItems.map((item, index) => (
