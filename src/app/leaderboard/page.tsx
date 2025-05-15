@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface Team {
   id: number;
@@ -41,6 +42,14 @@ export default function LeaderboardPage() {
   return (
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 w-full flex flex-col items-center">
       <div className="w-full max-w-5xl mx-auto">
+        {/* Back Button */}
+        <button 
+          onClick={() => window.location.href = '/'}
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+        >
+          <ArrowLeft size={16} className="mr-1" />
+          <span>Back to Home</span>
+        </button>
         {potAmount !== null && (
           <div className="mb-4 text-2xl font-extrabold text-center">
             <span className="bg-[#00C853] text-white px-4 py-2 rounded-lg shadow">💰 ${Math.floor(Number(potAmount))}</span>

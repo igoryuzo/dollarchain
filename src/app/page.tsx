@@ -24,18 +24,34 @@ import Image from 'next/image';
 // import GameBanner from './components/GameBanner';
 
 function getNextNoonEastern() {
-  const now = new Date();
   // Get current time in NY (Eastern)
-  const nowEastern = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-  // Set target to today at 12:00pm Eastern
-  const targetEastern = new Date(nowEastern);
-  targetEastern.setHours(12, 0, 0, 0);
-  // If it's already past 12:00pm, set to tomorrow
-  if (nowEastern.getTime() >= targetEastern.getTime()) {
-    targetEastern.setDate(targetEastern.getDate() + 1);
+  const now = new Date();
+  const nowInNY = new Date(
+    now.toLocaleString('en-US', { timeZone: 'America/New_York' })
+  );
+
+  // Determine if it's already past noon in NY
+  const targetNY = new Date(nowInNY);
+  targetNY.setHours(12, 0, 0, 0);
+  if (nowInNY.getHours() >= 12) {
+    // If it's already past noon, set to tomorrow at noon
+    targetNY.setDate(targetNY.getDate() + 1);
   }
-  // Convert targetEastern back to UTC
-  const targetUtc = new Date(targetEastern.toLocaleString('en-US', { timeZone: 'UTC' }));
+
+  // Get the equivalent UTC time for targetNY noon
+  // Format as YYYY-MM-DDT12:00:00 in America/New_York, then parse as UTC
+  const year = targetNY.getFullYear();
+  const month = String(targetNY.getMonth() + 1).padStart(2, '0');
+  const day = String(targetNY.getDate()).padStart(2, '0');
+  const noonNYString = `${year}-${month}-${day}T12:00:00`;
+  // The offset (-04:00 or -05:00) changes with DST, so use Intl to get offset
+  const offsetMinutes = -new Date(
+    noonNYString + ' America/New_York'
+  ).getTimezoneOffset();
+  // Calculate the UTC time for noon NY
+  const targetUtc = new Date(
+    Date.UTC(year, targetNY.getMonth(), targetNY.getDate(), 12, 0, 0) - (offsetMinutes * 60 * 1000)
+  );
   return targetUtc;
 }
 
@@ -251,7 +267,7 @@ export default function Home() {
       <div className="mb-6 flex flex-col items-center">
         <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game starts in</span>
         <span className="text-3xl font-mono font-bold text-[#00C853]">
-          {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}
+          {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
         </span>
       </div>
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
