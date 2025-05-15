@@ -15,7 +15,7 @@
     "splashBackgroundColor": "#0f172a",
     "webhookUrl": "https://api.neynar.com/f/app/04093a6d-63e1-4ddc-a625-5e50a2c8f1d2/event",
     "subtitle": "A social coordination game.",
-    "description": "Start a team with $1 deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.",
+    "description": "Start a team with 1 USDC deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.",
     "primaryCategory": "social",
     "tags": ["social", "game", "notifications", "users"],
     "tagline": "A social coordination game."
