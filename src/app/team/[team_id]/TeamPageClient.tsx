@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
 import Image from 'next/image';
@@ -61,6 +61,20 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const [error, setError] = useState<string | null>(null);
   const [potAmount, setPotAmount] = useState<number | null>(null);
   const [teamTotal, setTeamTotal] = useState<number | null>(null);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const infoRef = useRef<HTMLSpanElement>(null);
+
+  // Close tooltip on outside click
+  useEffect(() => {
+    if (!infoOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [infoOpen]);
 
   // Fetch team info and members
   useEffect(() => {
@@ -177,7 +191,35 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
           <div className="col-span-6">User</div>
           <div className="col-span-2 text-right flex items-center justify-end gap-1">
             Score
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-400 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" /></svg>
+            <span
+              ref={infoRef}
+              className="relative group cursor-pointer select-none"
+              tabIndex={0}
+              onClick={() => setInfoOpen((v) => !v)}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setInfoOpen(v => !v); }}
+              aria-label="What is Neynar Score?"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3 w-3 text-gray-400 inline-block ml-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01" />
+              </svg>
+              <span
+                className={`absolute right-0 z-10 w-64 p-2 text-xs text-white bg-gray-900 rounded shadow-lg mt-2
+                  ${infoOpen ? 'block' : 'hidden'}
+                  group-hover:block
+                `}
+                style={{ minWidth: '200px' }}
+              >
+                Your Neynar score (0–1) reflects your user quality—closer to 1 means higher quality.
+              </span>
+            </span>
           </div>
           <div className="col-span-3 text-right">Payout</div>
         </div>
