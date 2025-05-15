@@ -117,7 +117,7 @@ export default function GamePageInner() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#263238] text-white px-4 pb-16">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 px-4 pb-16">
       <button
         onClick={() => router.push("/")}
         className="self-start flex items-center text-gray-200 hover:text-white mb-8 mt-4 transition-colors"
@@ -128,7 +128,7 @@ export default function GamePageInner() {
       <h1 className="text-3xl font-bold mb-8">{headline}</h1>
       <div className="flex flex-col items-center gap-2 mb-4">
         <button
-          className="bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-150"
+          className="block w-full text-center bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-4 rounded-lg text-lg shadow transition-all duration-150"
           onClick={handleDeposit}
           disabled={depositLoading}
         >
