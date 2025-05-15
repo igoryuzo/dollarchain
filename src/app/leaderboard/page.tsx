@@ -62,7 +62,7 @@ export default function LeaderboardPage() {
           <div className="col-span-3">Owner</div>
           <div className="col-span-1 text-center">Chain</div>
           <div className="col-span-2 text-right">Points</div>
-          <div className="col-span-2 text-right">Pot. %</div>
+          <div className="col-span-2 text-right">%</div>
         </div>
         {loading ? (
           <div className="flex items-center justify-center py-8 text-gray-400">Loading...</div>
