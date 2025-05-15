@@ -75,6 +75,7 @@ export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
+  const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
   const timeLeft = useCountdownToNoonEastern();
 
@@ -249,6 +250,14 @@ export default function Home() {
     };
   }, []);
 
+  // Fetch active game status
+  useEffect(() => {
+    fetch('/api/game/active')
+      .then(res => res.json())
+      .then(data => setGameActive(!!data.active))
+      .catch(() => setGameActive(false));
+  }, []);
+
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-white">
@@ -273,8 +282,10 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-6 w-full">
           <a
-            href="/game"
-            className="block w-full text-center bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-4 rounded-lg text-lg shadow transition-all duration-150"
+            href={gameActive ? "/game" : undefined}
+            className={`block w-full text-center font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 ${gameActive ? 'bg-[#00C853] hover:bg-[#00b34d] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'}`}
+            tabIndex={gameActive ? 0 : -1}
+            aria-disabled={!gameActive}
           >
             Start Chain
           </a>
