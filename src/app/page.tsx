@@ -17,16 +17,16 @@ import {
 } from '@/lib/auth';
 import { NeynarUser } from '@/lib/neynar';
 import { sdk } from '@farcaster/frame-sdk';
-import DepositButton from './components/DepositButton';
-import WaitlistUsers from './components/WaitlistUsers';
-import WaitlistCounter from './components/WaitlistCounter';
-import GameBanner from './components/GameBanner';
+// import DepositButton from './components/DepositButton';
+// import WaitlistUsers from './components/WaitlistUsers';
+// import WaitlistCounter from './components/WaitlistCounter';
+// import GameBanner from './components/GameBanner';
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
-  const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
+  // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -59,10 +59,10 @@ export default function Home() {
   };
 
   // Function to handle successful deposit
-  const handleDepositSuccess = () => {
-    // Increment the refresh trigger to force the waitlist to reload
-    setRefreshWaitlist(prev => prev + 1);
-  };
+  // const handleDepositSuccess = () => {
+  //   // Increment the refresh trigger to force the waitlist to reload
+  //   setRefreshWaitlist(prev => prev + 1);
+  // };
 
   // Initialize Frame SDK and handle automatic authentication
   useEffect(() => {
@@ -208,53 +208,42 @@ export default function Home() {
   }
 
   return (
-    <>
-      <GameBanner />
-      <main className="flex min-h-screen flex-col items-center pt-16 py-8 px-4 bg-white">
-        <div className="max-w-md w-full">
-          {user?.hasAddedApp && <WaitlistCounter refreshTrigger={refreshWaitlist} />}
-          
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold mb-2">Dollarchain, a social coordination game.</h1>
-          </div>
-          
-          {user?.hasAddedApp ? (
-            <>
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h2 className="text-lg font-semibold mb-2">How it works:</h2>
-                <p className="text-gray-700">
-                  Dollarchain is a 48-hour social game where teams compete to top the leaderboard. Start a team chain with $1—whoever scores the most wins the entire pot.
-                </p>
-              </div>
-              
-              <div className="mb-6 text-center">
-                <DepositButton onDepositSuccess={handleDepositSuccess} />
-              </div>
-              
-              {/* Display waitlist users for all authenticated users */}
-              {user?.fid && (
-                <WaitlistUsers refreshTrigger={refreshWaitlist} />
-              )}
-              
-              {!user.hasEnabledNotifications && (
-                <div className="text-center mt-6">
-                  <button
-                    onClick={handleRequestNotifications}
-                    disabled={isRequestingNotifications}
-                    className="px-4 py-2 bg-[#00C853] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                  >
-                    {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="animate-pulse text-purple-600 text-center">
-              Loading...
-            </div>
-          )}
+    <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 flex flex-col items-center justify-center">
+      <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
+        <h1 className="text-3xl font-bold mb-8 text-center text-[#00C853]">Dollarchain</h1>
+        <div className="flex flex-col gap-6 w-full">
+          <a
+            href="/game"
+            className="block w-full text-center bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-4 rounded-lg text-lg shadow transition-all duration-150"
+          >
+            Start Chain
+          </a>
+          <a
+            href="/leaderboard"
+            className="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 border border-gray-200"
+          >
+            Leaderboard
+          </a>
+          <a
+            href="/launch"
+            className="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 border border-gray-200"
+          >
+            Game Rules
+          </a>
         </div>
-      </main>
-    </>
+        {/* Hidden Enable Notifications button for logic purposes */}
+        {user && !user.hasEnabledNotifications && (
+          <div className="text-center mt-6">
+            <button
+              onClick={handleRequestNotifications}
+              disabled={isRequestingNotifications}
+              className="hidden px-4 py-2 bg-[#00C853] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              {isRequestingNotifications ? "Requesting..." : "Enable Notifications"}
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
