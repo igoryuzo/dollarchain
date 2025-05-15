@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface Team {
   id: number;
@@ -78,7 +79,9 @@ export default function LeaderboardPage() {
                     <span className="text-sm text-gray-400 font-medium">{idx + 1}</span>
                   </div>
                   <div className="col-span-3 font-semibold text-purple-700 truncate">
-                    {team.team_name}
+                    <Link href={`/team/${team.id}`} className="hover:text-purple-900 hover:underline">
+                      {team.team_name}
+                    </Link>
                   </div>
                   <div className="col-span-2 text-sm text-gray-700 truncate">
                     {team.users && team.users.username ? `@${team.users.username}` : '—'}
