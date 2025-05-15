@@ -117,36 +117,39 @@ export default function GamePageInner() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 px-4 pb-16">
-      <button
-        onClick={() => router.push("/")}
-        className="self-start flex items-center text-gray-200 hover:text-white mb-8 mt-4 transition-colors"
-      >
-        <ArrowLeft size={18} className="mr-2" />
-        <span>Back to Home</span>
-      </button>
-      <h1 className="text-3xl font-bold mb-8">{headline}</h1>
-      <div className="flex flex-col items-center gap-2 mb-4">
+    <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 w-full flex flex-col items-center">
+      <div className="w-full max-w-md mx-auto">
+        {/* Back Button */}
         <button
-          className="block w-full text-center bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-4 rounded-lg text-lg shadow transition-all duration-150"
-          onClick={handleDeposit}
-          disabled={depositLoading}
+          onClick={() => router.push("/")}
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
         >
-          {depositLoading ? "Depositing..." : "Deposit $1 USDC"}
+          <ArrowLeft size={16} className="mr-1" />
+          <span>Back to Home</span>
         </button>
-        {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
-      </div>
-      {depositResult && (
-        <pre className="bg-[#1e272c] p-4 rounded-lg mt-4 max-w-xl overflow-x-auto text-sm">
-          {JSON.stringify(depositResult, null, 2)}
-        </pre>
-      )}
-      {result && result.shareableLink && (
-        <div className="mt-4 text-center">
-          <span className="text-green-400">Share your team link: </span>
-          <a href={result.shareableLink} className="underline text-blue-400">{result.shareableLink}</a>
+        <h1 className="text-3xl font-bold mb-6 text-center text-[#00C853]">{headline}</h1>
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <button
+            className="block w-full text-center bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-4 rounded-lg text-lg shadow transition-all duration-150"
+            onClick={handleDeposit}
+            disabled={depositLoading}
+          >
+            {depositLoading ? "Depositing..." : "Deposit $1 USDC"}
+          </button>
+          {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
         </div>
-      )}
-    </div>
+        {depositResult && (
+          <pre className="bg-[#f5f5f5] text-gray-800 p-4 rounded-lg mt-4 max-w-xl overflow-x-auto text-sm">
+            {JSON.stringify(depositResult, null, 2)}
+          </pre>
+        )}
+        {result && result.shareableLink && (
+          <div className="mt-4 text-center">
+            <span className="text-green-600">Share your team link: </span>
+            <a href={result.shareableLink} className="underline text-blue-600">{result.shareableLink}</a>
+          </div>
+        )}
+      </div>
+    </main>
   );
 } 
