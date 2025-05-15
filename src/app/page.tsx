@@ -23,17 +23,17 @@ import Image from 'next/image';
 // import WaitlistCounter from './components/WaitlistCounter';
 // import GameBanner from './components/GameBanner';
 
-function useCountdownToGameStart() {
+function useCountdownToGameEnd() {
   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
   const [target, setTarget] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Fetch start_time from API
+    // Fetch end_time from API
     fetch('/api/game/active')
       .then(res => res.json())
       .then(data => {
-        if (data && data.start_time) {
-          setTarget(new Date(data.start_time));
+        if (data && data.end_time) {
+          setTarget(new Date(data.end_time));
         } else {
           setTarget(null);
         }
@@ -67,7 +67,7 @@ export default function Home() {
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
   const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
-  const timeLeft = useCountdownToGameStart();
+  const timeLeft = useCountdownToGameEnd();
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
