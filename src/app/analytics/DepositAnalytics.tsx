@@ -31,6 +31,8 @@ export default function DepositAnalytics() {
   const [labels, setLabels] = useState<string[]>([]);
   const [depositCounts, setDepositCounts] = useState<number[]>([]);
   const [totalDeposits, setTotalDeposits] = useState(0);
+  const [windowStart, setWindowStart] = useState<string | null>(null);
+  const [windowEnd, setWindowEnd] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchDepositAnalytics() {
@@ -47,6 +49,8 @@ export default function DepositAnalytics() {
         setLabels(data.labels);
         setDepositCounts(data.data);
         setTotalDeposits(data.totalDeposits);
+        setWindowStart(data.windowStart || null);
+        setWindowEnd(data.windowEnd || null);
       } catch (err) {
         console.error("Error fetching deposit analytics:", err);
         setError(err instanceof Error ? err.message : "Failed to load analytics");
@@ -97,6 +101,10 @@ export default function DepositAnalytics() {
         ticks: {
           maxRotation: 45,
           minRotation: 45,
+          maxTicksLimit: 12,
+          callback: function(val, index) {
+            return index % 4 === 0 ? labels[index] : '';
+          }
         },
       },
     },
@@ -137,6 +145,11 @@ export default function DepositAnalytics() {
       <div className="mb-4 flex items-center justify-between">
         <div className="font-medium">
           Total deposits in last 48 hours: <span className="font-bold text-[#00C853]">{totalDeposits}</span>
+          {windowStart && windowEnd && (
+            <div className="text-sm text-gray-500 mt-1">
+              Window: {new Date(windowStart).toLocaleString()} - {new Date(windowEnd).toLocaleString()}
+            </div>
+          )}
         </div>
       </div>
       <Line options={chartOptions} data={chartData} />
