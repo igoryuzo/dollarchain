@@ -269,14 +269,12 @@ export default function Home() {
         <div className="flex flex-col items-center mt-1">
           <span className="text-xl font-mono font-bold text-[#00C853]">Join Next Thursday</span>
           <span className="text-xl font-mono font-bold text-[#00C853]">5/22/25</span>
-          <a
-            href="https://warpcast.com/~/channel/dollarchain"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 text-base text-[#7c3aed] font-semibold hover:underline"
+          <span
+            onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain")}
+            className="mt-3 text-base font-semibold hover:underline cursor-pointer"
           >
-            Follow <span className="font-bold text-[#7c3aed]">/dollarchain</span>
-          </a>
+            <span className="text-gray-500">Follow </span><span className="font-bold text-[#7c3aed]">/dollarchain</span>
+          </span>
         </div>
       </div>
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
