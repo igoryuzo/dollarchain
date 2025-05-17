@@ -93,7 +93,9 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         setMembers(data.members || []);
         setPotAmount(data.pot_amount ?? null);
         setTeamTotal(data.team_total ?? null);
+        console.log('[TeamPageClient] button_active from API:', data.button_active);
         setButtonActive(data.button_active !== false);
+        console.log('[TeamPageClient] buttonActive state set to:', data.button_active !== false);
         if (currentFid) {
           console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => (m as Member).user_fid === currentFid));
         } else {
@@ -155,6 +157,11 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
     }
   };
 
+  // Log when buttonActive changes
+  useEffect(() => {
+    console.log('[TeamPageClient] Deposit button disabled state:', !buttonActive);
+  }, [buttonActive]);
+
   if (loading) {
     console.log('[TeamPageClient] loading is true, rendering splash');
     return <div className="min-h-screen flex items-center justify-center text-white">Loading team...</div>;
@@ -183,7 +190,11 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       <h1 className="text-4xl font-extrabold mb-4 text-center text-[#00C853]">{team.team_name}</h1>
       <div className="flex flex-col items-center gap-2 mb-8">
         <button
-          className="w-64 bg-[#0091EA] hover:bg-[#007bb5] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150"
+          className={`w-64 text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150 ${
+            depositLoading || !buttonActive 
+            ? 'bg-gray-400 cursor-not-allowed' 
+            : 'bg-[#0091EA] hover:bg-[#007bb5]'
+          }`}
           onClick={handleDeposit}
           disabled={depositLoading || !buttonActive}
         >
