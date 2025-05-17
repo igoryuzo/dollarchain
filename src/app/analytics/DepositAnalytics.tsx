@@ -33,6 +33,7 @@ export default function DepositAnalytics() {
   const [totalDeposits, setTotalDeposits] = useState(0);
   const [windowStart, setWindowStart] = useState<string | null>(null);
   const [windowEnd, setWindowEnd] = useState<string | null>(null);
+  const [firstDepositTime, setFirstDepositTime] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchDepositAnalytics() {
@@ -51,6 +52,7 @@ export default function DepositAnalytics() {
         setTotalDeposits(data.totalDeposits);
         setWindowStart(data.windowStart || null);
         setWindowEnd(data.windowEnd || null);
+        setFirstDepositTime(data.firstDepositTime || null);
       } catch (err) {
         console.error("Error fetching deposit analytics:", err);
         setError(err instanceof Error ? err.message : "Failed to load analytics");
@@ -76,6 +78,26 @@ export default function DepositAnalytics() {
         fill: true,
         tension: 0.3,
       },
+      ...(firstDepositTime ? [{
+        label: 'First Deposit',
+        data: labels.map((_, index) => {
+          const hourKey = labels[index];
+          const hourDate = new Date(hourKey);
+          const firstDepositDate = firstDepositTime ? new Date(firstDepositTime) : null;
+          
+          return firstDepositDate && 
+                 hourDate.getHours() === firstDepositDate.getHours() && 
+                 hourDate.getDate() === firstDepositDate.getDate() && 
+                 hourDate.getMonth() === firstDepositDate.getMonth() ? 
+                 Math.max(...depositCounts) : null;
+        }),
+        borderColor: '#FF5722',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      }] : []),
     ],
   };
 
@@ -147,7 +169,12 @@ export default function DepositAnalytics() {
           Total deposits in last 48 hours: <span className="font-bold text-[#00C853]">{totalDeposits}</span>
           {windowStart && windowEnd && (
             <div className="text-sm text-gray-500 mt-1">
-              Window: {new Date(windowStart).toLocaleString()} - {new Date(windowEnd).toLocaleString()}
+              <div>Chart window: {new Date(windowStart).toLocaleString()} - {new Date(windowEnd).toLocaleString()}</div>
+              {firstDepositTime && (
+                <div className="mt-1">
+                  <span className="text-[#FF5722] font-semibold">First deposit:</span> {new Date(firstDepositTime).toLocaleString()}
+                </div>
+              )}
             </div>
           )}
         </div>

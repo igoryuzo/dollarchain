@@ -25,11 +25,12 @@ export async function GET() {
       });
     }
 
-    // Set window start to the earliest deposit time
-    const windowStart = new Date(earliestDeposit.created_at);
+    // Add one hour padding before the first deposit
+    const firstDepositTime = new Date(earliestDeposit.created_at);
+    const windowStart = new Date(firstDepositTime.getTime() - 1 * 60 * 60 * 1000);
     
-    // Set window end to 48 hours after the first deposit
-    const windowEnd = new Date(windowStart.getTime() + 48 * 60 * 60 * 1000);
+    // Add one hour padding after the 48-hour window
+    const windowEnd = new Date(firstDepositTime.getTime() + 49 * 60 * 60 * 1000);
     
     // Fetch all deposits within the 48-hour window from first deposit
     const { data: deposits, error } = await supabase
@@ -47,8 +48,8 @@ export async function GET() {
     // Group deposits by hour
     const hourlyDeposits: Record<string, number> = {};
     
-    // Initialize all hours in the 48-hour window with 0 deposits
-    for (let i = 0; i < 48; i++) {
+    // Initialize all hours in the 50-hour window (1 hour before + 48 hours + 1 hour after) with 0 deposits
+    for (let i = 0; i < 50; i++) {
       const hourDate = new Date(windowStart.getTime() + i * 60 * 60 * 1000);
       // Store full ISO string as key but use it for grouping only by hour
       const hourKey = hourDate.toISOString().split(':')[0] + ':00:00Z'; // Format: YYYY-MM-DDTHH:00:00Z
@@ -84,6 +85,7 @@ export async function GET() {
       labels,
       data: dataPoints,
       totalDeposits: deposits?.length || 0,
+      firstDepositTime: firstDepositTime.toISOString(),
       windowStart: windowStart.toISOString(),
       windowEnd: windowEnd.toISOString()
     });
