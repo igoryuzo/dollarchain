@@ -23,43 +23,43 @@ import Image from 'next/image';
 // import WaitlistCounter from './components/WaitlistCounter';
 // import GameBanner from './components/GameBanner';
 
-function useCountdownToGameEnd() {
-  const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
-  const [target, setTarget] = useState<Date | null>(null);
+// function useCountdownToGameEnd() {
+//   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
+//   const [target, setTarget] = useState<Date | null>(null);
 
-  useEffect(() => {
-    // Fetch end_time from API
-    fetch('/api/game/active')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.end_time) {
-          setTarget(new Date(data.end_time));
-        } else {
-          setTarget(null);
-        }
-      })
-      .catch(() => setTarget(null));
-  }, []);
+//   useEffect(() => {
+//     // Fetch end_time from API
+//     fetch('/api/game/active')
+//       .then(res => res.json())
+//       .then(data => {
+//         if (data && data.end_time) {
+//           setTarget(new Date(data.end_time));
+//         } else {
+//           setTarget(null);
+//         }
+//       })
+//       .catch(() => setTarget(null));
+//   }, []);
 
-  useEffect(() => {
-    function updateCountdown() {
-      if (!target) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-      const now = new Date();
-      const diff = Math.max(0, target.getTime() - now.getTime());
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      setTimeLeft({ hours, minutes, seconds });
-    }
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, [target]);
-  return timeLeft;
-}
+//   useEffect(() => {
+//     function updateCountdown() {
+//       if (!target) {
+//         setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+//         return;
+//       }
+//       const now = new Date();
+//       const diff = Math.max(0, target.getTime() - now.getTime());
+//       const hours = Math.floor(diff / (1000 * 60 * 60));
+//       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+//       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+//       setTimeLeft({ hours, minutes, seconds });
+//     }
+//     updateCountdown();
+//     const interval = setInterval(updateCountdown, 1000);
+//     return () => clearInterval(interval);
+//   }, [target]);
+//   return timeLeft;
+// }
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -67,7 +67,7 @@ export default function Home() {
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
   const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
-  const timeLeft = useCountdownToGameEnd();
+  // const timeLeft = useCountdownToGameEnd();
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -260,10 +260,21 @@ export default function Home() {
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 flex flex-col items-center justify-center">
       {/* Countdown Timer */}
       <div className="mb-6 flex flex-col items-center">
-        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Ends In</span>
+        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Ended</span>
+        {/*
         <span className="text-3xl font-mono font-bold text-[#00C853]">
           {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
         </span>
+        */}
+        <span className="text-3xl font-mono font-bold text-[#00C853]">
+          Join Next Thursday 5/22/25
+        </span>
+        <button
+          className="mt-4 w-64 bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150"
+          onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain")}
+        >
+          Follow /dollarchain
+        </button>
       </div>
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
         <div className="flex items-center justify-center mb-8">

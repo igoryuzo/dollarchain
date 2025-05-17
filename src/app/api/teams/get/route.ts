@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   // Fetch current active game for pot_amount and to filter deposits
   const { data: game, error: gameError } = await supabase
     .from("games")
-    .select("id, pot_amount")
+    .select("id, pot_amount, button_active")
     .eq("status", "active")
     .single();
   if (gameError || !game) {
@@ -58,5 +58,5 @@ export async function GET(req: NextRequest) {
     ...m,
     total_deposit: depositMap[String(m.user_fid)] || 0
   }));
-  return NextResponse.json({ team, members: membersWithDeposit, team_total: teamTotal, pot_amount: game.pot_amount });
+  return NextResponse.json({ team, members: membersWithDeposit, team_total: teamTotal, pot_amount: game.pot_amount, button_active: game.button_active });
 } 

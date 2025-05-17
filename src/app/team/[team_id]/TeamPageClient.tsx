@@ -64,6 +64,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const [teamTotal, setTeamTotal] = useState<number | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const infoRef = useRef<HTMLSpanElement>(null);
+  const [buttonActive, setButtonActive] = useState<boolean>(true);
 
   // Close tooltip on outside click
   useEffect(() => {
@@ -92,6 +93,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         setMembers(data.members || []);
         setPotAmount(data.pot_amount ?? null);
         setTeamTotal(data.team_total ?? null);
+        setButtonActive(data.button_active !== false);
         if (currentFid) {
           console.log('[TeamPageClient] currentFid:', currentFid, 'isOwner:', data.team.owner_fid === currentFid, 'isMember:', (data.members || []).some((m: Member) => (m as Member).user_fid === currentFid));
         } else {
@@ -183,7 +185,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         <button
           className="w-64 bg-[#0091EA] hover:bg-[#007bb5] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150"
           onClick={handleDeposit}
-          disabled={depositLoading}
+          disabled={depositLoading || !buttonActive}
         >
           {depositLoading ? (depositResult ? "Processing tx..." : "Depositing...") : "Deposit $1 USDC"}
         </button>
