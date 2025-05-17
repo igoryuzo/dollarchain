@@ -266,15 +266,18 @@ export default function Home() {
           {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
         </span>
         */}
-        <span className="text-3xl font-mono font-bold text-[#00C853]">
-          Join Next Thursday 5/22/25
-        </span>
-        <button
-          className="mt-4 w-64 bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150"
-          onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain")}
-        >
-          Follow /dollarchain
-        </button>
+        <div className="flex flex-col items-center mt-1">
+          <span className="text-xl font-mono font-bold text-[#00C853]">Join Next Thursday</span>
+          <span className="text-xl font-mono font-bold text-[#00C853]">5/22/25</span>
+          <a
+            href="https://warpcast.com/~/channel/dollarchain"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 text-base text-[#7c3aed] font-semibold hover:underline"
+          >
+            Follow <span className="font-bold text-[#7c3aed]">/dollarchain</span>
+          </a>
+        </div>
       </div>
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
         <div className="flex items-center justify-center mb-8">
