@@ -79,7 +79,9 @@ export default function DepositAnalytics() {
         tension: 0.3,
       },
       ...(firstDepositTime ? [{
-        label: 'First Deposit',
+        label: '',
+        showLine: true,
+        hidden: false,
         data: labels.map((_, index) => {
           const hourKey = labels[index];
           const hourDate = new Date(hourKey);
@@ -133,6 +135,12 @@ export default function DepositAnalytics() {
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          filter: (legendItem) => {
+            // Only show items with non-empty labels in the legend
+            return legendItem.text !== '';
+          }
+        }
       },
       tooltip: {
         callbacks: {
