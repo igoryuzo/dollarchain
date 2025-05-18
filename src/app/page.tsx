@@ -23,43 +23,43 @@ import Image from 'next/image';
 // import WaitlistCounter from './components/WaitlistCounter';
 // import GameBanner from './components/GameBanner';
 
-// function useCountdownToGameEnd() {
-//   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
-//   const [target, setTarget] = useState<Date | null>(null);
+function useCountdownToGameStart() {
+  const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
+  const [target, setTarget] = useState<Date | null>(null);
 
-//   useEffect(() => {
-//     // Fetch end_time from API
-//     fetch('/api/game/active')
-//       .then(res => res.json())
-//       .then(data => {
-//         if (data && data.end_time) {
-//           setTarget(new Date(data.end_time));
-//         } else {
-//           setTarget(null);
-//         }
-//       })
-//       .catch(() => setTarget(null));
-//   }, []);
+  useEffect(() => {
+    // Fetch start_time from API
+    fetch('/api/game/active')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.start_time) {
+          setTarget(new Date(data.start_time));
+        } else {
+          setTarget(null);
+        }
+      })
+      .catch(() => setTarget(null));
+  }, []);
 
-//   useEffect(() => {
-//     function updateCountdown() {
-//       if (!target) {
-//         setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-//         return;
-//       }
-//       const now = new Date();
-//       const diff = Math.max(0, target.getTime() - now.getTime());
-//       const hours = Math.floor(diff / (1000 * 60 * 60));
-//       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-//       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-//       setTimeLeft({ hours, minutes, seconds });
-//     }
-//     updateCountdown();
-//     const interval = setInterval(updateCountdown, 1000);
-//     return () => clearInterval(interval);
-//   }, [target]);
-//   return timeLeft;
-// }
+  useEffect(() => {
+    function updateCountdown() {
+      if (!target) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      const now = new Date();
+      const diff = Math.max(0, target.getTime() - now.getTime());
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft({ hours, minutes, seconds });
+    }
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [target]);
+  return timeLeft;
+}
 
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -67,7 +67,7 @@ export default function Home() {
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
   const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
-  // const timeLeft = useCountdownToGameEnd();
+  const timeLeft = useCountdownToGameStart();
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -260,15 +260,11 @@ export default function Home() {
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 flex flex-col items-center justify-center">
       {/* Countdown Timer */}
       <div className="mb-6 flex flex-col items-center">
-        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Ended</span>
-        {/*
+        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Starting In</span>
         <span className="text-3xl font-mono font-bold text-[#00C853]">
           {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
         </span>
-        */}
-        <div className="flex flex-col items-center mt-1">
-          <span className="text-xl font-mono font-bold text-[#00C853]">Join Next Thursday</span>
-          <span className="text-xl font-mono font-bold text-[#00C853]">5/22/25</span>
+        <div className="mt-1">
           <span
             onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain")}
             className="mt-3 text-base font-semibold hover:underline cursor-pointer"
