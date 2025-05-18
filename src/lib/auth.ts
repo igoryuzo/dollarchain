@@ -159,6 +159,11 @@ export async function signIn(): Promise<AuthUser | null> {
 // Sign out
 export function signOut(): void {
   currentUser = null;
+  
+  // Clear sessionStorage
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem('authState');
+  }
 }
 
 /**

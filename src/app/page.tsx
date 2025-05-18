@@ -112,15 +112,29 @@ export default function Home() {
 
     const initApp = async () => {
       try {
-        // Check if already signed in
+        // Check if we have cached auth data in sessionStorage
         let currentUser = null;
-        if (isSignedIn()) {
+        const storedAuth = typeof window !== 'undefined' ? sessionStorage.getItem('authState') : null;
+        
+        if (storedAuth) {
+          // Use cached auth data to prevent new sign-in flow
+          currentUser = JSON.parse(storedAuth);
+          console.log("Using cached auth:", currentUser);
+        } else if (isSignedIn()) {
           currentUser = getUser();
           console.log("User already authenticated:", currentUser);
+          // Cache the auth data
+          if (typeof window !== 'undefined' && currentUser) {
+            sessionStorage.setItem('authState', JSON.stringify(currentUser));
+          }
         } else {
-          // Authenticate silently
+          // Only call signIn when absolutely necessary
           currentUser = await signIn();
           console.log("User authenticated:", currentUser);
+          // Cache the auth data
+          if (typeof window !== 'undefined' && currentUser) {
+            sessionStorage.setItem('authState', JSON.stringify(currentUser));
+          }
         }
 
         if (mounted && currentUser) {
@@ -143,6 +157,11 @@ export default function Home() {
             currentUser.hasAddedApp = isCurrentlyAdded;
             currentUser.hasEnabledNotifications = hasNotifications;
             setUser({...currentUser});
+            
+            // Also update the cached data with the new status
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('authState', JSON.stringify(currentUser));
+            }
           }
 
           // Fetch Neynar data for all waitlist users when app loads
