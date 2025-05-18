@@ -245,9 +245,16 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/game/active')
       .then(res => res.json())
-      .then(data => setGameActive(!!data.button_active))
+      .then(data => {
+        // Special case: If user FID is 17714, always set button_active to true
+        if (user && user.fid === 17714) {
+          setGameActive(true);
+        } else {
+          setGameActive(!!data.button_active);
+        }
+      })
       .catch(() => setGameActive(false));
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return (
