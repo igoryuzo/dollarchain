@@ -24,7 +24,7 @@ import Image from 'next/image';
 // import GameBanner from './components/GameBanner';
 
 function useCountdownToGameStart() {
-  const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({ hours: 0, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number }>({ days: 0, hours: 0, minutes: 0 });
   const [target, setTarget] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -44,18 +44,18 @@ function useCountdownToGameStart() {
   useEffect(() => {
     function updateCountdown() {
       if (!target) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0 });
         return;
       }
       const now = new Date();
       const diff = Math.max(0, target.getTime() - now.getTime());
-      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      setTimeLeft({ hours, minutes, seconds });
+      setTimeLeft({ days, hours, minutes });
     }
     updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+    const interval = setInterval(updateCountdown, 60000); // Update every minute instead of every second
     return () => clearInterval(interval);
   }, [target]);
   return timeLeft;
@@ -261,13 +261,26 @@ export default function Home() {
       {/* Countdown Timer */}
       <div className="mb-6 flex flex-col items-center">
         <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Starting In</span>
-        <span className="text-3xl font-mono font-bold text-[#00C853]">
-          {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
-        </span>
-        <div className="mt-1">
+        <div className="flex items-center space-x-2 text-2xl font-mono font-bold text-[#00C853]">
+          <div className="flex flex-col items-center">
+            <span>{String(timeLeft.days).padStart(2, '0')}</span>
+            <span className="text-xs text-gray-500 uppercase mt-1">Days</span>
+          </div>
+          <span>:</span>
+          <div className="flex flex-col items-center">
+            <span>{String(timeLeft.hours).padStart(2, '0')}</span>
+            <span className="text-xs text-gray-500 uppercase mt-1">Hrs</span>
+          </div>
+          <span>:</span>
+          <div className="flex flex-col items-center">
+            <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
+            <span className="text-xs text-gray-500 uppercase mt-1">Min</span>
+          </div>
+        </div>
+        <div className="mt-3">
           <span
             onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain")}
-            className="mt-3 text-base font-semibold hover:underline cursor-pointer"
+            className="text-base font-semibold hover:underline cursor-pointer"
           >
             <span className="text-gray-500">Follow </span><span className="font-bold text-[#7c3aed]">/dollarchain</span>
           </span>
