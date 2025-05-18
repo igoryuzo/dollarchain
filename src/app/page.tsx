@@ -24,7 +24,7 @@ import Image from 'next/image';
 // import GameBanner from './components/GameBanner';
 
 function useCountdownToGameStart() {
-  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number }>({ days: 0, hours: 0, minutes: 0 });
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [target, setTarget] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function useCountdownToGameStart() {
   useEffect(() => {
     function updateCountdown() {
       if (!target) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0 });
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
       const now = new Date();
@@ -52,10 +52,11 @@ function useCountdownToGameStart() {
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeLeft({ days, hours, minutes });
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft({ days, hours, minutes, seconds });
     }
     updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // Update every minute instead of every second
+    const interval = setInterval(updateCountdown, 1000); // Update every second
     return () => clearInterval(interval);
   }, [target]);
   return timeLeft;
@@ -275,6 +276,11 @@ export default function Home() {
           <div className="flex flex-col items-center">
             <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
             <span className="text-xs text-gray-500 uppercase mt-1">Min</span>
+          </div>
+          <span>:</span>
+          <div className="flex flex-col items-center">
+            <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
+            <span className="text-xs text-gray-500 uppercase mt-1">Sec</span>
           </div>
         </div>
         <div className="mt-3">
