@@ -2,6 +2,7 @@
   "name": "dollarchain",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,6 +18,7 @@
     "@supabase/supabase-js": "2.39.6",
     "@tanstack/react-query": "^5.75.4",
     "chart.js": "^4.4.9",
+    "dotenv": "^16.5.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.509.0",
     "next": "15.3.1",
@@ -36,6 +38,7 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
+    "pg": "^8.16.0",
     "postcss": "^8.5.3",
     "tailwindcss": "3.3.3",
     "ts-node": "^10.9.2",

@@ -1,4 +1,4 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+import fetch from 'node-fetch';
 
 const API_URL = 'https://api.neynar.com/v2/farcaster/transaction/send';
 const API_KEY = 'D2C8572D-AD5B-4351-95D6-DF65FC666BC9';
