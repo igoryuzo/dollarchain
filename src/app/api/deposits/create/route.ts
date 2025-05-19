@@ -72,6 +72,20 @@ async function verifyOnchainUSDCDeposit({ transactionHash, userEthAddress }: { t
 
 export async function POST(req: NextRequest) {
   try {
+    // --- IP DEBUG LOGGING ---
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    const realIp = req.headers.get('x-real-ip');
+    const cfConnectingIp = req.headers.get('cf-connecting-ip');
+    const cfIpCountry = req.headers.get('cf-ipcountry');
+    const reqWithIp = req as unknown as { ip?: string; socket?: { remoteAddress?: string } };
+    const remoteAddr = reqWithIp.ip || reqWithIp.socket?.remoteAddress;
+    console.log('[IP DEBUG] x-forwarded-for:', forwardedFor);
+    console.log('[IP DEBUG] x-real-ip:', realIp);
+    console.log('[IP DEBUG] cf-connecting-ip:', cfConnectingIp);
+    console.log('[IP DEBUG] cf-ipcountry:', cfIpCountry);
+    console.log('[IP DEBUG] remoteAddr:', remoteAddr);
+    console.log('[IP DEBUG] All headers:', Object.fromEntries(req.headers.entries()));
+
     const user = getServerUser(req);
     if (!user) {
       console.error("[DEPOSIT] Unauthorized: No user found");
