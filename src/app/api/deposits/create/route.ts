@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerUser } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { createPublicClient, http, parseAbi, decodeEventLog } from 'viem';
+import { getUsersWithFollowerCount } from '@/lib/neynar';
 
 // USDC contract address on Base
 const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
@@ -222,6 +223,24 @@ export async function POST(req: NextRequest) {
     if (depositError) {
       console.error("[DEPOSIT] Supabase insert error", { depositError });
       return NextResponse.json({ error: depositError.message }, { status: 500 });
+    }
+
+    // --- NEW: Fetch and update Neynar score synchronously ---
+    let latestNeynarScore: number | undefined = undefined;
+    try {
+      const users = await getUsersWithFollowerCount([user.fid]);
+      if (users && users.length > 0) {
+        const neynarUser = users[0];
+        latestNeynarScore = neynarUser.score || (neynarUser.experimental && neynarUser.experimental.neynar_user_score) || undefined;
+        if (latestNeynarScore !== undefined) {
+          await supabase
+            .from("users")
+            .update({ neynar_score: latestNeynarScore, updated_at: new Date().toISOString() })
+            .eq("fid", user.fid);
+        }
+      }
+    } catch (err) {
+      console.error("[DEPOSIT] Failed to fetch/update Neynar score, will use stale score if present", err);
     }
 
     // 8.1. Update game pot_amount (sum of all deposits for this game)
