@@ -7,17 +7,20 @@
   "frame": {
     "version": "1",
     "name": "Dollarchain",
-    "iconUrl": "https://www.dollarchain.xyz/images/dollarchain-logo.png",
-    "homeUrl": "https://www.dollarchain.xyz/",
-    "imageUrl": "https://www.dollarchain.xyz/images/dollarchain-logo.png",
+    "iconUrl": "https://dollarchain.xyz/images/dollarchain-logo.png",
+    "homeUrl": "https://dollarchain.xyz/",
+    "imageUrl": "https://dollarchain.xyz/images/dollarchain-logo.png",
     "buttonTitle": "Join Waitlist",
-    "splashImageUrl": "https://www.dollarchain.xyz/images/dollarchain-logo.png",
+    "splashImageUrl": "https://dollarchain.xyz/images/dollarchain-logo.png",
     "splashBackgroundColor": "#0f172a",
     "webhookUrl": "https://api.neynar.com/f/app/04093a6d-63e1-4ddc-a625-5e50a2c8f1d2/event",
     "subtitle": "A social coordination game.",
     "description": "Start a team with 1 USDC deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.",
     "primaryCategory": "social",
     "tags": ["social", "game", "notifications", "tips"],
-    "tagline": "A 24-hour social coordination game."
+    "tagline": "A 24-hour social coordination game.",
+    "ogTitle": "Dollarchain: Social Coordination Game",
+    "ogDescription": "Start a team, form the longest chain, and win the pot. Play Dollarchain now!",
+    "noindex": false
   }
 } 
