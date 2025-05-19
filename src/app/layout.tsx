@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       version: "next",
       imageUrl: "https://www.dollarchain.xyz/images/dollarchain-joker-begin.gif",
       button: {
-        title: "Start Game",
+        title: "Play",
         action: {
           type: "launch_frame",
           name: "Dollarchain",
