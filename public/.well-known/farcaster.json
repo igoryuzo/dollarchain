@@ -18,7 +18,7 @@
     "description": "Start a team with 1 USDC deposit, coordinate to form the longest chain, and the winning chain splits the total pot evenly among its members.",
     "primaryCategory": "social",
     "tags": ["social", "game", "notifications", "tips"],
-    "tagline": "Asocial coordination game.",
+    "tagline": "A social coordination game.",
     "ogTitle": "A social coordination game.",
     "ogDescription": "Start a team, form the longest chain, and win the pot.",
     "noindex": false
