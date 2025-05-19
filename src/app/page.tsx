@@ -265,12 +265,7 @@ export default function Home() {
     fetch('/api/game/active')
       .then(res => res.json())
       .then(data => {
-        // Special case: If user FID is 17714, always set button_active to true
-        if (user && user.fid === 17714) {
-          setGameActive(true);
-        } else {
-          setGameActive(!!data.button_active);
-        }
+        setGameActive(!!data.button_active);
       })
       .catch(() => setGameActive(false));
   }, [user]);
