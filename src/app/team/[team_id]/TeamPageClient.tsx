@@ -120,6 +120,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
 
   // Deposit handler (always to this team)
   const handleDeposit = async () => {
+    console.log('[DEBUG] Deposit button clicked');
     setDepositLoading(true);
     setDepositResult(null);
     setError(null);
@@ -129,18 +130,22 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         amount: "1000000",
         recipientAddress: "0x638d7b6b585F2e248Ecbbc84047A96FD600e204E"
       });
+      console.log('[DEBUG] Wallet transfer result:', sendResult);
       if (!sendResult.success) {
         setError(sendResult.reason || "Failed to send USDC");
         setDepositLoading(false);
         return;
       }
       setDepositLoading(true); // Show processing state
+      const body = { team_id: teamId, transactionHash: sendResult.send.transaction };
+      console.log('[DEBUG] About to POST to /api/deposits/create', body);
       const res = await fetch("/api/deposits/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ team_id: teamId, transactionHash: sendResult.send.transaction }),
+        body: JSON.stringify(body),
         credentials: "include"
       });
+      console.log('[DEBUG] Response from /api/deposits/create:', res);
       const data = await res.json();
       setDepositResult(data);
       if (!res.ok) {
@@ -151,6 +156,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         // Optionally, re-fetch team data here if router.refresh does not update state
       }
     } catch (err) {
+      console.error('[DEBUG] Error in handleDeposit:', err);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setDepositLoading(false);

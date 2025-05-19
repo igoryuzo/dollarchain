@@ -65,6 +65,7 @@ export default function GamePageInner() {
 
   // Unified deposit handler
   const handleDeposit = async () => {
+    console.log('[DEBUG] Deposit button clicked');
     setDepositLoading(true);
     setDepositResult(null);
     setError(null);
@@ -75,22 +76,24 @@ export default function GamePageInner() {
         amount: "1000000", // 1 USDC (6 decimals)
         recipientAddress: "0x638d7b6b585F2e248Ecbbc84047A96FD600e204E"
       });
+      console.log('[DEBUG] Wallet transfer result:', sendResult);
       if (!sendResult.success) {
         setError(sendResult.reason || "Failed to send USDC");
         setDepositLoading(false);
         return;
       }
       // 2. Send transaction hash and team name to backend
-      const body: { team_id: string | null, transactionHash: string, team_name?: string } =
-        !teamId
-          ? { team_id: teamId, transactionHash: sendResult.send.transaction, team_name: getRandomTeamName() }
-          : { team_id: teamId, transactionHash: sendResult.send.transaction };
+      const body = !teamId
+        ? { team_id: teamId, transactionHash: sendResult.send.transaction, team_name: getRandomTeamName() }
+        : { team_id: teamId, transactionHash: sendResult.send.transaction };
+      console.log('[DEBUG] About to POST to /api/deposits/create', body);
       const res = await fetch("/api/deposits/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
         credentials: "include"
       });
+      console.log('[DEBUG] Response from /api/deposits/create:', res);
       const data = await res.json();
       setDepositResult(data);
       if (!res.ok) {
@@ -103,6 +106,7 @@ export default function GamePageInner() {
         }
       }
     } catch (err) {
+      console.error('[DEBUG] Error in handleDeposit:', err);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setDepositLoading(false);
