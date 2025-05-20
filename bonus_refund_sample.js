@@ -1,3 +1,5 @@
+// This is a sample script for sending bonus refunds using Neynar's bulk fungible send API.
+
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import fetch from 'node-fetch';
