@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { sdk } from "@farcaster/frame-sdk";
 import Image from 'next/image';
 import { ArrowLeft } from "lucide-react";
+import React from 'react';
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
@@ -23,16 +24,82 @@ type TeamPageClientProps = {
   currentFid: number | null;
 };
 
-function ShareTeamButton({ teamName, teamId }: { teamName: string; teamId: string }) {
+function UserTagModal({ open, onClose, onConfirm, currentFid, apiKey }: { open: boolean; onClose: () => void; onConfirm: (users: { username: string }[]) => void; currentFid: number; apiKey: string }) {
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<{ fid: number; username: string; pfp_url: string }[]>([]);
+  const [selected, setSelected] = useState<number[]>([]);
+  useEffect(() => {
+    if (!open) return;
+    setLoading(true);
+    setUsers([]);
+    setSelected([]);
+    fetch(`https://api.neynar.com/v2/farcaster/feed/user/replies_and_recasts?fid=${currentFid}&limit=10`, {
+      headers: { 'x-api-key': apiKey }
+    })
+      .then(res => res.json())
+      .then(data => {
+        // Extract unique users from replies/recasts
+        const seen = new Set<number>();
+        const userList: { fid: number; username: string; pfp_url: string }[] = [];
+        (data.casts || []).forEach((cast: { author: { fid: number; username: string; pfp_url: string } }) => {
+          const u = cast.author;
+          if (u && u.fid && !seen.has(u.fid) && u.fid !== currentFid) {
+            seen.add(u.fid);
+            userList.push({ fid: u.fid, username: u.username, pfp_url: u.pfp_url });
+          }
+        });
+        setUsers(userList.slice(0, 10));
+      })
+      .finally(() => setLoading(false));
+  }, [open, currentFid, apiKey]);
+
+  function toggle(fid: number) {
+    setSelected(sel => sel.includes(fid) ? sel.filter(f => f !== fid) : sel.length < 10 ? [...sel, fid] : sel);
+  }
+
+  function handleConfirm() {
+    onConfirm(users.filter(u => selected.includes(u.fid)));
+  }
+
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+        <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl font-bold">×</button>
+        <h2 className="text-lg font-bold mb-4">Tag users in your share</h2>
+        {loading ? <div className="text-center py-8">Loading...</div> : (
+          <div className="flex flex-col gap-2 mb-4">
+            {users.map(u => (
+              <label key={u.fid} className={`flex items-center gap-2 px-3 py-2 rounded border ${selected.includes(u.fid) ? 'border-green-500 bg-green-50' : 'border-gray-200'} cursor-pointer transition-all`}>
+                <input type="checkbox" checked={selected.includes(u.fid)} onChange={() => toggle(u.fid)} className="accent-green-500 w-4 h-4" />
+                <img src={u.pfp_url} alt={u.username} className="w-7 h-7 rounded-full object-cover" />
+                <span className="font-medium text-gray-800">@{u.username}</span>
+              </label>
+            ))}
+          </div>
+        )}
+        <button onClick={handleConfirm} disabled={selected.length === 0} className="w-full py-2 bg-[#00C853] text-white rounded font-bold disabled:bg-gray-300">Tag & Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function ShareTeamButton({ teamId, currentFid }: { teamId: string; currentFid: number }) {
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleShare = async () => {
+    setModalOpen(true);
+  };
+
+  const handleModalConfirm = async (users: { username: string }[]) => {
+    setModalOpen(false);
     setLoading(true);
     try {
-      // Use the team page URL as the embed for Farcaster Frame
+      const mentions = users.map(u => `@${u.username}`).join(' ');
       const teamUrl = `${APP_URL}team/${teamId}`;
       await sdk.actions.composeCast({
-        text: `Join my Dollarchain team: ${teamName}!`,
+        text: `Join my Dollarchain team! ${mentions}`.trim(),
         embeds: [teamUrl],
       });
     } catch {
@@ -43,13 +110,16 @@ function ShareTeamButton({ teamName, teamId }: { teamName: string; teamId: strin
   };
 
   return (
-    <button
-      className="w-64 bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150 mt-4"
-      onClick={handleShare}
-      disabled={loading}
-    >
-      {loading ? "Opening Composer..." : "Share Team"}
-    </button>
+    <>
+      <button
+        className="w-64 bg-[#00C853] hover:bg-[#00b34d] text-white font-bold py-3 rounded-md text-lg shadow-lg transition-all duration-150 mt-4"
+        onClick={handleShare}
+        disabled={loading}
+      >
+        {loading ? "Opening Composer..." : "Share Team"}
+      </button>
+      <UserTagModal open={modalOpen} onClose={() => setModalOpen(false)} onConfirm={handleModalConfirm} currentFid={currentFid} apiKey={process.env.NEXT_PUBLIC_NEYNAR_API_KEY || ''} />
+    </>
   );
 }
 
@@ -244,7 +314,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
             >
               {depositLoading ? (depositResult ? "Processing tx..." : "Depositing...") : "Deposit $1 USDC"}
             </button>
-            {team && <ShareTeamButton teamName={team.team_name} teamId={teamId} />}
+            {team && typeof currentFid === 'number' && <ShareTeamButton teamId={teamId} currentFid={currentFid} />}
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
           </div>
           <div className="w-full max-w-xl mt-2 mb-8">
