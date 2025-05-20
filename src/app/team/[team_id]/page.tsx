@@ -32,10 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ team_id: 
   console.log("[generateMetadata] ownerFid:", ownerFid);
   console.log("[generateMetadata] imageUrl:", imageUrl);
   const meta = {
-    title: `Join ${teamName} on Dollarchain`,
+    title: `Dollarchain`,
     description: `Join this team chain and help us win the pot!`,
     openGraph: {
-      title: `Join ${teamName} on Dollarchain`,
+      title: `Dollarchain`,
       description: `Join this team chain and help us win the pot!`,
       url: `${APP_URL}team/${team_id}`,
       siteName: 'Dollarchain',
