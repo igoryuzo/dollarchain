@@ -125,6 +125,20 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
     setDepositResult(null);
     setError(null);
     try {
+      // 1. Pre-check with backend
+      const precheckRes = await fetch('/api/deposits/precheck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team_id: teamId }),
+        credentials: 'include',
+      });
+      const precheckData = await precheckRes.json();
+      if (!precheckRes.ok) {
+        setError(precheckData.error || 'Deposit not allowed.');
+        setDepositLoading(false);
+        return;
+      }
+      // 2. Initiate wallet transfer
       const sendResult = await sdk.experimental.sendToken({
         token: "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         amount: "1000000",
