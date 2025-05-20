@@ -24,7 +24,7 @@ type TeamPageClientProps = {
   currentFid: number | null;
 };
 
-function UserTagModal({ open, onClose, onConfirm, currentFid, apiKey }: { open: boolean; onClose: () => void; onConfirm: (users: { username: string }[]) => void; currentFid: number; apiKey: string }) {
+function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean; onClose: () => void; onConfirm: (users: { username: string }[]) => void; currentFid: number }) {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<{ fid: number; username: string; pfp_url: string }[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
@@ -33,9 +33,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid, apiKey }: { open: 
     setLoading(true);
     setUsers([]);
     setSelected([]);
-    fetch(`https://api.neynar.com/v2/farcaster/feed/user/replies_and_recasts?fid=${currentFid}&limit=10`, {
-      headers: { 'x-api-key': apiKey }
-    })
+    fetch(`/api/neynar/replies_and_recasts?fid=${currentFid}&limit=10`)
       .then(res => res.json())
       .then(data => {
         // Extract unique users from replies/recasts
@@ -51,7 +49,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid, apiKey }: { open: 
         setUsers(userList.slice(0, 10));
       })
       .finally(() => setLoading(false));
-  }, [open, currentFid, apiKey]);
+  }, [open, currentFid]);
 
   function toggle(fid: number) {
     setSelected(sel => sel.includes(fid) ? sel.filter(f => f !== fid) : sel.length < 10 ? [...sel, fid] : sel);
@@ -118,7 +116,7 @@ function ShareTeamButton({ teamId, currentFid }: { teamId: string; currentFid: n
       >
         {loading ? "Opening Composer..." : "Share Team"}
       </button>
-      <UserTagModal open={modalOpen} onClose={() => setModalOpen(false)} onConfirm={handleModalConfirm} currentFid={currentFid} apiKey={process.env.NEXT_PUBLIC_NEYNAR_API_KEY || ''} />
+      <UserTagModal open={modalOpen} onClose={() => setModalOpen(false)} onConfirm={handleModalConfirm} currentFid={currentFid} />
     </>
   );
 }
