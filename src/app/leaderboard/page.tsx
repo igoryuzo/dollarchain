@@ -57,11 +57,12 @@ export default function LeaderboardPage() {
         )}
         <h1 className="text-3xl font-bold mb-6 text-center text-[#00C853]">Leaderboard</h1>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 w-full">
-          <div className="grid grid-cols-12 gap-1 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-xl">
+          <div className="grid grid-cols-13 gap-1 py-2 px-4 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-xl">
             <div className="col-span-1 text-center">#</div>
             <div className="col-span-3">Team</div>
             <div className="col-span-3">Owner</div>
             <div className="col-span-1 text-center">Chain</div>
+            <div className="col-span-1 text-center">Multi</div>
             <div className="col-span-2 text-right">Points</div>
             <div className="col-span-2 text-right">%</div>
           </div>
@@ -73,34 +74,43 @@ export default function LeaderboardPage() {
             <div className="flex items-center justify-center py-8 text-gray-400">No teams yet.</div>
           ) : (
             <ul className="divide-y divide-gray-100 bg-white rounded-b-xl">
-              {teams.map((team, idx) => (
-                <li className="hover:bg-gray-50 transition-colors" key={team.id}>
-                  <div className="grid grid-cols-12 gap-1 items-center px-4 py-3">
-                    <div className="col-span-1 text-center">
-                      <span className="text-xs text-gray-400 font-medium">{idx + 1}</span>
+              {/* Find max chain length for multiplier calculation */}
+              {(() => { let m = 1; teams.forEach(t => { if (t.chain_length && t.chain_length > m) m = t.chain_length; }); return m; })()}
+              {(() => { const maxChainLength = Math.max(...teams.map(t => t.chain_length || 0));
+              return teams.map((team, idx) => {
+                const multiplier = maxChainLength > 0 ? Math.max(1.0, 5 - 4 * (team.chain_length / maxChainLength)) : 1.0;
+                return (
+                  <li className="hover:bg-gray-50 transition-colors" key={team.id}>
+                    <div className="grid grid-cols-13 gap-1 items-center px-4 py-3">
+                      <div className="col-span-1 text-center">
+                        <span className="text-xs text-gray-400 font-medium">{idx + 1}</span>
+                      </div>
+                      <div className="col-span-3 font-medium text-purple-700 truncate text-xs">
+                        <Link href={`/team/${team.id}`} className="hover:text-purple-900 hover:underline">
+                          {team.team_name}
+                        </Link>
+                      </div>
+                      <div className="col-span-3 text-xs text-gray-700 truncate">
+                        {team.users && team.users.username ? `@${team.users.username}` : '—'}
+                      </div>
+                      <div className="col-span-1 text-center text-xs text-gray-600">
+                        {team.chain_length ?? '-'}
+                      </div>
+                      <div className="col-span-1 text-center text-xs text-blue-700 font-bold">
+                        {multiplier.toFixed(2)}x
+                      </div>
+                      <div className="col-span-2 text-right text-xs text-gray-900 font-bold">
+                        {team.total_points !== undefined ? Number(team.total_points).toFixed(2) : '-'}
+                      </div>
+                      <div className="col-span-2 text-right text-xs text-green-700 font-bold">
+                        {team.team_total && potAmount && team.team_total > 0
+                          ? `${Number(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100).toFixed(1)}%`
+                          : '-'}
+                      </div>
                     </div>
-                    <div className="col-span-3 font-medium text-purple-700 truncate text-xs">
-                      <Link href={`/team/${team.id}`} className="hover:text-purple-900 hover:underline">
-                        {team.team_name}
-                      </Link>
-                    </div>
-                    <div className="col-span-3 text-xs text-gray-700 truncate">
-                      {team.users && team.users.username ? `@${team.users.username}` : '—'}
-                    </div>
-                    <div className="col-span-1 text-center text-xs text-gray-600">
-                      {team.chain_length ?? '-'}
-                    </div>
-                    <div className="col-span-2 text-right text-xs text-gray-900 font-bold">
-                      {team.total_points !== undefined ? Number(team.total_points).toFixed(2) : '-'}
-                    </div>
-                    <div className="col-span-2 text-right text-xs text-green-700 font-bold">
-                      {team.team_total && potAmount && team.team_total > 0
-                        ? `${Number(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100).toFixed(1)}%`
-                        : '-'}
-                    </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              }); })()}
             </ul>
           )}
         </div>

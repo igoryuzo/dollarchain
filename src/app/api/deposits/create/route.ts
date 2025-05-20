@@ -272,16 +272,34 @@ export async function POST(req: NextRequest) {
         .eq("id", game.id);
     }
 
-    // 9. Calculate chain size and multiplier
+    // 9. Calculate chain size and dynamic multiplier
+    // Get current chain length
     const { count: chainLength } = await supabase
       .from("deposits")
       .select("id", { count: "exact", head: true })
       .eq("team_id", team_id)
       .eq("game_id", game.id);
+
+    // Get all team deposit counts in current game
+    const { data: chainStats } = await supabase
+      .from("deposits")
+      .select("team_id", { count: "exact", head: false })
+      .eq("game_id", game.id);
+
     let chain_multiplier = 1;
-    if (chainLength && chainLength <= 5) chain_multiplier = 5;
-    else if (chainLength && chainLength <= 10) chain_multiplier = 3;
-    else if (chainLength && chainLength <= 15) chain_multiplier = 2;
+    if (chainStats && Array.isArray(chainStats) && chainStats.length > 0 && chainLength) {
+      // Count number of deposits per team
+      const chainCounts = chainStats.reduce((acc: Record<string, number>, cur: { team_id: string }) => {
+        acc[cur.team_id] = (acc[cur.team_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      // Get max chain length
+      const maxChainLength = Math.max(...Object.values(chainCounts));
+      if (maxChainLength > 0) {
+        const ratio = Number(chainLength) / maxChainLength;
+        chain_multiplier = Math.max(1.0, 5 - 4 * ratio); // 5x when small, 1x when equal to max
+      }
+    }
 
     // 10. Calculate points (now includes Neynar score)
     // Fetch user's neynar_score from users table

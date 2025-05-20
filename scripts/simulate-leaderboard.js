@@ -1,15 +1,15 @@
-// Simulate a Dollarchain leaderboard with 100 users, 15 teams, and 200 deposits
+// Simulate a Dollarchain leaderboard with 100 users, 100 teams, and 200 deposits
 
-type User = { fid: number; username: string; teamId: number; neynarScore: number };
-type Team = { id: number; name: string; members: User[]; totalDeposit: number; chainLength: number; totalPoints: number };
-type Deposit = { userFid: number; teamId: number; amount: number };
+// type User = { fid: number; username: string; teamId: number; neynarScore: number };
+// type Team = { id: number; name: string; members: User[]; totalDeposit: number; chainLength: number; totalPoints: number };
+// type Deposit = { userFid: number; teamId: number; amount: number };
 
-const NUM_USERS = 100;
-const NUM_TEAMS = 15;
-const NUM_DEPOSITS = 200;
+const NUM_USERS = 1000;
+const NUM_TEAMS = 100;
+const NUM_DEPOSITS = 10000;
 
 // Generate users
-const users: User[] = Array.from({ length: NUM_USERS }, (_, i) => ({
+const users = Array.from({ length: NUM_USERS }, (_, i) => ({
   fid: i + 1,
   username: `user${i + 1}`,
   teamId: Math.floor(Math.random() * NUM_TEAMS) + 1,
@@ -17,7 +17,7 @@ const users: User[] = Array.from({ length: NUM_USERS }, (_, i) => ({
 }));
 
 // Generate teams
-const teams: Team[] = Array.from({ length: NUM_TEAMS }, (_, i) => ({
+const teams = Array.from({ length: NUM_TEAMS }, (_, i) => ({
   id: i + 1,
   name: `Team ${i + 1}`,
   members: [],
@@ -32,13 +32,13 @@ users.forEach(user => {
 });
 
 // Generate deposits
-const deposits: (Deposit & { neynarScore: number })[] = Array.from({ length: NUM_DEPOSITS }, () => {
+const deposits = Array.from({ length: NUM_DEPOSITS }, () => {
   const user = users[Math.floor(Math.random() * users.length)];
   return { userFid: user.fid, teamId: user.teamId, amount: 1, neynarScore: user.neynarScore };
 });
 
 // Sum deposits per team and build per-user deposit count for chain length
-const teamDepositCounts: Record<number, number> = {};
+const teamDepositCounts = {};
 deposits.forEach(dep => {
   teams[dep.teamId - 1].totalDeposit += dep.amount;
   teams[dep.teamId - 1].chainLength += 1;
