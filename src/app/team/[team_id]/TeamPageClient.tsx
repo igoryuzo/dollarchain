@@ -129,6 +129,8 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
 function ShareTeamButton({ teamId, currentFid }: { teamId: string; currentFid: number }) {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const teamUrl = `${APP_URL}team/${teamId}`;
 
   const handleShare = async () => {
     setModalOpen(true);
@@ -160,6 +162,19 @@ function ShareTeamButton({ teamId, currentFid }: { teamId: string; currentFid: n
       >
         {loading ? "Opening Composer..." : "Share Team"}
       </button>
+      {!modalOpen && (
+        <button
+          className="mt-2 mb-4 text-blue-600 hover:underline text-sm font-medium focus:outline-none"
+          style={{ display: 'block' }}
+          onClick={async () => {
+            await navigator.clipboard.writeText(teamUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
+        >
+          {copied ? 'Copied!' : 'Copy Link & DM'}
+        </button>
+      )}
       <UserTagModal open={modalOpen} onClose={() => setModalOpen(false)} onConfirm={handleModalConfirm} currentFid={currentFid} />
     </>
   );
