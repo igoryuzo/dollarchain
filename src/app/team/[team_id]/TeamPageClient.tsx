@@ -35,7 +35,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
     setSelected([]);
     fetch(`/api/neynar/replies_and_recasts?fid=${currentFid}&limit=10`)
       .then(res => res.json())
-      .then(data => {
+      .then(async data => {
         // Extract unique users from parent_author and mentioned_profiles
         const seen = new Set<number>();
         const userList: { fid: number; username?: string; pfp_url?: string }[] = [];
@@ -67,7 +67,30 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
             }
           });
         });
-        setUsers(userList.slice(0, 10));
+        const limitedUsers = userList.slice(0, 10);
+        // Find FIDs missing username or pfp_url
+        const missingFids = limitedUsers.filter(u => !u.username || !u.pfp_url).map(u => u.fid);
+        if (missingFids.length > 0) {
+          // Fetch missing profiles in batch
+          const resp = await fetch(`/api/neynar/users?fids=${missingFids.join(',')}`);
+          const profileData = await resp.json();
+          if (profileData.users && Array.isArray(profileData.users)) {
+            // Map FID to profile
+            const profileMap = new Map<number, { username: string; pfp_url: string }>();
+            profileData.users.forEach((user: NeynarProfile) => {
+              profileMap.set(user.fid, { username: user.username || '', pfp_url: user.pfp_url || '' });
+            });
+            // Merge info into userList
+            for (const u of limitedUsers) {
+              if ((!u.username || !u.pfp_url) && profileMap.has(u.fid)) {
+                const info = profileMap.get(u.fid)!;
+                u.username = u.username || info.username;
+                u.pfp_url = u.pfp_url || info.pfp_url;
+              }
+            }
+          }
+        }
+        setUsers(limitedUsers);
       })
       .finally(() => setLoading(false));
   }, [open, currentFid]);
