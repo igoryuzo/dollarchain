@@ -33,7 +33,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
     setLoading(true);
     setUsers([]);
     setSelected([]);
-    fetch(`/api/neynar/replies_and_recasts?fid=${currentFid}&limit=10`)
+    fetch(`/api/neynar/replies_and_recasts?fid=${currentFid}&limit=20`)
       .then(res => res.json())
       .then(async data => {
         // Extract unique users from parent_author and mentioned_profiles
@@ -108,7 +108,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
         <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl font-bold">×</button>
-        <h2 className="text-lg font-bold mb-4">Tag users in your share</h2>
+        <h2 className="text-lg font-bold mb-4">Tag users you interacted with before</h2>
         {loading ? <div className="text-center py-8">Loading...</div> : (
           <div className="flex flex-col gap-2 mb-4">
             {users.map(u => (
