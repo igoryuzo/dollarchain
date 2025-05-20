@@ -14,6 +14,7 @@ type Member = {
   joined_at: string;
   users?: { username: string; avatar_url: string; follower_count: number; neynar_score?: number };
   total_deposit: number;
+  last_deposit?: string;
 };
 type DepositResult = { deposit?: unknown; team?: Team; shareableLink?: string; error?: string } | null;
 
@@ -50,6 +51,27 @@ function ShareTeamButton({ teamName, teamId }: { teamName: string; teamId: strin
       {loading ? "Opening Composer..." : "Share Team"}
     </button>
   );
+}
+
+// Helper to get seconds until next deposit
+function getSecondsUntilNextDeposit(lastDeposit: string | null) {
+  if (!lastDeposit) return 0;
+  const last = new Date(lastDeposit).getTime();
+  const now = Date.now();
+  const elapsed = Math.floor((now - last) / 1000);
+  return Math.max(60 - elapsed, 0);
+}
+
+// Timer component for each user
+function UserDepositTimer({ lastDeposit }: { lastDeposit: string | null }) {
+  const [timer, setTimer] = useState(() => getSecondsUntilNextDeposit(lastDeposit));
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(getSecondsUntilNextDeposit(lastDeposit));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lastDeposit]);
+  return <span className="text-xs font-mono text-blue-700">{timer > 0 ? `${timer}s` : 'Ready'}</span>;
 }
 
 export default function TeamPageClient({ teamId, currentFid }: TeamPageClientProps) {
@@ -264,7 +286,8 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                   </span>
                 </span>
               </div>
-              <div className="col-span-3 text-right">Payout</div>
+              <div className="col-span-2 text-center">Next</div>
+              <div className="col-span-1 text-right">Payout</div>
             </div>
             <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
               {members.map((member, index) => {
@@ -313,7 +336,10 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                           {user.neynar_score !== undefined ? Number(user.neynar_score).toFixed(2) : '-'}
                         </span>
                       </div>
-                      <div className="col-span-3 text-right">
+                      <div className="col-span-2 text-center">
+                        <UserDepositTimer lastDeposit={member.last_deposit || null} />
+                      </div>
+                      <div className="col-span-1 text-right">
                         <span className="text-xs text-green-700 font-bold">
                           {potAmount && teamTotal && member.total_deposit
                             ? `$${(Number(potAmount) * (Number(member.total_deposit) / Number(teamTotal))).toFixed(1)}`

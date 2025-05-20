@@ -38,25 +38,35 @@ export async function GET(req: NextRequest) {
   if (gameError || !game) {
     return NextResponse.json({ error: "No active game found" }, { status: 400 });
   }
-  // For each member, sum their deposits for this team in this game
+  // Fetch all deposits for this team in this game, including created_at
   const { data: deposits } = await supabase
     .from("deposits")
-    .select("user_fid, amount")
+    .select("user_fid, amount, created_at")
     .eq("team_id", team_id)
     .eq("game_id", game.id);
+
   let teamTotal = 0;
-  const depositMap: Record<string, number> = {};
+  const depositMap: Record<string, { total: number; lastDeposit: string | null }> = {};
   if (deposits) {
     deposits.forEach(d => {
       const fid = String(d.user_fid);
-      depositMap[fid] = (depositMap[fid] || 0) + (d.amount || 0);
+      if (!depositMap[fid]) {
+        depositMap[fid] = { total: 0, lastDeposit: null };
+      }
+      depositMap[fid].total += d.amount || 0;
+      // Track the latest deposit time
+      if (!depositMap[fid].lastDeposit || new Date(d.created_at) > new Date(depositMap[fid].lastDeposit)) {
+        depositMap[fid].lastDeposit = d.created_at;
+      }
       teamTotal += d.amount || 0;
     });
   }
-  // Attach total_deposit to each member
+
+  // Attach total_deposit and last_deposit to each member
   const membersWithDeposit = (sortedMembers || []).map(m => ({
     ...m,
-    total_deposit: depositMap[String(m.user_fid)] || 0
+    total_deposit: depositMap[String(m.user_fid)]?.total || 0,
+    last_deposit: depositMap[String(m.user_fid)]?.lastDeposit || null
   }));
   return NextResponse.json({ team, members: membersWithDeposit, team_total: teamTotal, pot_amount: game.pot_amount, button_active: game.button_active });
 } 
