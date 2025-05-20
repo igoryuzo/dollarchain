@@ -26,7 +26,7 @@ type TeamPageClientProps = {
 
 function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean; onClose: () => void; onConfirm: (users: { username: string }[]) => void; currentFid: number }) {
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<{ fid: number; username: string; pfp_url: string }[]>([]);
+  const [users, setUsers] = useState<{ fid: number; username?: string; pfp_url?: string }[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   useEffect(() => {
     if (!open) return;
@@ -36,15 +36,36 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
     fetch(`/api/neynar/replies_and_recasts?fid=${currentFid}&limit=10`)
       .then(res => res.json())
       .then(data => {
-        // Extract unique users from replies/recasts
+        // Extract unique users from parent_author and mentioned_profiles
         const seen = new Set<number>();
-        const userList: { fid: number; username: string; pfp_url: string }[] = [];
-        (data.casts || []).forEach((cast: { author: { fid: number; username: string; pfp_url: string } }) => {
-          const u = cast.author;
-          if (u && u.fid && !seen.has(u.fid) && u.fid !== currentFid) {
-            seen.add(u.fid);
-            userList.push({ fid: u.fid, username: u.username, pfp_url: u.pfp_url });
+        const userList: { fid: number; username?: string; pfp_url?: string }[] = [];
+        type NeynarProfile = { fid: number; username?: string; pfp_url?: string };
+        type NeynarCast = {
+          parent_author?: { fid?: number };
+          mentioned_profiles?: NeynarProfile[];
+        };
+        (data.casts || []).forEach((cast: NeynarCast) => {
+          // 1. Add parent_author (user you replied to)
+          if (cast.parent_author && cast.parent_author.fid && cast.parent_author.fid !== currentFid && !seen.has(cast.parent_author.fid)) {
+            seen.add(cast.parent_author.fid);
+            // Try to get username/pfp_url from mentioned_profiles if available
+            let userInfo = null;
+            if (cast.mentioned_profiles) {
+              userInfo = cast.mentioned_profiles.find((p: NeynarProfile) => p.fid === cast.parent_author!.fid);
+            }
+            userList.push({
+              fid: cast.parent_author.fid,
+              username: userInfo?.username,
+              pfp_url: userInfo?.pfp_url
+            });
           }
+          // 2. Add mentioned_profiles
+          (cast.mentioned_profiles || []).forEach((profile: NeynarProfile) => {
+            if (profile.fid !== currentFid && !seen.has(profile.fid)) {
+              seen.add(profile.fid);
+              userList.push({ fid: profile.fid, username: profile.username, pfp_url: profile.pfp_url });
+            }
+          });
         });
         setUsers(userList.slice(0, 10));
       })
@@ -56,7 +77,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
   }
 
   function handleConfirm() {
-    onConfirm(users.filter(u => selected.includes(u.fid)));
+    onConfirm(users.filter(u => selected.includes(u.fid)).map(u => ({ username: u.username || '' })));
   }
 
   if (!open) return null;
@@ -70,7 +91,7 @@ function UserTagModal({ open, onClose, onConfirm, currentFid }: { open: boolean;
             {users.map(u => (
               <label key={u.fid} className={`flex items-center gap-2 px-3 py-2 rounded border ${selected.includes(u.fid) ? 'border-green-500 bg-green-50' : 'border-gray-200'} cursor-pointer transition-all`}>
                 <input type="checkbox" checked={selected.includes(u.fid)} onChange={() => toggle(u.fid)} className="accent-green-500 w-4 h-4" />
-                <img src={u.pfp_url} alt={u.username} className="w-7 h-7 rounded-full object-cover" />
+                <img src={u.pfp_url || ''} alt={u.username || ''} className="w-7 h-7 rounded-full object-cover" />
                 <span className="font-medium text-gray-800">@{u.username}</span>
               </label>
             ))}
