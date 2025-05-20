@@ -141,7 +141,7 @@ function ShareTeamButton({ teamId, currentFid }: { teamId: string; currentFid: n
       const mentions = users.map(u => `@${u.username}`).join(' ');
       const teamUrl = `${APP_URL}team/${teamId}`;
       await sdk.actions.composeCast({
-        text: `Join my Dollarchain team! ${mentions}`.trim(),
+        text: `Join my team—let's win /dollarchain together! 🏆 ${mentions}`.trim(),
         embeds: [teamUrl],
       });
     } catch {
