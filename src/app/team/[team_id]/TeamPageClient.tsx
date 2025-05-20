@@ -188,7 +188,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
     <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 w-full px-2 pb-16">
       <button
         onClick={() => router.push("/")}
-        className="self-start flex items-center text-gray-600 hover:text-gray-900 mb-8 mt-4 transition-colors"
+        className="flex items-center text-gray-600 hover:text-gray-900 mb-8 mt-4 transition-colors"
       >
         <ArrowLeft size={18} className="mr-2" />
         <span>Back to Home</span>
