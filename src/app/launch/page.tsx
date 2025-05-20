@@ -23,7 +23,7 @@ export default function GameRules() {
           <span>Back to Home</span>
         </button>
         <h1 className="text-2xl font-bold mb-2">How to Play</h1>
-        <p className="text-gray-600">Dollarchain is a 48-hour social coordination game.</p>
+        <p className="text-gray-600">Dollarchain is a 24-hour social coordination game.</p>
       </header>
 
       <section className="space-y-6 mb-10">
@@ -85,7 +85,7 @@ const ruleItems = [
   {
     icon: <Clock size={20} />,
     title: "Deposit Regularly",
-    description: "You can deposit $1 every hour during the 48-hour game.",
+    description: "You can deposit $1 every hour during the 24-hour game.",
   },
   {
     icon: <Trophy size={20} />,
