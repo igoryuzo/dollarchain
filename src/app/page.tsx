@@ -69,6 +69,7 @@ export default function Home() {
   const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
   const timeLeft = useCountdownToGameStart();
+  const [userTeams, setUserTeams] = useState<{ id: number; team_name: string; role: string }[] | null>(null);
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -270,6 +271,15 @@ export default function Home() {
       .catch(() => setGameActive(false));
   }, [user]);
 
+  // Fetch user's teams after user is loaded
+  useEffect(() => {
+    if (!user) return;
+    fetch('/api/user/teams', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setUserTeams(data.teams || []))
+      .catch(() => setUserTeams([]));
+  }, [user]);
+
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-white">
@@ -319,14 +329,24 @@ export default function Home() {
           <h1 className="text-3xl font-bold text-center text-[#00C853]">Dollarchain</h1>
         </div>
         <div className="flex flex-col gap-6 w-full">
-          <a
-            href={gameActive ? "/game" : undefined}
-            className={`block w-full text-center font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 ${gameActive ? 'bg-[#00C853] hover:bg-[#00b34d] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'}`}
-            tabIndex={gameActive ? 0 : -1}
-            aria-disabled={!gameActive}
-          >
-            Start Chain
-          </a>
+          {userTeams && userTeams.length > 0 ? (
+            <a
+              href="/my-teams"
+              className="block w-full text-center font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 bg-[#00C853] hover:bg-[#00b34d] text-white"
+              tabIndex={0}
+            >
+              Go To Team(s)
+            </a>
+          ) : (
+            <a
+              href={gameActive ? "/game" : undefined}
+              className={`block w-full text-center font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 ${gameActive ? 'bg-[#00C853] hover:bg-[#00b34d] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'}`}
+              tabIndex={gameActive ? 0 : -1}
+              aria-disabled={!gameActive}
+            >
+              Start Chain
+            </a>
+          )}
           <a
             href="/leaderboard"
             className="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 border border-gray-200"
