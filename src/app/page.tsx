@@ -294,11 +294,15 @@ export default function Home() {
       <div className="mb-6 flex flex-col items-center">
         <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Starting In</span>
         <div className="flex items-center space-x-2 text-2xl font-mono font-bold text-[#00C853]">
-          <div className="flex flex-col items-center">
-            <span>{String(timeLeft.days).padStart(2, '0')}</span>
-            <span className="text-xs text-gray-500 uppercase mt-1">Days</span>
-          </div>
-          <span>:</span>
+          {timeLeft.days > 0 && (
+            <>
+              <div className="flex flex-col items-center">
+                <span>{String(timeLeft.days).padStart(2, '0')}</span>
+                <span className="text-xs text-gray-500 uppercase mt-1">Days</span>
+              </div>
+              <span>:</span>
+            </>
+          )}
           <div className="flex flex-col items-center">
             <span>{String(timeLeft.hours).padStart(2, '0')}</span>
             <span className="text-xs text-gray-500 uppercase mt-1">Hrs</span>
