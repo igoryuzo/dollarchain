@@ -209,7 +209,6 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositResult, setDepositResult] = useState<DepositResult>(null);
   const [error, setError] = useState<string | null>(null);
-  const [potAmount, setPotAmount] = useState<number | null>(null);
   const [teamTotal, setTeamTotal] = useState<number | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const infoRef = useRef<HTMLSpanElement>(null);
@@ -240,7 +239,6 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
         if (!res.ok) throw new Error(data.error || "Failed to fetch team");
         setTeam(data.team);
         setMembers(data.members || []);
-        setPotAmount(data.pot_amount ?? null);
         setTeamTotal(data.team_total ?? null);
         console.log('[TeamPageClient] button_active from API:', data.button_active);
         setButtonActive(data.button_active !== false);
@@ -414,7 +412,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                 </span>
               </div>
               <div className="col-span-2 text-center">Next</div>
-              <div className="col-span-1 text-right">Payout</div>
+              <div className="col-span-1 text-right">%</div>
             </div>
             <ul className="divide-y divide-gray-100 bg-white rounded-b-md">
               {members.map((member, index) => {
@@ -468,8 +466,8 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                       </div>
                       <div className="col-span-1 text-right">
                         <span className="text-xs text-green-700 font-bold">
-                          {potAmount && teamTotal && member.total_deposit
-                            ? `$${(Number(potAmount) * (Number(member.total_deposit) / Number(teamTotal))).toFixed(1)}`
+                          {teamTotal && member.total_deposit
+                            ? `${((member.total_deposit / teamTotal) * 100).toFixed(2)}%`
                             : '-'}
                         </span>
                       </div>

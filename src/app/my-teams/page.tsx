@@ -17,7 +17,6 @@ interface UserTeam {
 
 export default function MyTeamsPage() {
   const [teams, setTeams] = useState<UserTeam[]>([]);
-  const [potAmount, setPotAmount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [gameActive, setGameActive] = useState(true);
@@ -31,7 +30,6 @@ export default function MyTeamsPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to fetch your teams");
         setTeams(data.teams || []);
-        setPotAmount(data.pot_amount ?? null);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
       } finally {
@@ -78,13 +76,12 @@ export default function MyTeamsPage() {
         <h1 className="text-3xl font-bold mb-2 text-center text-[#00C853]">Your Teams</h1>
         <div className="text-center text-gray-500 text-sm mb-6">Click on team name to deposit.</div>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 w-full">
-          <div className="grid grid-cols-10 gap-1 py-2 px-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-xl">
+          <div className="grid grid-cols-9 gap-1 py-2 px-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-xl">
             <div className="col-span-1 text-center">#</div>
             <div className="col-span-3">Team</div>
             <div className="col-span-2">Owner</div>
             <div className="col-span-1 text-center">Chain</div>
             <div className="col-span-2 text-right">Points</div>
-            <div className="col-span-1 text-right">%</div>
           </div>
           {loading ? (
             <div className="flex items-center justify-center py-8 text-gray-400">Loading...</div>
@@ -96,7 +93,7 @@ export default function MyTeamsPage() {
             <ul className="divide-y divide-gray-100 bg-white rounded-b-xl">
               {teams.map((team, idx) => (
                 <li className="hover:bg-gray-50 transition-colors" key={team.id}>
-                  <div className="grid grid-cols-10 gap-1 items-center px-2 py-3">
+                  <div className="grid grid-cols-9 gap-1 items-center px-2 py-3">
                     <div className="col-span-1 text-center">
                       <span className="text-xs text-gray-400 font-medium">{idx + 1}</span>
                     </div>
@@ -113,11 +110,6 @@ export default function MyTeamsPage() {
                     </div>
                     <div className="col-span-2 text-right text-xs text-gray-900 font-bold">
                       {team.total_points !== undefined ? Number(team.total_points).toFixed(2) : '-'}
-                    </div>
-                    <div className="col-span-1 text-right text-xs text-green-700 font-bold">
-                      {team.team_total && potAmount && team.team_total > 0
-                        ? `${Number(((Number(potAmount) - Number(team.team_total)) / Number(team.team_total)) * 100).toFixed(1)}%`
-                        : '-'}
                     </div>
                   </div>
                 </li>

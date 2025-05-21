@@ -69,18 +69,18 @@ export default function GameRules() {
 const ruleItems = [
   {
     icon: <Users size={20} />,
-    title: "Join or Create a Team",
-    description: "Deposit $1 USDC to join or start a new team.",
+    title: "Join or Create a Team Chain",
+    description: "Deposit $1 USDC to join or start a new team chain.",
   },
   {
     icon: <Link size={20} />,
-    title: "Share Your Link",
+    title: "Share Your Chain",
     description: "Invite others to join your chain by sharing your team link.",
   },
   {
     icon: <BarChart size={20} />,
     title: "Earn Points",
-    description: "Longer chains and more deposits earn your team more points.",
+    description: "More deposits earn your team more points.",
   },
   {
     icon: <Clock size={20} />,
@@ -90,6 +90,6 @@ const ruleItems = [
   {
     icon: <Trophy size={20} />,
     title: "Win the Pot",
-    description: "Teams compete for a share of all deposited USDC.",
+    description: "Top 3 teams share the pot of all deposited USDC. Team 1: 50%, Team 2: 30%, Team 3: 20%",
   },
 ] 
