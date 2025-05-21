@@ -51,7 +51,8 @@ export default function MyTeamsPage() {
           <ArrowLeft size={16} className="mr-1" />
           <span>Back to Home</span>
         </button>
-        <h1 className="text-3xl font-bold mb-6 text-center text-[#00C853]">Your Teams</h1>
+        <h1 className="text-3xl font-bold mb-2 text-center text-[#00C853]">Your Teams</h1>
+        <div className="text-center text-gray-500 text-sm mb-6">Click on team name to deposit.</div>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 w-full">
           <div className="grid grid-cols-10 gap-1 py-2 px-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100 rounded-t-xl">
             <div className="col-span-1 text-center">#</div>
