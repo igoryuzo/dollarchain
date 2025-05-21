@@ -297,7 +297,7 @@ export async function POST(req: NextRequest) {
       const maxChainLength = Math.max(...Object.values(chainCounts));
       if (maxChainLength > 0) {
         const ratio = Number(chainLength) / maxChainLength;
-        chain_multiplier = Math.max(1.0, 5 - 4 * ratio); // 5x when small, 1x when equal to max
+        chain_multiplier = Math.max(1.0, 3.5 - 2.5 * ratio); // 5x when small, 1x when equal to max
       }
     }
 
