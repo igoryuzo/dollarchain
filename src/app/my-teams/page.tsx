@@ -20,6 +20,7 @@ export default function MyTeamsPage() {
   const [potAmount, setPotAmount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [gameActive, setGameActive] = useState(true);
 
   useEffect(() => {
     async function fetchTeams() {
@@ -40,6 +41,18 @@ export default function MyTeamsPage() {
     fetchTeams();
   }, []);
 
+  useEffect(() => {
+    fetch('/api/game/active')
+      .then(res => res.json())
+      .then(data => {
+        setGameActive(!!data.button_active);
+      })
+      .catch(() => setGameActive(false));
+  }, []);
+
+  // Check if user is owner of any team
+  const isOwner = teams.some(team => team.role === 'owner');
+
   return (
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 w-full flex flex-col items-center">
       <div className="w-full max-w-5xl mx-auto">
@@ -51,6 +64,17 @@ export default function MyTeamsPage() {
           <ArrowLeft size={16} className="mr-1" />
           <span>Back to Home</span>
         </button>
+        {/* Start Chain button if not owner of any team */}
+        {!isOwner && (
+          <a
+            href={gameActive ? "/game" : undefined}
+            className={`block w-full text-center font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 mb-6 ${gameActive ? 'bg-[#00C853] hover:bg-[#00b34d] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'}`}
+            tabIndex={gameActive ? 0 : -1}
+            aria-disabled={!gameActive}
+          >
+            Start Chain
+          </a>
+        )}
         <h1 className="text-3xl font-bold mb-2 text-center text-[#00C853]">Your Teams</h1>
         <div className="text-center text-gray-500 text-sm mb-6">Click on team name to deposit.</div>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 w-full">
