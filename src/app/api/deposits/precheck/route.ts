@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
     if (lastDeposit) {
       const last = new Date(lastDeposit.created_at).getTime();
       const now = Date.now();
-      if (now - last < 60 * 1000) { // 1 minute rule (for testing)
-        return NextResponse.json({ error: 'You can only deposit $1 per minute (testing only).' }, { status: 400 });
+      if (now - last < 60 * 60 * 1000) { // 1 hour rule
+        return NextResponse.json({ error: 'You can only deposit $1 per hour.' }, { status: 400 });
       }
     }
     // All checks passed
