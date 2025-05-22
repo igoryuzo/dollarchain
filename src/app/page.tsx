@@ -23,17 +23,17 @@ import Image from 'next/image';
 // import WaitlistCounter from './components/WaitlistCounter';
 // import GameBanner from './components/GameBanner';
 
-function useCountdownToGameStart() {
+function useCountdownToGameEnd() {
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [target, setTarget] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Fetch start_time from API
+    // Fetch end_time from API
     fetch('/api/game/active')
       .then(res => res.json())
       .then(data => {
-        if (data && data.start_time) {
-          setTarget(new Date(data.start_time));
+        if (data && data.end_time) {
+          setTarget(new Date(data.end_time));
         } else {
           setTarget(null);
         }
@@ -68,7 +68,7 @@ export default function Home() {
   const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
   const [gameActive, setGameActive] = useState(true); // default true for now
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
-  const timeLeft = useCountdownToGameStart();
+  const timeLeft = useCountdownToGameEnd();
   const [userTeams, setUserTeams] = useState<{ id: number; team_name: string; role: string }[] | null>(null);
 
   // Function to handle notification request
@@ -292,7 +292,7 @@ export default function Home() {
     <main className="min-h-screen bg-white text-gray-900 px-4 py-8 pb-16 flex flex-col items-center justify-center">
       {/* Countdown Timer */}
       <div className="mb-6 flex flex-col items-center">
-        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Starting In</span>
+        <span className="text-xs text-gray-500 uppercase tracking-widest mb-1">Game Ending In</span>
         <div className="flex items-center space-x-2 text-2xl font-mono font-bold text-[#00C853]">
           {timeLeft.days > 0 && (
             <>
