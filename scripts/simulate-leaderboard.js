@@ -54,7 +54,7 @@ teams.forEach(team => {
   let multiplier = 1;
   if (maxChainLength > 0) {
     const ratio = team.chainLength / maxChainLength;
-    multiplier = Math.max(1.0, 5 - 4 * ratio); // 5x when small, 1x when equal to max
+    multiplier = Math.max(1.0, 3.5 - 2.5 * ratio); // 3.5x when small, 1x when equal to max
   }
   // Points: sum for each deposit: 1 * multiplier * neynarScore
   team.totalPoints = teamDeposits.reduce((sum, d) => sum + (1 * multiplier * d.neynarScore), 0);
