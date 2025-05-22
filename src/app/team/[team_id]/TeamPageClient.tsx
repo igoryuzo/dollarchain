@@ -471,36 +471,38 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                 const isOwner = member.role === 'owner';
                 return (
                   <li key={member.user_fid} className="hover:bg-gray-50">
-                    <a
-                      href={`https://warpcast.com/${user.username}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="grid grid-cols-12 gap-1 items-center px-2 py-2 group"
-                    >
+                    <div className="grid grid-cols-12 gap-1 items-center px-2 py-2 group">
                       <div className="col-span-1 text-center">
                         <span className="text-xs text-gray-400 font-medium">{index + 1}</span>
                       </div>
                       <div className="col-span-6 flex items-center">
-                        <div className={`h-8 w-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0 ${isOwner ? 'border-2 border-green-400' : ''}`}>
-                          {user.avatar_url ? (
-                            <Image
-                              src={user.avatar_url}
-                              alt={`${user.username}'s avatar`}
-                              width={32}
-                              height={32}
-                              className="h-8 w-8 object-cover block"
-                              unoptimized
-                            />
-                          ) : (
-                            <div className="h-8 w-8 flex items-center justify-center bg-purple-100 text-purple-800 font-bold text-xs">
-                              {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
-                            </div>
-                          )}
-                        </div>
-                        <span className="ml-2 text-xs font-medium text-purple-700 group-hover:text-purple-900 truncate">
-                          @{user.username}
-                          <span className={`ml-1 text-xs ${isOwner ? 'text-green-400' : 'text-blue-400'}`}>({isOwner ? 'owner' : 'member'})</span>
-                        </span>
+                        <a
+                          href={`https://warpcast.com/${user.username}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center group"
+                        >
+                          <div className={`h-8 w-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0 ${isOwner ? 'border-2 border-green-400' : ''}`}>
+                            {user.avatar_url ? (
+                              <Image
+                                src={user.avatar_url}
+                                alt={`${user.username}'s avatar`}
+                                width={32}
+                                height={32}
+                                className="h-8 w-8 object-cover block"
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="h-8 w-8 flex items-center justify-center bg-purple-100 text-purple-800 font-bold text-xs">
+                                {user.username ? user.username.slice(0, 1).toUpperCase() : '?'}
+                              </div>
+                            )}
+                          </div>
+                          <span className="ml-2 text-xs font-medium text-purple-700 group-hover:text-purple-900 truncate">
+                            @{user.username}
+                            <span className={`ml-1 text-xs ${isOwner ? 'text-green-400' : 'text-blue-400'}`}>({isOwner ? 'owner' : 'member'})</span>
+                          </span>
+                        </a>
                       </div>
                       <div className="col-span-2 text-right">
                         <span className="text-xs text-gray-600">
@@ -508,7 +510,6 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                         </span>
                       </div>
                       <div className="col-span-2 text-center">
-                        {/* For the current user, use global lastDeposit; for others, use their own last_deposit */}
                         {member.user_fid === currentFid ? (
                           <UserDepositTimer lastDeposit={globalLastDeposit} />
                         ) : (
@@ -522,7 +523,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                             : '-'}
                         </span>
                       </div>
-                    </a>
+                    </div>
                   </li>
                 );
               })}
