@@ -62,6 +62,38 @@ function useCountdownToGameEnd() {
   return timeLeft;
 }
 
+function getSecondsUntilNextDeposit(lastDeposit: string | null) {
+  if (!lastDeposit) return 0;
+  const last = new Date(lastDeposit).getTime();
+  const now = Date.now();
+  const elapsed = Math.floor((now - last) / 1000);
+  return Math.max(3600 - elapsed, 0);
+}
+
+function HomeDepositTimer({ lastDeposit }: { lastDeposit: string | null }) {
+  const [timer, setTimer] = useState(() => getSecondsUntilNextDeposit(lastDeposit));
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(getSecondsUntilNextDeposit(lastDeposit));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lastDeposit]);
+  if (timer > 0) {
+    const m = Math.floor(timer / 60).toString().padStart(2, '0');
+    const s = (timer % 60).toString().padStart(2, '0');
+    return (
+      <div className="mb-3 text-xs font-mono text-blue-700 text-center">
+        Next deposit in <span className="font-bold">{m}:{s}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="mb-3 text-xs font-mono text-blue-700 text-center">
+      Ready
+    </div>
+  );
+}
+
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +102,7 @@ export default function Home() {
   // const [refreshWaitlist, setRefreshWaitlist] = useState(0); // For triggering waitlist refresh
   const timeLeft = useCountdownToGameEnd();
   const [userTeams, setUserTeams] = useState<{ id: number; team_name: string; role: string }[] | null>(null);
+  const [lastDeposit, setLastDeposit] = useState<string | null>(null);
 
   // Function to handle notification request
   const handleRequestNotifications = async () => {
@@ -280,6 +313,29 @@ export default function Home() {
       .catch(() => setUserTeams([]));
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    // Fetch last deposit for the user in the active game
+    fetch('/api/game/active')
+      .then(res => res.json())
+      .then(data => {
+        if (!data || !data.active || !data.start_time) return;
+        fetch('/api/deposits/precheck', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        })
+          .then(res => res.json())
+          .then(precheck => {
+            if (precheck && precheck.lastDeposit) {
+              setLastDeposit(precheck.lastDeposit);
+            } else {
+              setLastDeposit(null);
+            }
+          });
+      });
+  }, [user]);
+
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-white">
@@ -332,6 +388,10 @@ export default function Home() {
           <Image src="/images/dollarchain-logo.png" alt="Dollarchain Logo" width={40} height={40} className="h-10 w-10 mr-3" />
           <h1 className="text-3xl font-bold text-center text-[#00C853]">Dollarchain</h1>
         </div>
+        {/* Countdown until user can deposit again */}
+        {user && lastDeposit !== null && (
+          <HomeDepositTimer lastDeposit={lastDeposit} />
+        )}
         <div className="flex flex-col gap-6 w-full">
           {userTeams && userTeams.length > 0 ? (
             <a

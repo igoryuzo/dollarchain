@@ -354,7 +354,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
             }
           }}
         >
-          {isSigningIn ? 'Signing in...' : 'Sign in with Farcaster'}
+          {isSigningIn ? 'Signing in...' : 'Sign in'}
         </button>
       </div>
     );
