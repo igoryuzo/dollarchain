@@ -220,6 +220,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const infoRef = useRef<HTMLSpanElement>(null);
   const [buttonActive, setButtonActive] = useState<boolean>(true);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [globalLastDeposit, setGlobalLastDeposit] = useState<string | null>(null);
 
   // Close tooltip on outside click
   useEffect(() => {
@@ -271,6 +272,24 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       sdk.actions.ready();
     }
   }, [loading, error]);
+
+  // Fetch global last deposit for the current user
+  useEffect(() => {
+    if (currentFid === null) return;
+    fetch('/api/deposits/precheck', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.lastDeposit) {
+          setGlobalLastDeposit(data.lastDeposit);
+        } else {
+          setGlobalLastDeposit(null);
+        }
+      });
+  }, [currentFid]);
 
   // Deposit handler (always to this team)
   const handleDeposit = async () => {
@@ -489,7 +508,12 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                         </span>
                       </div>
                       <div className="col-span-2 text-center">
-                        <UserDepositTimer lastDeposit={member.last_deposit || null} />
+                        {/* Countdown until user can deposit again (global, not per team) */}
+                        {typeof currentFid === 'number' && (
+                          <div className="mb-3">
+                            <UserDepositTimer lastDeposit={globalLastDeposit} />
+                          </div>
+                        )}
                       </div>
                       <div className="col-span-1 text-right">
                         <span className="text-xs text-green-700 font-bold">
