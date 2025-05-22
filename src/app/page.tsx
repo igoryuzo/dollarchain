@@ -399,7 +399,7 @@ export default function Home() {
               className="block w-full text-center font-bold py-4 rounded-lg text-lg shadow transition-all duration-150 bg-[#00C853] hover:bg-[#00b34d] text-white"
               tabIndex={0}
             >
-              Go To Team(s)
+              Go To My Team(s)
             </a>
           ) : (
             <a
