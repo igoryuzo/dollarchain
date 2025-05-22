@@ -338,9 +338,8 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       if (!res.ok) {
         setError(data.error || "Deposit failed");
       } else {
-        // Refresh team info after deposit to update membership
-        await router.refresh();
-        // Optionally, re-fetch team data here if router.refresh does not update state
+        // Redirect to the same team page after deposit
+        router.push(`/team/${teamId}`);
       }
     } catch (err) {
       console.error('[DEBUG] Error in handleDeposit:', err);
