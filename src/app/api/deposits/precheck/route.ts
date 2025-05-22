@@ -40,11 +40,13 @@ export async function POST(req: NextRequest) {
       const last = new Date(lastDeposit.created_at).getTime();
       const now = Date.now();
       if (now - last < 60 * 60 * 1000) { // 1 hour rule
-        return NextResponse.json({ error: 'You can only deposit $1 per hour.' }, { status: 400 });
+        return NextResponse.json({ error: 'You can only deposit $1 per hour.', lastDeposit: lastDeposit.created_at }, { status: 400 });
       }
+      // Not rate-limited, but still return lastDeposit
+      return NextResponse.json({ ok: true, lastDeposit: lastDeposit.created_at });
     }
-    // All checks passed
-    return NextResponse.json({ ok: true });
+    // No deposit found
+    return NextResponse.json({ ok: true, lastDeposit: null });
   } catch {
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
