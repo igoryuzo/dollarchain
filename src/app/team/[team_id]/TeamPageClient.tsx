@@ -5,6 +5,7 @@ import { sdk } from "@farcaster/frame-sdk";
 import Image from 'next/image';
 import { ArrowLeft } from "lucide-react";
 import React from 'react';
+import { signIn } from '@/lib/auth';
 
 const APP_URL = "https://www.dollarchain.xyz/";
 
@@ -218,6 +219,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   const [infoOpen, setInfoOpen] = useState(false);
   const infoRef = useRef<HTMLSpanElement>(null);
   const [buttonActive, setButtonActive] = useState<boolean>(true);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   // Close tooltip on outside click
   useEffect(() => {
@@ -334,6 +336,30 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
     console.log('[TeamPageClient] Deposit button disabled state:', !buttonActive);
   }, [buttonActive]);
 
+  if (currentFid === null) {
+    // Prompt user to sign in
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <div className="text-2xl font-semibold mb-4">You must be signed in to view this team.</div>
+        <button
+          className="px-6 py-3 bg-[#00C853] text-white rounded-lg font-bold text-lg shadow hover:bg-[#00b34d] transition-all duration-150"
+          disabled={isSigningIn}
+          onClick={async () => {
+            setIsSigningIn(true);
+            try {
+              await signIn();
+              window.location.reload();
+            } finally {
+              setIsSigningIn(false);
+            }
+          }}
+        >
+          {isSigningIn ? 'Signing in...' : 'Sign in with Farcaster'}
+        </button>
+      </div>
+    );
+  }
+
   if (loading) {
     console.log('[TeamPageClient] loading is true, rendering splash');
     return <div className="min-h-screen flex items-center justify-center text-white">Loading team...</div>;
@@ -344,10 +370,6 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
   }
   if (!team) {
     return <div className="min-h-screen flex items-center justify-center text-white">Team not found.</div>;
-  }
-  if (currentFid === null) {
-    // This should never happen in the mini app; log for debugging.
-    console.error("[TeamPageClient] currentFid is null - this should not happen in the mini app.");
   }
 
   return (
