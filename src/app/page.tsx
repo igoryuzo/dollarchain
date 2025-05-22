@@ -318,14 +318,14 @@ export default function Home() {
             <span className="text-xs text-gray-500 uppercase mt-1">Sec</span>
           </div>
         </div>
-        <div className="mt-3">
+        {/* <div className="mt-3">
           <span
             onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/dollarchain")}
             className="text-base font-semibold hover:underline cursor-pointer"
           >
             <span className="text-gray-500">Follow </span><span className="font-bold text-[#7c3aed]">/dollarchain</span>
           </span>
-        </div>
+        </div> */}
       </div>
       <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-8 flex flex-col items-center">
         <div className="flex items-center justify-center mb-8">
