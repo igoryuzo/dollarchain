@@ -320,7 +320,13 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
       console.log('[DEBUG] Wallet transfer result:', sendResult);
       if (!sendResult.success) {
         console.error("SendToken error:", sendResult);
-        // Send error to server for logging
+        // Add this before sending to /api/client-error
+        const extraContext = {
+          userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : null,
+          platform: typeof window !== 'undefined' ? window.navigator.platform : null,
+          url: typeof window !== 'undefined' ? window.location.href : null,
+          // Add any other relevant context here
+        };
         fetch('/api/client-error', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -330,6 +336,7 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
             teamId,
             userFid: currentFid,
             timestamp: new Date().toISOString(),
+            ...extraContext,
           }),
         });
         setError(sendResult.reason || "Failed to send USDC");
