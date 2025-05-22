@@ -508,11 +508,11 @@ export default function TeamPageClient({ teamId, currentFid }: TeamPageClientPro
                         </span>
                       </div>
                       <div className="col-span-2 text-center">
-                        {/* Countdown until user can deposit again (global, not per team) */}
-                        {typeof currentFid === 'number' && (
-                          <div className="mb-3">
-                            <UserDepositTimer lastDeposit={globalLastDeposit} />
-                          </div>
+                        {/* For the current user, use global lastDeposit; for others, use their own last_deposit */}
+                        {member.user_fid === currentFid ? (
+                          <UserDepositTimer lastDeposit={globalLastDeposit} />
+                        ) : (
+                          <UserDepositTimer lastDeposit={member.last_deposit || null} />
                         )}
                       </div>
                       <div className="col-span-1 text-right">
