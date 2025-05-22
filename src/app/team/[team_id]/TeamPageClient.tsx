@@ -186,7 +186,7 @@ function getSecondsUntilNextDeposit(lastDeposit: string | null) {
   const last = new Date(lastDeposit).getTime();
   const now = Date.now();
   const elapsed = Math.floor((now - last) / 1000);
-  return Math.max(60 - elapsed, 0);
+  return Math.max(3600 - elapsed, 0);
 }
 
 // Timer component for each user
@@ -198,7 +198,12 @@ function UserDepositTimer({ lastDeposit }: { lastDeposit: string | null }) {
     }, 1000);
     return () => clearInterval(interval);
   }, [lastDeposit]);
-  return <span className="text-xs font-mono text-blue-700">{timer > 0 ? `${timer}s` : 'Ready'}</span>;
+  if (timer > 0) {
+    const m = Math.floor(timer / 60).toString().padStart(2, '0');
+    const s = (timer % 60).toString().padStart(2, '0');
+    return <span className="text-xs font-mono text-blue-700">{m}:{s}</span>;
+  }
+  return <span className="text-xs font-mono text-blue-700">Ready</span>;
 }
 
 export default function TeamPageClient({ teamId, currentFid }: TeamPageClientProps) {
