@@ -21,8 +21,8 @@ const supabase = createClient(
 );
 
 // Configuration values
-const TEAM_ID = 30;
-const POT_AMOUNT = 211; // Set this to the actual pot amount for team 30
+const TEAM_ID = 94;
+const POT_AMOUNT = 32; // Set this to the actual pot amount for team 30
 
 async function calculateAndSendPayouts() {
   try {
@@ -107,4 +107,4 @@ async function calculateAndSendPayouts() {
 }
 
 // Execute the function
-calculateAndSendPayouts(); 
+calculateAndSendPayouts();
