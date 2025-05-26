@@ -53,7 +53,7 @@ export async function signIn(): Promise<AuthUser | null> {
     // Use try-catch specifically for the signIn call
     let signInResult;
     try {
-      signInResult = await sdk.actions.signIn({ nonce });
+      signInResult = await sdk.actions.signIn({ nonce, acceptAuthAddress: true });
     } catch (signInError) {
       console.error("Error during signIn call:", signInError);
       // Try to proceed with context even if signIn fails
